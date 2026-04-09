@@ -14,10 +14,12 @@ export default {
             fontFamily: {
                 sans: ["Montserrat", ...defaultTheme.fontFamily.sans],
             },
-            primary: "#323986",
-            secondary: "#2ac4ea",
-            accent: "#ecc25c",
-            info: "#BB52FE",
+            colors: {
+                primary: "#323986",
+                secondary: "#2ac4ea",
+                accent: "#ecc25c",
+                info: "#BB52FE",
+            },
         },
     },
 
