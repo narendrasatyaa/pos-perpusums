@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -11,8 +13,16 @@ Route::get('/', function () {
         return redirect()->route('kasir.dashboard');
     }
 
-    return redirect()->route('login');
-});
+    return view('home');
+})->name('home');
+
+Route::get('/akses', function () {
+    if (Auth::check()) {
+        return redirect()->route('kasir.dashboard');
+    }
+
+    return view('auth.method');
+})->name('access');
 
 // Login
 Route::get('/login', function () {
@@ -69,7 +79,12 @@ Route::post('/finance/login', function (Request $request) {
 })->name('finance.login.store');
 
 Route::middleware('auth')->get('/kasir', function () {
-    return view('kasir.dashboard');
+    // ambil dr db
+    $categories = Category::where('is_active', true)->get();
+    $products = Product::where('is_available', true)->get();
+
+    // Kirim data ke view (dashboard)
+    return view('kasir.dashboard', compact('categories', 'products'));
 })->name('kasir.dashboard');
 
 // Logout
@@ -81,3 +96,26 @@ Route::match(['post', 'get'], '/logout', [AuthenticatedSessionController::class,
 Route::middleware('auth')->get('/dashboard', function () {
     return redirect()->route('kasir.dashboard');
 })->name('dashboard');
+
+Route::middleware('auth')->get('/kasir/order', function (Request $request) {
+    $categories = Category::where('is_active', true)->get();
+    
+    // filter produk kategori
+    $query = Product::where('is_available', true);
+    
+    if ($request->has('category') && $request->category != '') {
+        $query->where('category_id', $request->category);
+    }
+    
+    // filter pake nama
+    if ($request->has('search') && $request->search != '') {
+        $query->where('name', 'like', '%' . $request->search . '%');
+    }
+    
+    $products = $query->get();
+
+    return view('kasir.order', compact('categories', 'products'));
+})->name('kasir.order');
+Route::middleware('auth')->get('/kasir/histori', function () {
+    return view('kasir.histori');
+})->name('kasir.histori');

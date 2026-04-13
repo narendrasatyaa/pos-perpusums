@@ -6,7 +6,9 @@ export default {
     content: [
         "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
         "./storage/framework/views/*.php",
-        "./resources/views/**/*.blade.php",
+        "./resources/**/*.blade.php",
+        "./resources/**/*.js",
+        "./resources/**/*.vue",
     ],
 
     theme: {
@@ -16,9 +18,9 @@ export default {
             },
             colors: {
                 primary: "#323986",
-                secondary: "#2ac4ea",
+                secondary: "#3e426b",
                 accent: "#ecc25c",
-                info: "#BB52FE",
+                info: "#c9b27e",
             },
         },
     },

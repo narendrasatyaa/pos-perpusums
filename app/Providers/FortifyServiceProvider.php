@@ -41,6 +41,19 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::confirmPasswordView(fn () => view('auth.login'));
         Fortify::twoFactorChallengeView(fn () => view('auth.login'));
 
+        // Custom Login Response agar Kasir PASTI masuk ke kasir.dashboard, bukan ke url Filament (url.intended)
+        $this->app->singleton(
+            \Laravel\Fortify\Contracts\LoginResponse::class,
+            function () {
+                return new class implements \Laravel\Fortify\Contracts\LoginResponse {
+                    public function toResponse($request)
+                    {
+                        return redirect()->route('kasir.dashboard');
+                    }
+                };
+            }
+        );
+
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
