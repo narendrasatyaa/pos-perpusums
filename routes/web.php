@@ -116,6 +116,40 @@ Route::middleware('auth')->get('/kasir/order', function (Request $request) {
 
     return view('kasir.order', compact('categories', 'products'));
 })->name('kasir.order');
+
+Route::middleware('auth')->get('/process/payment', function () {
+    return view('process.payment');
+})->name('kasir.payment');
+
+Route::middleware('auth')->get('/process/receipt', function () {
+    return view('process.receipt');
+})->name('kasir.receipt');
+
 Route::middleware('auth')->get('/kasir/histori', function () {
     return view('kasir.histori');
 })->name('kasir.histori');
+Route::middleware('auth')->get('/kasir/stok', function () {
+    $categories = \App\Models\Category::all();
+    $products = \App\Models\Product::with('category')->get();
+    
+    return view('kasir.stok', compact('categories', 'products'));
+})->name('kasir.stok');
+
+Route::middleware('auth')->post('/kasir/stok/{product}/toggle', function (\App\Models\Product $product) {
+    $product->is_available = !$product->is_available;
+    $product->save();
+    
+    return response()->json([
+        'success' => true, 
+        'is_available' => $product->is_available
+    ]);
+})->name('kasir.stok.toggle');
+
+
+Route::middleware('auth')->get('/kasir/profile', function () {
+    return view('components.profile-page');
+})->name('kasir.profile');
+
+Route::get('/doc', function () {
+    return view('doc');
+})->name('doc');

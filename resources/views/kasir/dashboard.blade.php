@@ -1,95 +1,118 @@
 <x-app-layout :title="'Dashboard Kasir'">
-    <div class="flex h-screen bg-[#f4f7fe] font-sans selection:bg-accent selection:text-primary">
+    <div class="flex h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary">
         <x-sidebar />
 
-        {{-- header --}}
-        <div class="flex-1 flex flex-col h-screen overflow-hidden">
-            <header
-                class="bg-white h-24 px-10 flex items-center justify-between shadow-sm z-10 rounded-b-3xl mx-4 mt-4 border border-[#eef2f9] flex-shrink-0">
-                <div class="flex items-center space-x-12">
-                    <h1 class="font-bold text-lg" style="padding-right: 1rem;">Dashboard Kasir</h1>
-                    @foreach ($headerLinks ?? [] as $link)
-                        <a href="{{ $link->url ?? '#' }}"
-                            class="text-secondary/60 hover:text-primary font-bold text-sm transition-colors">
-                            {{ $link->name ?? 'Link' }}
-                        </a>
-                    @endforeach
-                </div>
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            {{-- header --}}
+            <header class="bg-white/80 backdrop-blur-md h-20 px-10 flex items-center justify-between shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0">
 
-                <div class="flex items-center space-x-6">
-
-                    <a href="kasir/order"
-                        class="bg-accent hover:bg-info text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-md shadow-accent/20">
-                        New Request Order
-                    </a>
-                    <button
-                        class="w-10 h-10 rounded-full bg-[#f4f7fe] text-secondary hover:text-primary flex items-center justify-center transition-colors relative">
-                        <i class="fa-solid fa-bell"></i>
-                        <span
-                            class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    {{-- <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm">
-                        <img src="{{ auth()->user()->avatar_url ?? asset('img/avatar-default.png') }}"
-                            onerror="this.src='https://ui-avatars.com/api/?name=User&background=ecc25c&color=fff'"
-                            alt="User" class="w-full h-full object-cover">
-                    </div> --}}
+                <div class="flex items-center gap-4 justify-end w-full">
+                    <div class="text-right mr-4 border-slate-200 pr-4 hidden md:block">
+                        <p class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
+                        <p class="text-xs text-secondary/60 font-medium clock-display">00:00:00 WIB</p>
+                    </div>
                 </div>
             </header>
 
-            <div class="flex-1 overflow-hidden flex flex-col p-4 pt-6">
-                {{-- produk --}}
-                <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-4">
-                    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-                        @forelse($products ?? [] as $product)
-                            <div
-                                class="bg-white rounded-3xl p-5 shadow-sm border border-[#eef2f9] flex flex-col transition-all hover:shadow-lg group">
-                                <!-- Product Image Area -->
-                                <div
-                                    class="w-full aspect-square bg-[#f4f7fe] rounded-2xl mb-4 p-4 flex items-center justify-center relative overflow-hidden group-hover:bg-accent/5 transition-colors">
-                                    @if ($product->image)
-                                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name ?? 'Product' }}"
-                                            class="w-full h-full object-cover rounded-xl drop-shadow-md ">
-                                    @else
-                                        <i
-                                            class="fa-solid fa-image text-5xl text-secondary/10 group-hover:text-accent/30 transition-colors"></i>
-                                    @endif
-                                </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-8 space-y-8 pb-20">
+                
+                @php
+                    $hour = now()->format('H');
+                    $hari = $hour < 12 ? 'Pagi' : ($hour < 15 ? 'Siang' : ($hour < 18 ? 'Sore' : 'Malam'));
+                @endphp
 
-                                <h3 class="text-primary font-bold text-lg mb-1 truncate">
-                                    {{ $product->name ?? 'Product Name' }}</h3>
+                <!-- Hero Section: Welcome & Quick Action -->
+                <div class=" rounded-3xl bg-primary p-8 shadow-xl">
+                    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div class="text-white space-y-2 max-w-xl">
+                            <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight">
+                                Selamat {{ $hari }}, <span class="text-accent">{{ explode(' ', Auth::user()->name)[0] }}</span>! 👋
+                            </h2>
+                            <p class="text-slate-200 text-sm leading-relaxed mt-2">
+                                Cek stok hari ini atau langsung mulai terima pesanan pelanggan. Jangan lupa tersenyum!
+                            </p>
+                        </div>
+                        
+                        <div class="shrink-0 flex flex-col sm:flex-row gap-4">
+                            <a href="{{ route('kasir.order') }}" class="group relative flex items-center gap-3 bg-accent hover:bg-info text-white px-8 py-4 rounded-2xl font-bold">
+                                <i class="fa-solid fa-cash-register text-xl"></i>
+                                <span>Mulai Pesanan Baru</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="mt-auto flex flex-col pt-2">
-                                    <p class="text-secondary/50 text-xs font-semibold mb-2">Price</p>
-                                    <div class="flex items-center justify-between">
-                                        <p class="text-accent font-extrabold text-base">Rp
-                                            {{ number_format($product->price ?? 0, 0, ',', '.') }}</p>
-
-                                        <div
-                                            class="flex items-center bg-white border border-secondary/10 rounded-lg p-1 shadow-sm">
-                                            <button
-                                                class="w-6 h-6 rounded bg-transparent text-secondary flex items-center justify-center hover:bg-secondary/5 transition-colors">
-                                                <i class="fa-solid fa-minus text-[10px]"></i>
-                                            </button>
-                                            <span
-                                                class="w-6 text-center text-xs font-bold text-primary">{{ $product->cart_quantity ?? 1 }}</span>
-                                            <button
-                                                class="w-6 h-6 rounded bg-accent/10 text-accent flex items-center justify-center hover:bg-accent/20 transition-colors">
-                                                <i class="fa-solid fa-plus text-[10px]"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Metrics & Quick Access Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Metric 1 -->
+                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute -right-6 -top-6 text-slate-50 text-8xl transition-transform"><i class="fa-solid fa-boxes-stacked"></i></div>
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-tertiary/10 text-tertiary flex items-center justify-center text-xl mb-4">
+                                <i class="fa-solid fa-box-open"></i>
                             </div>
-                        @empty
-                            <div
-                                class="col-span-full h-64 flex flex-col items-center justify-center text-secondary/40 space-y-4 bg-white rounded-3xl border border-[#eef2f9]">
-                                <i class="fa-solid fa-utensils text-5xl"></i>
-                                <p class="font-bold text-lg">Belum ada menu yang tersedia</p>
+                            <p class="text-secondary/60 text-sm font-bold mb-1">Total Produk Aktif</p>
+                            <h3 class="text-3xl font-extrabold text-primary">{{ $products->count() }}</h3>
+                            <a href="{{ route('kasir.stok') }}" class="text-xs text-tertiary font-bold hover:underline mt-4 inline-block">Kelola Stok &rarr;</a>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2 -->
+                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute -right-6 -top-6 text-slate-50 text-8xl transition-transform"><i class="fa-solid fa-tags"></i></div>
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-info/10 text-info flex items-center justify-center text-xl mb-4">
+                                <i class="fa-solid fa-layer-group"></i>
                             </div>
-                        @endforelse
+                            <p class="text-secondary/60 text-sm font-bold mb-1">Kategori Menu</p>
+                            <h3 class="text-3xl font-extrabold text-primary">{{ $categories->count() }}</h3>
+                            <a href="{{ route('kasir.stok') }}" class="text-xs text-info font-bold hover:underline mt-4 inline-block">Lihat Kategori &rarr;</a>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3 (Placeholder / Mock) -->
+                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute -right-6 -top-6 text-slate-50 text-8xl transition-transform"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-green-500/10 text-green-500 flex items-center justify-center text-xl mb-4">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+                            <p class="text-secondary/60 text-sm font-bold mb-1">Transaksi Hari Ini</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-3xl font-extrabold text-primary">0</h3>
+                                <span class="text-xs text-green-500 font-bold bg-green-50 px-2 py-0.5 rounded-full"><i class="fa-solid fa-arrow-up text-[10px]"></i> Baru</span>
+                            </div>
+                            <a href="{{ route('kasir.histori') }}" class="text-xs text-green-500 font-bold hover:underline mt-4 inline-block">Cek Riwayat &rarr;</a>
+                        </div>
+                    </div>
+
+                    <!-- Metric 4 (Placeholder / Mock) -->
+                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute -right-6 -top-6 text-slate-50 text-8xl transition-transform"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center text-xl mb-4">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                            <p class="text-secondary/60 text-sm font-bold mb-1">Estimasi Pemasukan</p>
+                            <h3 class="text-2xl font-extrabold text-primary">Rp 0</h3>
+                            <a href="{{ route('kasir.histori') }}" class="text-xs text-accent font-bold hover:underline mt-4 inline-block">Lihat Laporan &rarr;</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
+
+    {{-- script jam --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const clockEl = document.querySelector('.clock-display');
+            if(clockEl) {
+                setInterval(() => {
+                    const now = new Date();
+                    clockEl.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
+                }, 1000);
+            }
+        });
+    </script>
 </x-app-layout>

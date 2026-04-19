@@ -3,7 +3,7 @@
 
         <div class="relative z-10 w-full max-w-4xl mx-auto">
             <div class="text-center mb-16">
-
+                {{-- <a href="{{ route('home') }}" class="text-accent hover:text-primary">balik home</a> --}}
                 <h1 class="text-4xl md:text-5xl font-extrabold text-primary mb-4 tracking-tight">
                     Pilih Peran Anda
                 </h1>

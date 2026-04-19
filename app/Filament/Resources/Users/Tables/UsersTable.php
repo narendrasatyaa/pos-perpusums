@@ -1,35 +1,25 @@
 <?php
 
-namespace App\Filament\Resources\Products\Tables;
+namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class ProductsTable
+class UsersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('category.name')
-                    ->label('Kategori')
-                    ->sortable()
-                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
-                ImageColumn::make('image')
-                    ->disk('public'),
-                TextColumn::make('price')
-                    ->money('IDR')
-                    ->sortable(),
-                IconColumn::make('is_available')
-                    ->boolean(),
+                TextColumn::make('email')
+                    ->label('Email address')
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -43,14 +33,12 @@ class ProductsTable
                 //
             ])
             ->recordActions([
-                // EditAction::make(),
                 EditAction::make()
                     ->label('Ubah')
                     ->icon('heroicon-o-pencil'),
                 ViewAction::make()
                     ->label('Lihat')
                     ->icon('heroicon-o-eye'),
-
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
