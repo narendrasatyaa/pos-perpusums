@@ -14,7 +14,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Montserrat", ...defaultTheme.fontFamily.sans],
+                sans: ["Google Sans"],
             },
             colors: {
                 primary: "#323986",

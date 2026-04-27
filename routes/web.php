@@ -2,11 +2,13 @@
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\Kasir\TransactionController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -79,13 +81,37 @@ Route::post('/finance/login', function (Request $request) {
 })->name('finance.login.store');
 
 Route::middleware('auth')->get('/kasir', function () {
-    // ambil dr db
     $categories = Category::where('is_active', true)->get();
     $products = Product::where('is_available', true)->get();
+    $transactionCount = Transaction::where('status', 'paid')
+        ->whereDate('paid_at', now()->toDateString())
+        ->count();
+    $totalSales = Transaction::where('status', 'paid')
+        ->whereDate('paid_at', now()->toDateString())
+        ->sum('total');
 
-    // Kirim data ke view (dashboard)
-    return view('kasir.dashboard', compact('categories', 'products'));
+    return view('kasir.dashboard', compact('categories', 'products', 'transactionCount', 'totalSales'));
 })->name('kasir.dashboard');
+
+Route::middleware('auth')->prefix('kasir')->name('kasir.')->group(function () {
+    Route::post('/orders/paid', [TransactionController::class, 'storePaidOrder'])->name('orders.paid');
+    Route::get('/histori/data', [TransactionController::class, 'indexHistory'])->name('histori.data');
+    Route::get('/histori/{id}/data', [TransactionController::class, 'showHistory'])->name('histori.show');
+});
+
+Route::get('/nota/{order_code}', [TransactionController::class, 'showNota'])->name('kasir.nota.publik');
+
+Route::get('/qr-code', function (Illuminate\Http\Request $request) {
+    $text = $request->get('text', 'https://perpus-ums.id');
+    $options = new \chillerlan\QRCode\QROptions([
+        'version'     => 5,
+        'outputType'  => \chillerlan\QRCode\QRCode::OUTPUT_MARKUP_SVG,
+        'eccLevel'    => \chillerlan\QRCode\QRCode::ECC_L,
+        'imageBase64' => false,
+    ]);
+    return response((new \chillerlan\QRCode\QRCode($options))->render($text))
+        ->header('Content-Type', 'image/svg+xml');
+})->name('qr-code');
 
 // Logout
 Route::match(['post', 'get'], '/logout', [AuthenticatedSessionController::class, 'destroy'])
@@ -117,9 +143,17 @@ Route::middleware('auth')->get('/kasir/order', function (Request $request) {
     return view('kasir.order', compact('categories', 'products'));
 })->name('kasir.order');
 
+Route::middleware('auth')->get('/kasir/split-bill', function () {
+    return view('kasir.split-bill');
+})->name('kasir.split-bill');
+
 Route::middleware('auth')->get('/process/payment', function () {
     return view('process.payment');
 })->name('kasir.payment');
+
+Route::middleware('auth')->get('/process/payment-success', function () {
+    return view('process.pyament-success');
+})->name('kasir.payment-success');
 
 Route::middleware('auth')->get('/process/receipt', function () {
     return view('process.receipt');
@@ -128,6 +162,13 @@ Route::middleware('auth')->get('/process/receipt', function () {
 Route::middleware('auth')->get('/kasir/histori', function () {
     return view('kasir.histori');
 })->name('kasir.histori');
+
+Route::middleware('auth')->get('/kasir/histori/{id}', function (string $id) {
+    return view('kasir.detail-histori', [
+        'orderId' => $id,
+    ]);
+})->where('id', '[^/]+')->name('kasir.histori.detail');
+
 Route::middleware('auth')->get('/kasir/stok', function () {
     $categories = \App\Models\Category::all();
     $products = \App\Models\Product::with('category')->get();

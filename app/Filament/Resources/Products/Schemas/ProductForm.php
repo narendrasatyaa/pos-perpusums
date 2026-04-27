@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -21,10 +20,6 @@ class ProductForm
                     ->label('Kategori'),
                 TextInput::make('name')
                     ->required(),
-                FileUpload::make('image')
-                    ->image()
-                    ->disk('public')
-                    ->directory('products'),
                 TextInput::make('price')
                     ->required()
                     ->numeric()

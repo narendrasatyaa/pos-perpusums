@@ -1,118 +1,86 @@
 <x-app-layout :title="'Dashboard Kasir'">
-    <div class="flex h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary">
+    <div class="flex h-screen bg-[#f8f9fa] font-sans selection:bg-accent selection:text-primary">
         <x-sidebar />
 
         <main class="flex-1 flex flex-col h-screen overflow-hidden">
-            {{-- header --}}
-            <header class="bg-white/80 backdrop-blur-md h-20 px-10 flex items-center justify-between shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0">
-
-                <div class="flex items-center gap-4 justify-end w-full">
-                    <div class="text-right mr-4 border-slate-200 pr-4 hidden md:block">
+            {{-- Header --}}
+            <header
+                class="bg-white/80 backdrop-blur-md h-[72px] px-8 flex items-center justify-end shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0">
+                <div class="flex items-center gap-5">
+                    <div class="text-right leading-tight">
                         <p class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
-                        <p class="text-xs text-secondary/60 font-medium clock-display">00:00:00 WIB</p>
+                        <p class="text-primary font-bold">{{ date('H:i:s') }} WIB</p>
                     </div>
                 </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-8 space-y-8 pb-20">
-                
-                @php
-                    $hour = now()->format('H');
-                    $hari = $hour < 12 ? 'Pagi' : ($hour < 15 ? 'Siang' : ($hour < 18 ? 'Sore' : 'Malam'));
-                @endphp
+            {{-- Content --}}
+            <div class="flex-1 overflow-y-auto p-8 lg:p-10 space-y-8 pb-12">
 
-                <!-- Hero Section: Welcome & Quick Action -->
-                <div class=" rounded-3xl bg-primary p-8 shadow-xl">
-                    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div class="text-white space-y-2 max-w-xl">
-                            <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight">
-                                Selamat {{ $hari }}, <span class="text-accent">{{ explode(' ', Auth::user()->name)[0] }}</span>! 👋
-                            </h2>
-                            <p class="text-slate-200 text-sm leading-relaxed mt-2">
-                                Cek stok hari ini atau langsung mulai terima pesanan pelanggan. Jangan lupa tersenyum!
-                            </p>
+                {{-- Welcome & Buka POS --}}
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-primary font-medium text-xl">
+                            Selamat Datang, {{ explode(' ', auth()->user()->name ?? 'Admin')[0] }}
+                        </h2>
+                        <p class="text-secondary/60 text-sm mt-1">Ringkasan aktivitas operasional Library Cafe hari ini.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Stats Grid --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {{-- Transaksi --}}
+                    <div class="bg-primary rounded-xl p-6 text-white shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-white/60 text-xs font-medium uppercase tracking-wider mb-1">TRANSAKSI HARI INI</p>
+                            <h3 class="text-3xl font-medium text-white">{{ $transactionCount }}</h3>
                         </div>
-                        
-                        <div class="shrink-0 flex flex-col sm:flex-row gap-4">
-                            <a href="{{ route('kasir.order') }}" class="group relative flex items-center gap-3 bg-accent hover:bg-info text-white px-8 py-4 rounded-2xl font-bold">
-                                <i class="fa-solid fa-cash-register text-xl"></i>
-                                <span>Mulai Pesanan Baru</span>
-                            </a>
+                    </div>
+
+                    {{-- Penjualan --}}
+                    <div class="bg-primary rounded-xl p-6 text-white shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-white/60 text-xs font-medium uppercase tracking-wider mb-1">TOTAL
+                                PENJUALAN HARI INI</p>
+                            <h3 class="text-3xl font-medium text-white">Rp {{ number_format($totalSales, 0, ',', '.') }}</h3>
                         </div>
                     </div>
                 </div>
 
-                <!-- Metrics & Quick Access Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Metric 1 -->
-                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                        <div class="absolute -right-6 -top-6 text-slate-50 text-8xl transition-transform"><i class="fa-solid fa-boxes-stacked"></i></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-tertiary/10 text-tertiary flex items-center justify-center text-xl mb-4">
-                                <i class="fa-solid fa-box-open"></i>
-                            </div>
-                            <p class="text-secondary/60 text-sm font-bold mb-1">Total Produk Aktif</p>
-                            <h3 class="text-3xl font-extrabold text-primary">{{ $products->count() }}</h3>
-                            <a href="{{ route('kasir.stok') }}" class="text-xs text-tertiary font-bold hover:underline mt-4 inline-block">Kelola Stok &rarr;</a>
+                {{-- Quick Actions --}}
+                <div class="grid grid-cols-3 gap-6 pt-2">
+                    <a href="{{ route('kasir.stok') }}"
+                        class="bg-primary text-white rounded-xl p-6 flex items-center gap-5 transition-all group shadow-sm">
+                        <div class="flex-1">
+                            <p class="font-medium text-base">Lihat Stok Bahan</p>
+                            <p class="text-white/60 text-xs mt-1">Input kondisi bahan baku harian.</p>
                         </div>
-                    </div>
+                        <i
+                            class="fa-solid fa-arrow-right text-white/50 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
 
-                    <!-- Metric 2 -->
-                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                        <div class="absolute -right-6 -top-6 text-slate-50 text-8xl transition-transform"><i class="fa-solid fa-tags"></i></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-info/10 text-info flex items-center justify-center text-xl mb-4">
-                                <i class="fa-solid fa-layer-group"></i>
-                            </div>
-                            <p class="text-secondary/60 text-sm font-bold mb-1">Kategori Menu</p>
-                            <h3 class="text-3xl font-extrabold text-primary">{{ $categories->count() }}</h3>
-                            <a href="{{ route('kasir.stok') }}" class="text-xs text-info font-bold hover:underline mt-4 inline-block">Lihat Kategori &rarr;</a>
+                    <a href="{{ route('kasir.histori') }}"
+                        class="bg-accent rounded-xl p-6 flex items-center gap-5 shadow-sm transition-all group">
+                        <div class="flex-1">
+                            <p class="font-medium text-base text-secondary">Lihat Riwayat Transaksi</p>
+                            <p class="text-secondary/70 text-xs mt-1">Lihat riwayat transaksi sebelumnya.</p>
                         </div>
-                    </div>
-
-                    <!-- Metric 3 (Placeholder / Mock) -->
-                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                        <div class="absolute -right-6 -top-6 text-slate-50 text-8xl transition-transform"><i class="fa-solid fa-chart-line"></i></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-green-500/10 text-green-500 flex items-center justify-center text-xl mb-4">
-                                <i class="fa-solid fa-receipt"></i>
-                            </div>
-                            <p class="text-secondary/60 text-sm font-bold mb-1">Transaksi Hari Ini</p>
-                            <div class="flex items-baseline gap-2">
-                                <h3 class="text-3xl font-extrabold text-primary">0</h3>
-                                <span class="text-xs text-green-500 font-bold bg-green-50 px-2 py-0.5 rounded-full"><i class="fa-solid fa-arrow-up text-[10px]"></i> Baru</span>
-                            </div>
-                            <a href="{{ route('kasir.histori') }}" class="text-xs text-green-500 font-bold hover:underline mt-4 inline-block">Cek Riwayat &rarr;</a>
+                        <i
+                            class="fa-solid fa-arrow-right text-secondary/40 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="{{ route('kasir.order') }}"
+                        class="bg-primary text-white rounded-xl p-6 flex items-center gap-5 shadow-sm transition-all group">
+                        <div class="flex-1">
+                            <p class="font-medium text-base text-base">Buka POS</p>
+                            <p class="text-white/60 text-xs mt-1">Buka POS untuk transaksi.</p>
                         </div>
-                    </div>
-
-                    <!-- Metric 4 (Placeholder / Mock) -->
-                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                        <div class="absolute -right-6 -top-6 text-slate-50 text-8xl transition-transform"><i class="fa-solid fa-wallet"></i></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center text-xl mb-4">
-                                <i class="fa-solid fa-coins"></i>
-                            </div>
-                            <p class="text-secondary/60 text-sm font-bold mb-1">Estimasi Pemasukan</p>
-                            <h3 class="text-2xl font-extrabold text-primary">Rp 0</h3>
-                            <a href="{{ route('kasir.histori') }}" class="text-xs text-accent font-bold hover:underline mt-4 inline-block">Lihat Laporan &rarr;</a>
-                        </div>
-                    </div>
+                        <i
+                            class="fa-solid fa-arrow-right text-white/50 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
                 </div>
             </div>
         </main>
     </div>
-
-    {{-- script jam --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const clockEl = document.querySelector('.clock-display');
-            if(clockEl) {
-                setInterval(() => {
-                    const now = new Date();
-                    clockEl.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
-                }, 1000);
-            }
-        });
-    </script>
 </x-app-layout>

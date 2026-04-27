@@ -1,10 +1,10 @@
 
-        <footer class="bg-accent text-primary">
+        <footer class="bg-accent text-primary selection:bg-primary selection:text-white">
             <div class="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12">
                 <div class="grid gap-10 text-left sm:grid-cols-2 lg:grid-cols-3">
                     <div class="lg:col-span-1">
                         <img src="{{ asset('img/logo-perpus-putih.webp') }}" alt="Logo Library Cafe" class="w-full h-auto">
-                        <p class="mt-4 max-w-xs text-sm leading-7 text-primary">
+                        <p class="mt-2 max-w-xs text-sm leading-7 text-primary">
                             Sistem POS internal yang mendukung operasional kafe perpustakaan secara cepat, terorganisir, dan transparan.
                         </p>
                     </div>
@@ -30,7 +30,7 @@
 
                     <div>
                         <h4 class="text-sm font-bold uppercase tracking-[0.18em] text-primary">Jam Buka</h4>
-                        <ul class="mt-4 space-y-3 text-sm">
+                        <ul class="mt-2 space-y-3 text-sm">
                             <li><span class="text-primary"> Senin - Jumat: 08:00 - 20:00</span></li>
                             <li><span class="text-primary">Sabtu: 08:00 - 16:00</span></li>
                             <li><span class="text-primary">Tutup Sholat & Istirahat (12.00 - 13.00 WIB)</span></li>
@@ -60,7 +60,7 @@
                     </div>
                 </div>
 
-                <div class="mt-12 bg-tertiary border-t border-white/30 pt-6 text-center text-sm text-secondary">
+                <div class="mt-12 bg-accent border-t border-white/30 pt-6 text-center text-sm text-primary">
                     {{-- ©{{ date('Y') }} Library Cafe UPT Perpustakaan & Layanan Digital UM Surakarta. All rights reserved. --}}
                     ©{{ date('Y') }}  All rights reserved by UMS Library and Digital Services Center
                 </div>
