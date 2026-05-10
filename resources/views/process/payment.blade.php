@@ -3,7 +3,7 @@
         <div
             class="bg-white rounded-[24px] w-full max-w-6xl xl:max-w-[1200px] flex flex-col md:flex-row overflow-hidden shadow-2xl min-h-[75vh]">
 
-            {{-- LEFT PANEL: Order Summary --}}
+            {{-- Order Summary --}}
             <div class="w-full md:w-[38%] border-r border-slate-100 flex flex-col">
                 <div class="p-8 flex-1">
                     <div class="flex items-start justify-between mb-8">
@@ -13,49 +13,33 @@
                     </div>
 
                     <div class="space-y-5" id="order-items">
-                        {{-- Injected via JS --}}
                         <div class="text-slate-400 text-sm text-center py-4">No items</div>
                     </div>
                 </div>
 
-                {{-- Discount --}}
+                {{-- Discount Section --}}
                 <div class="px-8 pb-5">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-[10px] font-bold text-slate-500 tracking-wider">DISCOUNTS & PROMOS</span>
+                        <span class="text-[10px] font-bold text-slate-500 tracking-wider">DISCOUNTS & PROMO</span>
                     </div>
-                    <div
-                        class="border border-dashed border-[#242b6a]/30 rounded-xl p-3.5 flex justify-between items-center bg-[#fdfdfd]">
+                    <div class="border border-dashed border-[#242b6a]/30 rounded-xl p-3.5 bg-[#fdfdfd]">
                         <div class="w-full">
-                            <div class="flex items-center justify-between mb-3">
-                                <p class="text-[13px] font-bold text-[#242b6a]">Discount Type</p>
-                                <div class="bg-slate-100 p-1 rounded-lg flex text-[11px] font-bold relative">
-                                    <button type="button" id="btn-type-pct"
-                                        class="px-3 py-1.5 rounded-md relative z-10 transition-all text-[#242b6a] bg-white shadow-sm">Persen
-                                        (%)</button>
-                                    <button type="button" id="btn-type-rp"
-                                        class="px-3 py-1.5 rounded-md relative z-10 transition-all text-slate-400">Nominal
-                                        (Rp)</button>
-                                </div>
+                            <div class="mb-3">
+                                <p class="text-[13px] font-bold text-primary whitespace-nowrap">Kode Voucher</p>
                             </div>
 
-                            <div class="relative" id="discount-input-container">
-                                <!-- Input Persen -->
-                                <div id="container-pct" class="relative block">
-                                    <input type="number" id="discount-percent" placeholder="0"
-                                        class="w-full rounded-lg border border-slate-200 py-2.5 pl-4 pr-8 text-sm font-bold text-[#242b6a] focus:border-[#242b6a] focus:ring-0 transition-colors"
-                                        value="" min="0" max="100">
-                                    <span
-                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">%</span>
+                            {{-- Input Container --}}
+                            <div class="relative w-full overflow-hidden" id="discount-input-container">
+                                <div id="container-voucher" class="relative w-full">
+                                    <input type="text" id="voucher-input" placeholder="Masukkan kode voucher"
+                                        class="w-full rounded-lg border border-slate-200 py-2.5 px-4 text-[8px] sm:text-sm font-bold text-primary focus:border-primary focus:ring-0 transition-colors tracking-wider placeholder:text-slate-300"
+                                        autocomplete="off">
                                 </div>
-
-                                <!-- Input Nominal -->
-                                <div id="container-rp" class="relative hidden">
-                                    <span
-                                        class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">Rp</span>
-                                    <input type="number" id="discount-input" placeholder="0"
-                                        class="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-sm font-bold text-primary focus:border-primary focus:ring-0 transition-colors"
-                                        value="">
-                                </div>
+                                <button type="button" id="apply-voucher-btn"
+                                    class="mt-2 w-full rounded-lg bg-primary/10 py-2 text-[11px] font-bold text-primary hover:bg-primary/15 transition-colors">
+                                    Terapkan Voucher
+                                </button>
+                                <p id="voucher-feedback" class="mt-2 text-[11px] font-medium text-slate-400 hidden"></p>
                             </div>
                         </div>
                     </div>
@@ -78,7 +62,7 @@
                 </div>
             </div>
 
-            {{-- RIGHT PANEL: Process Payment --}}
+            {{-- Process Payment --}}
             <div class="w-full md:w-[62%] p-8 flex flex-col bg-white">
                 <div class="flex justify-between items-start mb-8">
                     <div>
@@ -91,13 +75,12 @@
                     </a>
                 </div>
 
-                <div class="flex gap-8 flex-1">
-                    {{-- Methods & Change --}}
-                    <div class="w-1/2 flex flex-col justify-between">
+                <div class="flex flex-col lg:flex-row gap-8 flex-1">
+                    {{-- Methods --}}
+                    <div class="w-full lg:w-1/2 flex flex-col justify-between">
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 tracking-wider mb-3">METHOD</p>
                             <div class="space-y-3">
-                                {{-- Cash --}}
                                 <button type="button"
                                     class="method-btn w-full flex items-center gap-4 p-3.5 rounded-xl border-2 border-primary bg-primary/5 text-left"
                                     data-method="cash">
@@ -105,117 +88,99 @@
                                         class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-money-bill-wave"></i>
                                     </div>
-                                    <div>
-                                        <p class="font-bold text-slate-800 text-sm">Cash</p>
-                                    </div>
+                                    <p class="font-bold text-slate-800 text-sm">Cash</p>
                                 </button>
-                                {{-- QRIS --}}
                                 <button type="button"
-                                    class="method-btn w-full flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 text-left opacity-50 cursor-not-allowed"
-                                    data-method="qris" disabled>
+                                    class="method-btn w-full flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 text-left"
+                                    data-method="qris_static">
                                     <div
                                         class="w-10 h-10 rounded-lg bg-slate-100 text-primary flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-qrcode"></i>
                                     </div>
                                     <div>
-                                        <p class="font-bold text-slate-800 text-sm">QRIS</p>
-                                        <p class="text-[10px] font-bold text-slate-400">Soon</p>
-                                    </div>
-                                </button>
-                                {{-- Bank Transfer --}}
-                                <button type="button"
-                                    class="method-btn w-full flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 text-left opacity-50 cursor-not-allowed"
-                                    data-method="transfer" disabled>
-                                    <div
-                                        class="w-10 h-10 rounded-lg bg-slate-100 text-primary flex items-center justify-center text-lg flex-shrink-0">
-                                        <i class="fa-solid fa-building-columns"></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-bold text-slate-800 text-sm">Bank Transfer</p>
-                                        <p class="text-[10px] font-bold text-slate-400">Soon</p>
+                                        <p class="font-bold text-slate-800 text-sm"> QRIS Statis</p>
+                                        <p class="text-[10px] font-bold text-slate-400">Upload bukti transfer</p>
                                     </div>
                                 </button>
                             </div>
+
+                            <div id="qris-static-panel" class="mt-4 hidden rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+                                <p class="text-[11px] font-bold text-slate-600 mb-2">Upload Bukti Transfer</p>
+                                <div class="flex flex-col">
+                                    <label for="transfer-proof-input" class="text-[11px] font-medium text-slate-500 mb-1.5">Silakan upload bukti transfer Anda di sini.</label>
+                                    <input type="file" id="transfer-proof-input" accept="image/*,.pdf"
+                                        class="block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-[11px] file:font-bold file:text-primary hover:file:bg-primary/15">
+                                    <p id="transfer-proof-feedback" class="mt-1 text-[11px] font-medium text-red-600 hidden"></p>
+                                </div>
+                            </div>
                         </div>
 
-                        {{-- Change --}}
                         <div class="bg-slate-100 rounded-xl p-5 text-center mt-6">
                             <p class="text-[11px] font-bold text-slate-600 mb-1.5">Change to Return</p>
                             <p class="text-[26px] font-bold text-tertiary tracking-tight" id="change-display">Rp 0</p>
                         </div>
                     </div>
 
-                    {{-- Numpad & Submit --}}
-                    <div class="w-1/2 flex flex-col justify-between">
+                    {{-- Numpad --}}
+                    <div class="w-full lg:w-1/2 flex flex-col justify-between">
                         <div>
-                            <p class="text-[10px] font-bold text-slate-500 tracking-wider mb-3">NOMINAL BAYAR</p>
-                            <div class="relative mb-5">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg">Rp</span>
-                                <input type="text" id="nominal-input"
-                                    class="w-full rounded-xl border-2 border-primary py-3.5 pr-4 pl-12 text-right text-[26px] font-bold text-primary focus:outline-none"
-                                    value="" placeholder="0">
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="text-[10px] font-bold text-slate-500 tracking-wider" id="payment-amount-label">NOMINAL BAYAR</p>
+                                <div id="qris-transfer-summary" class="hidden items-center text-[24px] font-bold text-primary tracking-tight">
+                                    <span id="qris-large-total">Rp 0</span>
+                                </div>
                             </div>
 
-                            <div class="grid grid-cols-4 gap-2.5 mb-3">
-                                <button type="button"
-                                    class="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-[15px] transition-colors quick-btn"
-                                    data-val="10000">10.000</button>
-                                <button type="button"
-                                    class="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-[15px] transition-colors quick-btn"
-                                    data-val="20000">20.000</button>
-                                <button type="button"
-                                    class="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-[15px] transition-colors quick-btn"
-                                    data-val="50000">50.000</button>
-                                <button type="button"
-                                    class="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-[15px] transition-colors quick-btn"
-                                    data-val="100000">100.000</button>
+                            <div id="cash-input-panel">
+                                <div class="relative mb-5">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg font-bold">Rp</span>
+                                    <input type="text" id="nominal-input"
+                                        class="w-full rounded-xl border-2 border-primary py-3.5 pr-4 pl-12 text-right text-[26px] font-bold text-primary focus:outline-none"
+                                        placeholder="0">
+                                </div>
+
+                                <div class="grid grid-cols-4 gap-2 mb-3">
+                                    <button type="button"
+                                        class="py-2 rounded-xl bg-slate-100 font-bold text-primary text-[13px] quick-btn"
+                                        data-val="10000">10k</button>
+                                    <button type="button"
+                                        class="py-2 rounded-xl bg-slate-100 font-bold text-primary text-[13px] quick-btn"
+                                        data-val="20000">20k</button>
+                                    <button type="button"
+                                        class="py-2 rounded-xl bg-slate-100 font-bold text-primary text-[13px] quick-btn"
+                                        data-val="50000">50k</button>
+                                    <button type="button"
+                                        class="py-2 rounded-xl bg-slate-100 font-bold text-primary text-[13px] quick-btn"
+                                        data-val="100000">100k</button>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-2">
+                                    @for ($i = 1; $i <= 9; $i++)
+                                        <button type="button"
+                                            class="py-3 rounded-xl bg-slate-100 font-bold text-primary text-lg numpad-btn"
+                                            data-val="{{ $i }}">{{ $i }}</button>
+                                    @endfor
+                                    <button type="button"
+                                        class="py-3 rounded-xl bg-slate-100 font-bold text-primary text-lg numpad-btn"
+                                        data-val="0">0</button>
+                                    <button type="button"
+                                        class="py-3 rounded-xl bg-slate-100 font-bold text-primary text-lg numpad-btn"
+                                        data-val="000">000</button>
+                                    <button type="button" class="py-3 rounded-xl bg-red-100 text-red-600 numpad-btn"
+                                        data-action="backspace"><i class="fa-solid fa-delete-left"></i></button>
+                                </div>
                             </div>
-
-                            <div class="grid grid-cols-3 gap-2.5">
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="1">1</button>
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="2">2</button>
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="3">3</button>
-
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="4">4</button>
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="5">5</button>
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="6">6</button>
-
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="7">7</button>
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="8">8</button>
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="9">9</button>
-
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-lg transition-colors numpad-btn"
-                                    data-val="0">0</button>
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-primary text-[15px] transition-colors numpad-btn"
-                                    data-val="000">000</button>
-                                <button type="button"
-                                    class="py-3 rounded-xl bg-red-100 hover:bg-red-200 text-red-600 text-base transition-colors numpad-btn"
-                                    data-action="backspace"><i class="fa-solid fa-delete-left"></i></button>
+                            
+                            <div id="qris-image-panel" class="hidden flex-col items-center justify-center py-6 px-4 border-2 border-dashed border-slate-200 rounded-2xl bg-[#fdfdfd] mb-4">
+                                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm mb-4">
+                                    <img src="{{ asset('img/sample-qris-img.png') }}" alt="QRIS Statis" class="w-full max-w-[300px] aspect-square object-contain">
+                                </div>
+                                <p class="text-[11px] font-medium text-slate-400 text-center">Scan QR Code dengan aplikasi pembayaran Anda</p>
                             </div>
                         </div>
 
                         <button type="button" id="process-payment-btn"
-                            class="w-full py-4 mt-6 rounded-xl bg-primary hover:bg-primary/90 transition-colors text-white font-bold text-sm flex justify-center items-center gap-2.5 shadow-sm">
+                            class="w-full py-4 mt-6 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm flex justify-center items-center gap-2.5">
                             <i class="fa-regular fa-circle-check text-lg"></i>
                             Process Payment
                         </button>
@@ -227,275 +192,321 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Data checkout
             const checkout = JSON.parse(localStorage.getItem('kasir-active-checkout') || 'null');
-            if (!checkout || !checkout.items || checkout.items.length === 0) {
-                alert('Order kosong! Kembali ke halaman order.');
+            if (!checkout || !checkout.items) {
                 window.location.href = "{{ route('kasir.order') }}";
                 return;
             }
 
-            // Order code final dibuat di backend saat transaksi tersimpan.
-            document.getElementById('order-id').textContent = '#AUTO';
+            const generateOrderId = () => {
+                const now = new Date();
+                const y = String(now.getFullYear()).slice(-2);
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const d = String(now.getDate()).padStart(2, '0');
+                const random = String(Math.floor(1000 + Math.random() * 9000));
+
+                return `#ORD-${y}${m}${d}-${random}`;
+            };
+
+            if (!checkout.order_id) {
+                checkout.order_id = generateOrderId();
+                localStorage.setItem('kasir-active-checkout', JSON.stringify(checkout));
+            }
+
+            document.getElementById('order-id').textContent = checkout.order_id;
 
             const formatCurrency = (val) => new Intl.NumberFormat('id-ID').format(val);
-
-            // Subtotal
             let subtotal = checkout.totalPrice || 0;
             let discount = 0;
-            let totalDue = subtotal - discount;
+            let totalDue = subtotal;
+            let nominalStr = "";
+            let appliedVoucher = null;
+            let activePaymentMethod = 'cash';
 
-            // Render Items
             const itemsContainer = document.getElementById('order-items');
             itemsContainer.innerHTML = checkout.items.map(item => `
-                <div class="flex items-start justify-between gap-3">
+                <div class="flex justify-between gap-3">
                     <div class="flex gap-3">
                         <span class="text-primary font-bold text-sm">${item.quantity}x</span>
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm leading-tight">${item.name}</p>
-                            <p class="text-[11px] text-slate-500 mt-0.5">${item.category_id == 1 ? 'Standard, Less Ice' : 'Regular'}</p>
-                        </div>
+                        <p class="font-bold text-slate-800 text-sm leading-tight">${item.name}</p>
                     </div>
-                    <p class="font-bold text-slate-800 text-sm whitespace-nowrap">Rp ${formatCurrency(item.subtotal)}</p>
+                    <p class="font-bold text-slate-800 text-sm">Rp ${formatCurrency(item.subtotal)}</p>
                 </div>
             `).join('');
 
-            // Numpad & Totals logic
-            let nominalStr = ""; // Don't prefill
-            const nominalInput = document.getElementById('nominal-input');
-            const changeDisplay = document.getElementById('change-display');
-
             const updateTotals = () => {
-                totalDue = subtotal - discount;
-                if (totalDue < 0) totalDue = 0;
+                totalDue = Math.max(0, subtotal - discount);
                 document.getElementById('subtotal-display').textContent = `Rp ${formatCurrency(subtotal)}`;
                 document.getElementById('discount-display').textContent = `- Rp ${formatCurrency(discount)}`;
                 document.getElementById('total-due').textContent = `Rp ${formatCurrency(totalDue)}`;
-                updateChange();
-            };
 
-            const discountInput = document.getElementById('discount-input');
-            const discountPercent = document.getElementById('discount-percent');
-            const btnPct = document.getElementById('btn-type-pct');
-            const btnRp = document.getElementById('btn-type-rp');
-            const containerPct = document.getElementById('container-pct');
-            const containerRp = document.getElementById('container-rp');
-
-            let discountType = 'pct'; // default
-
-            const switchDiscountType = (type) => {
-                discountType = type;
-                if (type === 'pct') {
-                    btnPct.classList.add('bg-white', 'shadow-sm', 'text-primary');
-                    btnPct.classList.remove('text-slate-400');
-                    btnRp.classList.add('text-slate-400');
-                    btnRp.classList.remove('bg-white', 'shadow-sm', 'text-primary');
-
-                    containerPct.classList.remove('hidden');
-                    containerPct.classList.add('block');
-                    containerRp.classList.add('hidden');
-                    containerRp.classList.remove('block');
-                } else {
-                    btnRp.classList.add('bg-white', 'shadow-sm', 'text-primary');
-                    btnRp.classList.remove('text-slate-400');
-                    btnPct.classList.add('text-slate-400');
-                    btnPct.classList.remove('bg-white', 'shadow-sm', 'text-primary');
-
-                    containerRp.classList.remove('hidden');
-                    containerRp.classList.add('block');
-                    containerPct.classList.add('hidden');
-                    containerPct.classList.remove('block');
+                if (activePaymentMethod === 'qris_static') {
+                    nominalStr = String(totalDue);
                 }
-
-                // Reset values on switch
-                discountPercent.value = "";
-                discountInput.value = "";
-                discount = 0;
-                updateTotals();
-            };
-
-            if (btnPct && btnRp) {
-                btnPct.addEventListener('click', () => switchDiscountType('pct'));
-                btnRp.addEventListener('click', () => switchDiscountType('rp'));
-
-                // Input Nominal (Rp)
-                discountInput.addEventListener('input', (e) => {
-                    if (discountType !== 'rp') return;
-                    discount = parseInt(e.target.value, 10) || 0;
-                    if (discount < 0) discount = 0;
-                    if (discount > subtotal) discount = subtotal;
-                    updateTotals();
-                });
-
-                // Input Percent (%)
-                discountPercent.addEventListener('input', (e) => {
-                    if (discountType !== 'pct') return;
-                    let pct = parseFloat(e.target.value) || 0;
-                    if (pct < 0) pct = 0;
-                    if (pct > 100) pct = 100;
-
-                    discount = Math.round(subtotal * (pct / 100));
-                    updateTotals();
-                });
-            }
-
-            const updateNominal = () => {
-                let nominalVal = parseInt(nominalStr, 10);
-                if (isNaN(nominalVal)) nominalVal = 0;
-
-                nominalStr = nominalVal > 0 ? nominalVal.toString() : "";
-                nominalInput.value = nominalVal > 0 ? formatCurrency(nominalVal) : "";
+                
+                document.getElementById('qris-large-total').textContent = `Rp ${formatCurrency(totalDue)}`;
                 updateChange();
             };
 
             const updateChange = () => {
-                let nominalVal = parseInt(nominalStr, 10) || 0;
-                let change = nominalVal - totalDue;
-                if (change < 0) change = 0;
-                changeDisplay.textContent = `Rp ${formatCurrency(change)}`;
+                let paid = parseInt(nominalStr, 10) || 0;
+                let change = Math.max(0, paid - totalDue);
+                document.getElementById('change-display').textContent = `Rp ${formatCurrency(change)}`;
             };
 
-            updateTotals(); // Initial render
-            updateNominal();
+            const qrisPanel = document.getElementById('qris-static-panel');
+            const qrisImagePanel = document.getElementById('qris-image-panel');
+            const qrisTransferSummary = document.getElementById('qris-transfer-summary');
+            const cashPanel = document.getElementById('cash-input-panel');
+            const paymentAmountLabel = document.getElementById('payment-amount-label');
+            const transferProofInput = document.getElementById('transfer-proof-input');
+            const transferProofFeedback = document.getElementById('transfer-proof-feedback');
 
-            nominalInput.addEventListener('input', (e) => {
-                nominalStr = e.target.value.replace(/\\D/g, '');
-                updateNominal();
-            });
+            const showTransferProofFeedback = (message = '') => {
+                transferProofFeedback.textContent = message;
+                transferProofFeedback.classList.toggle('hidden', !message);
+            };
 
-            document.querySelectorAll('.quick-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const val = parseInt(btn.getAttribute('data-val'), 10);
-                    if (val) {
-                        let current = parseInt(nominalStr, 10) || 0;
-                        current += val;
-                        nominalStr = current.toString();
-                        updateNominal();
-                    }
+            const setPaymentMethod = (method) => {
+                activePaymentMethod = method;
+
+                document.querySelectorAll('.method-btn').forEach((button) => {
+                    const isActive = button.dataset.method === method;
+                    button.classList.toggle('border-2', isActive);
+                    button.classList.toggle('border-primary', isActive);
+                    button.classList.toggle('bg-primary/5', isActive);
+                    button.classList.toggle('border', !isActive);
+                    button.classList.toggle('border-slate-200', !isActive);
                 });
-            });
 
-            document.querySelectorAll('.numpad-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const val = btn.getAttribute('data-val');
-                    const action = btn.getAttribute('data-action');
+                const isQris = method === 'qris_static';
+                qrisPanel.classList.toggle('hidden', !isQris);
+                qrisImagePanel.classList.toggle('hidden', !isQris);
+                qrisImagePanel.classList.toggle('flex', isQris);
+                qrisTransferSummary.classList.toggle('hidden', !isQris);
+                qrisTransferSummary.classList.toggle('flex', isQris);
+                cashPanel.classList.toggle('hidden', isQris);
+                paymentAmountLabel.textContent = isQris ? 'TOTAL TRANSFER' : 'NOMINAL BAYAR';
 
-                    if (val) {
-                        if (nominalStr === "0") nominalStr = val;
-                        else nominalStr += val;
-                    } else if (action === 'backspace') {
-                        nominalStr = nominalStr.slice(0, -1);
-                    }
+                if (isQris) {
+                    nominalStr = String(totalDue);
+                    showTransferProofFeedback('');
                     updateNominal();
-                });
-            });
-
-            // Method selection
-            let selectedMethod = 'cash';
-            const methodBtns = document.querySelectorAll('.method-btn');
-
-            methodBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    selectedMethod = btn.getAttribute('data-method');
-
-                    methodBtns.forEach(b => {
-                        b.classList.remove('border-2', 'border-primary', 'bg-primary/5');
-                        b.classList.add('border', 'border-slate-200');
-                        // reset icon bg
-                        const iconBox = b.querySelector('div');
-                        iconBox.classList.remove('bg-primary/10');
-                        iconBox.classList.add('bg-slate-100');
-                    });
-
-                    btn.classList.add('border-2', 'border-primary', 'bg-primary/5');
-                    btn.classList.remove('border', 'border-slate-200');
-                    const iconBox = btn.querySelector('div');
-                    iconBox.classList.add('bg-primary/10');
-                    iconBox.classList.remove('bg-slate-100');
-                });
-            });
-
-            // Process Payment
-            const processPaymentButton = document.getElementById('process-payment-btn');
-            let isSubmitting = false;
-
-            processPaymentButton.addEventListener('click', async () => {
-                if (isSubmitting) {
                     return;
                 }
 
-                const paid = parseInt(nominalStr, 10);
+                if (nominalStr === String(totalDue)) {
+                    nominalStr = '';
+                    updateNominal();
+                }
+            };
 
-                if (paid < totalDue) {
-                    alert('Nominal bayar kurang dari total tagihan!');
+            // Discount Logic
+            const voucherInput = document.getElementById('voucher-input');
+            const voucherFeedback = document.getElementById('voucher-feedback');
+            const applyVoucherBtn = document.getElementById('apply-voucher-btn');
+
+            const showVoucherFeedback = (message, status = 'info') => {
+                voucherFeedback.textContent = message;
+                voucherFeedback.classList.remove('hidden', 'text-slate-400', 'text-tertiary', 'text-red-600');
+
+                if (status === 'success') {
+                    voucherFeedback.classList.add('text-tertiary');
+                } else if (status === 'error') {
+                    voucherFeedback.classList.add('text-red-600');
+                } else {
+                    voucherFeedback.classList.add('text-slate-400');
+                }
+            };
+
+            const resetVoucherState = (shouldClearInput = false) => {
+                appliedVoucher = null;
+
+                if (shouldClearInput) {
+                    voucherInput.value = '';
+                }
+
+                voucherFeedback.textContent = '';
+                voucherFeedback.classList.add('hidden');
+            };
+
+            applyVoucherBtn.onclick = async () => {
+                const code = voucherInput.value.trim();
+
+                if (!code) {
+                    discount = 0;
+                    resetVoucherState();
+                    showVoucherFeedback('Masukkan kode voucher terlebih dahulu.', 'error');
+                    updateTotals();
                     return;
                 }
 
-                isSubmitting = true;
-                processPaymentButton.disabled = true;
-                processPaymentButton.classList.add('opacity-70', 'cursor-not-allowed');
-
-                const itemsPayload = (checkout.items || []).map((item) => ({
-                    product_id: item.id ?? null,
-                    name: item.name ?? 'Item',
-                    price: Number(item.price || 0),
-                    quantity: Number(item.quantity || 0),
-                }));
+                applyVoucherBtn.disabled = true;
+                applyVoucherBtn.textContent = 'Memproses...';
 
                 try {
-                    const response = await fetch("{{ route('kasir.orders.paid') }}", {
+                    const response = await fetch("{{ route('kasir.vouchers.validate') }}", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
                         },
                         body: JSON.stringify({
-                            subtotal: Number(subtotal || 0),
-                            total: Number(totalDue || 0),
-                            paid_amount: Number(paid || 0),
-                            change_amount: Number((paid - totalDue) || 0),
-                            items: itemsPayload,
-                        }),
+                            code,
+                            subtotal
+                        })
                     });
 
                     const result = await response.json();
 
                     if (!response.ok || !result.success) {
+                        throw new Error(result.message || 'Voucher tidak bisa digunakan.');
+                    }
+
+                    appliedVoucher = result.data;
+                    voucherInput.value = code;
+                    discount = parseInt(appliedVoucher.discount_amount, 10) || 0;
+                    showVoucherFeedback(`Voucher ${appliedVoucher.code} aktif. Diskon Rp ${formatCurrency(discount)}.`, 'success');
+                    updateTotals();
+                } catch (error) {
+                    discount = 0;
+                    resetVoucherState();
+                    showVoucherFeedback(error.message || 'Gagal memvalidasi voucher.', 'error');
+                    updateTotals();
+                } finally {
+                    applyVoucherBtn.disabled = false;
+                    applyVoucherBtn.textContent = 'Terapkan Voucher';
+                }
+            };
+
+            voucherInput.addEventListener('input', () => {
+                discount = 0;
+                appliedVoucher = null;
+                voucherFeedback.classList.add('hidden');
+                updateTotals();
+
+                if (activePaymentMethod === 'qris_static') {
+                    nominalStr = String(totalDue);
+                    updateNominal();
+                }
+            });
+
+            // Numpad & Payment
+            const nominalInput = document.getElementById('nominal-input');
+            const updateNominal = () => {
+                let val = parseInt(nominalStr, 10) || 0;
+                nominalInput.value = val > 0 ? formatCurrency(val) : "";
+                updateChange();
+            };
+
+            transferProofInput.addEventListener('change', () => {
+                showTransferProofFeedback('');
+            });
+
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                btn.onclick = () => setPaymentMethod(btn.dataset.method);
+            });
+
+            document.querySelectorAll('.numpad-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const val = btn.dataset.val;
+                    const action = btn.dataset.action;
+                    if (val) nominalStr += val;
+                    else if (action === 'backspace') nominalStr = nominalStr.slice(0, -1);
+                    updateNominal();
+                };
+            });
+
+            document.querySelectorAll('.quick-btn').forEach(btn => {
+                btn.onclick = () => {
+                    nominalStr = ((parseInt(nominalStr, 10) || 0) + parseInt(btn.dataset.val))
+                    .toString();
+                    updateNominal();
+                };
+            });
+
+            document.getElementById('process-payment-btn').onclick = async function() {
+                if (voucherInput.value.trim() && !appliedVoucher) {
+                    alert('Voucher belum diterapkan.');
+                    return;
+                }
+
+                if (activePaymentMethod === 'qris_static' && !transferProofInput.files.length) {
+                    showTransferProofFeedback('Upload bukti transfer terlebih dahulu.');
+                    return;
+                }
+
+                const paid = activePaymentMethod === 'qris_static'
+                    ? totalDue
+                    : (parseInt(nominalStr, 10) || 0);
+                if (paid < totalDue) return alert('Uang kurang!');
+
+                this.disabled = true;
+                this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+                // kode id order, subtotal, total, paid_amount, change_amount, items
+                try {
+                    const payload = new FormData();
+                    payload.append('order_id', checkout.order_id);
+                    payload.append('subtotal', String(subtotal));
+                    payload.append('total', String(totalDue));
+                    payload.append('paid_amount', String(paid));
+                    payload.append('change_amount', String(Math.max(0, paid - totalDue)));
+                    payload.append('payment_method', activePaymentMethod);
+                    payload.append('voucher_code', appliedVoucher?.code || '');
+                    payload.append('discount_type', appliedVoucher ? `voucher_${appliedVoucher.discount_type}` : 'none');
+                    payload.append('discount_value', String(discount));
+                    payload.append('items', JSON.stringify(checkout.items));
+
+                    if (activePaymentMethod === 'qris_static' && transferProofInput.files.length) {
+                        payload.append('transfer_proof', transferProofInput.files[0]);
+                    }
+
+                    const response = await fetch("{{ route('kasir.orders.paid') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        body: payload
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
                         throw new Error(result.message || 'Gagal menyimpan transaksi');
                     }
 
-                    const trx = result.data;
-                    const receiptFromDb = {
-                        id: trx.order_code,
-                        status: trx.status,
-                        created_at: trx.paid_at || trx.created_at,
-                        payment_method: selectedMethod,
-                        paid_amount: trx.paid_amount,
-                        change_amount: trx.change_amount,
-                        totalItems: (trx.items || []).reduce((acc, row) => acc + Number(row
-                            .quantity || 0), 0),
-                        totalPrice: trx.total,
-                        items: (trx.items || []).map((row) => ({
-                            id: row.product_id,
-                            name: row.product_name,
-                            price: row.price,
-                            quantity: row.quantity,
-                            subtotal: row.subtotal,
+                    const trx = result.data || {};
+                    const lastReceipt = {
+                        id: trx.order_code || checkout.order_id,
+                        order_code: trx.order_code || checkout.order_id,
+                        created_at: trx.paid_at || trx.created_at || new Date().toISOString(),
+                        payment_method: trx.payment_method || activePaymentMethod,
+                        paid_amount: Number(trx.paid_amount ?? paid),
+                        change_amount: Number(trx.change_amount ?? Math.max(0, paid - totalDue)),
+                        totalItems: (trx.items || checkout.items || []).reduce((acc, item) => acc + Number(item.quantity || 0), 0),
+                        totalPrice: Number(trx.total ?? totalDue),
+                        items: (trx.items || checkout.items || []).map((item) => ({
+                            id: item.product_id || item.id || null,
+                            name: item.product_name || item.name || 'Item',
+                            price: Number(item.price || 0),
+                            quantity: Number(item.quantity || 0),
+                            subtotal: Number(item.subtotal || (Number(item.price || 0) * Number(item.quantity || 0))),
                         })),
                     };
 
-                    localStorage.setItem('kasir-last-receipt', JSON.stringify(receiptFromDb));
+                    localStorage.setItem('kasir-last-receipt', JSON.stringify(lastReceipt));
                     localStorage.removeItem('kasir-active-checkout');
-
                     window.location.href = "{{ route('kasir.payment-success') }}";
-                } catch (error) {
-                    alert(error.message || 'Terjadi kesalahan saat simpan transaksi');
-                    isSubmitting = false;
-                    processPaymentButton.disabled = false;
-                    processPaymentButton.classList.remove('opacity-70', 'cursor-not-allowed');
+                } catch (e) {
+                    alert(e.message || 'Error saving transaction');
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fa-regular fa-circle-check text-lg"></i> Process Payment';
                 }
-            });
+            };
+
+            updateTotals();
+            setPaymentMethod('cash');
         });
     </script>
 </x-app-layout>

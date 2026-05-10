@@ -69,10 +69,6 @@
         <div style="margin-top: 8px;">Wifi : UMS Wifi</div>
         <div>Password : ums.wifi</div>
         <div style="margin-top: 8px;">-- Terima Kasih --</div>
-        <div style="margin-top: 15px; margin-bottom: 10px;">
-            <img id="print-qr-code" src="" style="width: 100px; height: 100px; margin: 0 auto; display: block;">
-            <div style="font-size: 8px; margin-top: 5px; color: #666;">Scan QR untuk akses nota digital</div>
-        </div>
     </div>
 
 </div>
@@ -184,12 +180,13 @@
                 <i class="fa-solid fa-circle-check text-tertiary text-lg"></i>
             </div>
 
-            <!-- Digital Receipt QR -->
-            <div class="mt-4 pt-6 border-t border-slate-100 text-center">
-                <div class="inline-block p-3 bg-white rounded-2xl border border-slate-100 shadow-sm mb-3">
-                    <img id="receipt-qr-code" src="#" alt="QR Code" class="w-24 h-24">
-                </div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Scan for Digital Receipt</p>
+            <!-- Footer -->
+            <div class="text-center">
+                <p class="text-xs text-slate-500 mb-4">Thank you for your visit!<br>Enjoy your reading time with us.</p>
+                {{-- <div class="flex justify-center text-slate-300 text-[40px] leading-none opacity-50">
+                    <i class="fa-solid fa-barcode"></i>
+                    <i class="fa-solid fa-barcode"></i>
+                </div> --}}
             </div>
         </div>
 
@@ -306,7 +303,7 @@
                     receiptDiscountRow.classList.remove('flex');
                 }
             }
-            if (printSubtotal) printSubtotal.textContent = formatNumber(total);
+            if (printSubtotal) printSubtotal.textContent = formatNumber(subtotalVal);
             if (printTotal) printTotal.textContent = formatNumber(total);
             if (printPaid) printPaid.textContent = formatNumber(paid);
             if (printChange) printChange.textContent = formatNumber(change);
@@ -332,19 +329,6 @@
                          </div>
                      </div>
                 `).join('');
-            }
-
-            // Render QR Code
-            const orderCode = receipt.id || receipt.order_code;
-            if (orderCode) {
-                const publicUrl = "{{ route('kasir.nota.publik', ['order_code' => '__CODE__']) }}".replace('__CODE__', orderCode);
-                const qrUrl = "{{ route('qr-code') }}?text=" + encodeURIComponent(publicUrl);
-                
-                const receiptQr = document.getElementById('receipt-qr-code');
-                const printQr = document.getElementById('print-qr-code');
-                
-                if (receiptQr) receiptQr.src = qrUrl;
-                if (printQr) printQr.src = qrUrl;
             }
 
             printButton?.addEventListener('click', function() {

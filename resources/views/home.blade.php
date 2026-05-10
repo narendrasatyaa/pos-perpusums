@@ -41,11 +41,11 @@
                 <div class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
                     <div class="max-w-2xl mb-16">
                         <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl leading-tight">
-                            Semua yang dibutuhkan operasional Library Cafe.
+                            Semua yang dibutuhkan operasional Library Cafe
                         </h2>
                         <p class="mt-4 text-gray-500 text-lg">
-                            Dirancang khusus untuk keperluan internal kafe UPT Perpustakaan UMS, tidak untuk penggunaan
-                            publik.
+                            Dirancang khusus untuk keperluan internal kafe UPT Perpustakaan UMS tidak untuk penggunaan
+                            publik
                         </p>
                     </div>
 
@@ -103,7 +103,7 @@
                     <div class="grid gap-12 lg:grid-cols-2 items-center">
                         <div>
                             <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl leading-tight">
-                                Dibangun khusus. Bukan solusi generik.
+                                Dibangun khusus bukan <br>solusi generik
                             </h2>
                             <p class="mt-5 text-gray-500 text-lg leading-relaxed">
                                 POS Library Cafe dirancang dari awal untuk kebutuhan spesifik kafe di dalam UPT

@@ -24,6 +24,11 @@ class ProductForm
                     ->required()
                     ->numeric()
                     ->prefix('Rp'),
+                TextInput::make('stock')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
+                    ->label('Stok'),
                 Toggle::make('is_available')
                     ->required(),
             ]);

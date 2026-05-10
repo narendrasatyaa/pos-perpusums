@@ -95,6 +95,7 @@ Route::middleware('auth')->get('/kasir', function () {
 
 Route::middleware('auth')->prefix('kasir')->name('kasir.')->group(function () {
     Route::post('/orders/paid', [TransactionController::class, 'storePaidOrder'])->name('orders.paid');
+    Route::post('/vouchers/validate', [TransactionController::class, 'validateVoucher'])->name('vouchers.validate');
     Route::get('/histori/data', [TransactionController::class, 'indexHistory'])->name('histori.data');
     Route::get('/histori/{id}/data', [TransactionController::class, 'showHistory'])->name('histori.show');
 });
@@ -152,12 +153,16 @@ Route::middleware('auth')->get('/process/payment', function () {
 })->name('kasir.payment');
 
 Route::middleware('auth')->get('/process/payment-success', function () {
-    return view('process.pyament-success');
+    return view('process.payment-success');
 })->name('kasir.payment-success');
 
 Route::middleware('auth')->get('/process/receipt', function () {
     return view('process.receipt');
 })->name('kasir.receipt');
+
+Route::middleware('auth')->get('/process/receipt-qr', function () {
+    return view('process.receipt-qr');
+})->name('kasir.receipt-qr');
 
 Route::middleware('auth')->get('/kasir/histori', function () {
     return view('kasir.histori');

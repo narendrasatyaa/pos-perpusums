@@ -71,14 +71,15 @@
             document.querySelector('[data-receipt-total]').textContent = formatCurrency(receipt.totalPrice || 0);
             document.querySelector('[data-receipt-number]').textContent = receipt.id || '-';
             
-            const isCash = receipt.payment_method === 'cash';
-            const methodStr = isCash ? 'Cash' : (receipt.payment_method === 'transfer' ? 'Bank Transfer' : 'QRIS');
+            const paymentMethod = receipt.payment_method || 'cash';
+            const isCash = paymentMethod === 'cash';
+            const methodStr = isCash ? 'Cash' : (paymentMethod === 'transfer' ? 'Bank Transfer' : 'QRIS');
             document.querySelector('[data-receipt-method]').textContent = methodStr;
             
             // Icon handling
             const icon = document.querySelector('[data-receipt-method]').previousElementSibling;
             if (icon) {
-                icon.className = isCash ? 'fa-solid fa-money-bill-wave text-primary' : (receipt.payment_method === 'transfer' ? 'fa-solid fa-building-columns text-primary' : 'fa-solid fa-qrcode text-primary');
+                icon.className = isCash ? 'fa-solid fa-money-bill-wave text-primary' : (paymentMethod === 'transfer' ? 'fa-solid fa-building-columns text-primary' : 'fa-solid fa-qrcode text-primary');
             }
         });
     </script>

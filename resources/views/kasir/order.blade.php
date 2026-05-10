@@ -1,12 +1,21 @@
 <x-app-layout :title="'Order Kasir'">
-    <div class="flex h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary">
+    <div class="flex h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary overflow-hidden">
         <x-sidebar />
 
-        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <main class="flex-1 flex flex-col h-screen overflow-y-auto lg:overflow-hidden">
             <header
-                class="bg-white/80 backdrop-blur-md h-[72px] px-8 flex items-center justify-end shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0">
-                <div class="flex items-center gap-5">
-                    <form method="GET" action="{{ route('kasir.order') }}" class="relative ml-4 flex-shrink-0 w-64">
+                class="bg-white/80 backdrop-blur-md min-h-[72px] py-4 px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between sm:justify-end shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0 gap-4">
+                
+                <!-- Hamburger menu placeholder if needed for mobile sidebar later -->
+                <div class="w-full sm:hidden flex justify-between items-center mb-2">
+                    <h1 class="font-black text-xl text-primary">Library Cafe</h1>
+                    <div class="text-right leading-tight">
+                        <p class="text-primary font-bold">{{ date('H:i:s') }} WIB</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-5 w-full sm:w-auto">
+                    <form method="GET" action="{{ route('kasir.order') }}" class="relative w-full sm:w-64 flex-shrink-0">
                         @if (request('category'))
                             <input type="hidden" name="category" value="{{ request('category') }}">
                         @endif
@@ -20,16 +29,17 @@
                             class="bg-white border text-primary text-sm rounded-full focus:ring-accent focus:border-accent border-secondary/10 block w-full pl-12 pr-4 py-2 font-medium placeholder:text-secondary/40"
                             placeholder="Cari menu...">
                     </form>
-                    <div class="text-right leading-tight">
+                    <div class="text-right leading-tight hidden sm:block">
                         <p class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
                         <p class="text-primary font-bold">{{ date('H:i:s') }} WIB</p>
                     </div>
                 </div>
             </header>
-            <main class="flex-1 flex overflow-hidden p-4 pt-6 gap-6">
-                <section class="flex-1 flex flex-col overflow-hidden gap-5">
-                    <div class="bg-white rounded-[28px] p-3 shadow-sm border border-slate-200 shrink-0">
-                        <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-1">
+            
+            <div class="flex-1 flex flex-col lg:flex-row p-4 sm:p-6 gap-6 lg:overflow-hidden">
+                <section class="flex-1 flex flex-col gap-5 lg:overflow-hidden">
+                    <div class="bg-white rounded-[28px] p-3 shadow-sm border border-slate-200 shrink-0 w-full overflow-x-auto custom-scrollbar">
+                        <div class="flex items-center gap-2 pb-1 w-max">
                             <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}"
                                 class="inline-flex items-center rounded-full border px-4 py-2.5 text-sm font-bold whitespace-nowrap transition-colors {{ !request('category') ? 'border-primary bg-primary text-white' : 'border-secondary/10 bg-white text-secondary/70 hover:bg-slate-100 hover:text-primary' }}">
                                 All Menu
@@ -43,20 +53,18 @@
                         </div>
                     </div>
 
-                    <div
-                        class="flex-1 bg-white rounded-[28px] p-6 shadow-sm border border-slate-200 overflow-y-auto custom-scrollbar">
-                        <div class="flex items-center justify-between gap-4 mb-5">
+                    <div class="flex-1 bg-white rounded-[28px] p-4 sm:p-6 shadow-sm border border-slate-200 lg:overflow-y-auto custom-scrollbar">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                             <div>
-                                <h2 class="text-2xl font-black text-primary">Daftar Menu</h2>
+                                <h2 class="text-xl sm:text-2xl font-black text-primary">Daftar Menu</h2>
                                 <p class="text-sm text-secondary/60 mt-1">Pilih produk dari daftar berikut</p>
                             </div>
-                            <div
-                                class="hidden sm:inline-flex items-center rounded-2xl bg-slate-100 px-4 py-2 text-xs font-black text-primary border border-slate-200">
+                            <div class="inline-flex items-center self-start sm:self-center rounded-2xl bg-slate-100 px-4 py-2 text-xs font-black text-primary border border-slate-200">
                                 {{ count($products ?? []) }} Items
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                             @forelse($products ?? [] as $product)
                                 @php
                                     $words = explode(' ', $product->name);
@@ -69,35 +77,44 @@
                                     }
                                 @endphp
                                 <button type="button"
-                                    class="group text-left cursor-pointer flex flex-col aspect-square w-full rounded-2xl border border-[#eef2f9] bg-white p-3.5 shadow-sm transition-all duration-200 hover:shadow-lg"
-                                    data-add-to-cart data-product-id="{{ $product->id }}"
+                                    class="group text-left flex flex-col aspect-square w-full rounded-2xl border border-[#eef2f9] bg-white p-3 sm:p-3.5 shadow-sm transition-all duration-200 hover:shadow-lg {{ $product->stock == 0 ? 'opacity-60 cursor-not-allowed grayscale-[50%]' : 'cursor-pointer' }}"
+                                    @if($product->stock > 0) data-add-to-cart @else disabled @endif 
+                                    data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-price="{{ $product->price }}">
 
-                                    <div
-                                        class="relative flex-1 w-full flex items-center justify-center overflow-hidden rounded-xl bg-[#f4f7fe] border border-[#eef2f9]">
-
-                                        <div
-                                            class="flex aspect-square items-center justify-center text-8xl tracking-tighter text-primary">
+                                    <div class="relative flex-1 w-full flex items-center justify-center overflow-hidden rounded-xl bg-[#f4f7fe] border border-[#eef2f9]">
+                                        @if($product->stock == 0)
+                                            <div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg z-10 shadow-sm">
+                                                Habis
+                                            </div>
+                                            {{-- low stok --}}
+                                        @elseif($product->stock <= 10)
+                                            <div class="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg z-10 shadow-sm">
+                                                Sisa {{ $product->stock }}
+                                            </div>
+                                        @endif
+                                        <div class="flex aspect-square items-center justify-center text-6xl sm:text-8xl tracking-tighter text-primary">
                                             {{ $productInitials }}
                                         </div>
                                     </div>
 
-                                    <div class="mt-2">
-                                        <h3 class="truncate text-[0.9rem] font-bold leading-tight text-primary">
+                                    <div class="mt-2 w-full">
+                                        <h3 class="truncate text-xs sm:text-[0.9rem] font-bold leading-tight text-primary">
                                             {{ $product->name }}
                                         </h3>
-                                        <p
-                                            class="mt-0.5 text-[1.1rem] font-black leading-none tracking-tight text-accent">
+                                        <p class="mt-0.5 text-sm sm:text-[1.1rem] font-black leading-none tracking-tight text-accent">
                                             Rp{{ number_format($product->price, 0, ',', '.') }}
+                                        </p>
+                                        <p class="mt-1 text-[10px] sm:text-xs font-semibold {{ $product->stock == 0 ? 'text-red-500' : ($product->stock <= 5 ? 'text-amber-500' : 'text-secondary/60') }}">
+                                            Stok: {{ $product->stock }}
                                         </p>
                                     </div>
                                 </button>
                             @empty
-                                <div
-                                    class="col-span-full h-48 flex flex-col items-center justify-center text-secondary/40 space-y-4 bg-slate-100 rounded-2xl border border-dashed border-slate-200">
-                                    <i class="fa-solid fa-utensils text-4xl"></i>
-                                    <p class="font-semibold text-sm">Belum ada menu yang tersedia</p>
+                                <div class="col-span-full h-48 flex flex-col items-center justify-center text-secondary/40 space-y-4 bg-slate-100 rounded-2xl border border-dashed border-slate-200">
+                                    <i class="fa-solid fa-utensils text-3xl sm:text-4xl"></i>
+                                    <p class="font-semibold text-xs sm:text-sm text-center px-4">Belum ada menu yang tersedia</p>
                                 </div>
                             @endforelse
                         </div>
@@ -105,59 +122,59 @@
                 </section>
 
                 <aside
-                    class="w-full max-w-[360px] bg-white rounded-[28px] shadow-sm border border-slate-200 flex flex-col overflow-hidden shrink-0">
-                    <div class="p-6 border-b border-secondary/10 flex items-center justify-between gap-4">
+                    class="w-full lg:max-w-[360px] bg-white rounded-[28px] shadow-sm border border-slate-200 flex flex-col overflow-hidden shrink-0 h-[500px] lg:h-auto mt-4 lg:mt-0">
+                    <div class="p-4 sm:p-6 border-b border-secondary/10 flex items-center justify-between gap-4">
                         <div>
-                            <h2 class="font-black text-2xl text-primary">Current Order</h2>
+                            <h2 class="font-black text-xl sm:text-2xl text-primary">Current Order</h2>
                         </div>
 
                         <button type="button" id="clear-cart"
-                            class="text-sm font-bold text-red-500 hover:text-red-600 transition-colors">
+                            class="text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 transition-colors">
                             Clear All
                         </button>
                     </div>
 
-                    <div class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-4" data-cart-items>
+                    <div class="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar space-y-3 sm:space-y-4" data-cart-items>
                         <div class="flex flex-col items-center justify-center text-secondary/40 space-y-3 py-12">
-                            <i class="fa-solid fa-cart-shopping text-7xl"></i>
-                            <p class="font-bold text-sm text-center">Belum ada produk di keranjang</p>
+                            <i class="fa-solid fa-cart-shopping text-5xl sm:text-7xl"></i>
+                            <p class="font-bold text-xs sm:text-sm text-center px-4">Belum ada produk di keranjang</p>
                         </div>
                     </div>
 
-                    <div class="border-t border-slate-200 p-6 space-y-4 bg-white">
-                        <div class="space-y-3 text-sm">
+                    <div class="border-t border-slate-200 p-4 sm:p-6 space-y-4 bg-white">
+                        <div class="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                             <div class="flex items-center justify-between text-secondary/60 font-medium">
                                 <span>Subtotal</span>
                                 <span class="font-bold text-primary" data-cart-subtotal>Rp 0</span>
                             </div>
                             <div class="flex items-center justify-between text-secondary/60 font-medium">
                                 <span>Total Amount</span>
-                                <span class="text-2xl font-black text-primary" data-cart-total>Rp 0</span>
+                                <span class="text-xl sm:text-2xl font-black text-primary" data-cart-total>Rp 0</span>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3 pt-2">
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3 pt-2">
                             <button type="button" id="split-bill"
-                                class="inline-flex items-center justify-center rounded-2xl border border-primary bg-white px-4 py-3.5 text-sm font-black text-primary transition-colors hover:bg-slate-100"
+                                class="inline-flex items-center justify-center rounded-2xl border border-primary bg-white px-2 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm font-black text-primary transition-colors hover:bg-slate-100"
                                 title="Fitur split bill segera hadir">
                                 Split Bill
                             </button>
                             <button type="button" id="process-order"
-                                class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-3.5 text-sm font-black text-white shadow-md shadow-primary/20 transition-colors hover:bg-secondary">
+                                class="inline-flex items-center justify-center rounded-2xl bg-primary px-2 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm font-black text-white shadow-md shadow-primary/20 transition-colors hover:bg-secondary">
                                 Checkout
                             </button>
                         </div>
                     </div>
                 </aside>
-            </main>
-    </div>
+            </div>
+        </main>
     </div>
 
-    {{-- notif tambah ke order kerangjang --}}
+    {{-- pop up tambah ke order kerangjang --}}
     <div id="cart-toast"
-        class="fixed top-6 right-6 z-50 hidden min-w-[280px] rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-2xl shadow-slate-950/30">
-        <p class="text-sm font-semibold">Produk ditambahkan ke keranjang</p>
-        <p class="text-xs text-white/60 mt-1" data-toast-text></p>
+        class="fixed top-6 right-6 z-50 hidden min-w-[240px] sm:min-w-[280px] rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-2xl shadow-slate-950/30">
+        <p class="text-xs sm:text-sm font-semibold">Produk ditambahkan ke keranjang</p>
+        <p class="text-[10px] sm:text-xs text-white/60 mt-1" data-toast-text></p>
     </div>
 
     <script>

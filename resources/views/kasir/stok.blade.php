@@ -119,6 +119,7 @@
                                         <th class="py-3 px-6 font-semibold">Produk</th>
                                         <th class="py-3 px-6 font-semibold">Kategori</th>
                                         <th class="py-3 px-6 font-semibold">Harga</th>
+                                        <th class="py-3 px-6 font-semibold">Stok</th>
                                         <th class="py-3 px-6 font-semibold text-center">Status Stok</th>
                                     </tr>
                                 </thead>
@@ -144,6 +145,9 @@
                                             </td>
                                             <td class="py-4 px-6 font-bold text-primary">
                                                 Rp {{ number_format($product->price ?? 0, 0, ',', '.') }}
+                                            </td>
+                                            <td class="py-4 px-6 font-bold text-primary">
+                                                {{ $product->stock }}
                                             </td>
                                             <td class="py-4 px-6 text-center">
                                                 <button type="button" onclick="toggleStock({{ $product->id }}, this)"

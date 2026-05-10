@@ -15,6 +15,11 @@ use Filament\Widgets\AccountWidget;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\ProductsByCategoryChart;
 use App\Filament\Widgets\ProductAvailabilityChart;
+// use App\Filament\Widgets\StockAvailability;
+use App\Filament\Widgets\SalesOverview;
+use App\Filament\Widgets\SalesChart;
+use App\Filament\Widgets\TopProducts;
+use App\Filament\Widgets\LowStockProducts;
 // use App\Filament\Widgets\ProductPriceRangeChart;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -53,10 +58,14 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+                SalesOverview::class,
                 StatsOverview::class,
-                ProductsByCategoryChart::class,
+                // StockAvailability::class,
+                SalesChart::class,
+                TopProducts::class,
+                LowStockProducts::class,
                 ProductAvailabilityChart::class,
-                // ProductPriceRangeChart::class,
+                ProductsByCategoryChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

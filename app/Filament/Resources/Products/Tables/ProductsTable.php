@@ -25,6 +25,16 @@ class ProductsTable
                 TextColumn::make('price')
                     ->money('IDR')
                     ->sortable(),
+                TextColumn::make('stock')
+                    ->numeric()
+                    ->sortable()
+                    ->label('Stok')
+                    ->badge()
+                    ->color(fn (string $state): string => match (true) {
+                        $state == 0 => 'danger',
+                        $state <= 10 => 'warning',
+                        default => 'success',
+                    }),
                 IconColumn::make('is_available')
                     ->boolean(),
                 TextColumn::make('created_at')

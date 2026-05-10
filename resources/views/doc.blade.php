@@ -83,7 +83,7 @@
                                     <li>Buka halaman <a href="{{ route('access') }}"
                                             class="text-primary font-semibold hover:underline">Akses Sistem</a>.</li>
                                     <li>Masukkan email dan password yang diberikan oleh Admin.</li>
-                                    <li>Tekan <strong class="text-gray-700">Masuk</strong> — sistem mengarahkan ke
+                                    <li>Tekan <strong class="text-gray-700">Masuk</strong> - sistem mengarahkan ke
                                         Terminal Kasir.</li>
                                 </ol>
                             </div>
@@ -96,7 +96,7 @@
                                             class="bg-gray-200 text-gray-700 rounded px-1 py-0.5 text-xs">/admin</code>
                                         (Filament Admin Panel).</li>
                                     <li>Masukkan email dan password akun Admin.</li>
-                                    <li>Tekan <strong class="text-gray-700">Sign In</strong> — sistem mengarahkan ke
+                                    <li>Tekan <strong class="text-gray-700">Sign In</strong> - sistem mengarahkan ke
                                         Dashboard Admin.</li>
                                 </ol>
                             </div>
@@ -137,7 +137,7 @@
                                 </div>
                                 <h3 class="text-base font-bold text-gray-900">Proses Bayar</h3>
                                 <p class="mt-2 text-sm text-gray-500 leading-relaxed">Klik <strong
-                                        class="text-gray-700">Checkout</strong>, input nominal uang diterima — sistem
+                                        class="text-gray-700">Checkout</strong>, input nominal uang diterima - sistem
                                     otomatis hitung kembalian.</p>
                             </div>
                             <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50">
@@ -147,7 +147,7 @@
                                 </div>
                                 <h3 class="text-base font-bold text-gray-900">Cetak Nota</h3>
                                 <p class="mt-2 text-sm text-gray-500 leading-relaxed">Klik <strong
-                                        class="text-gray-700">Cetak Nota</strong> — nota ter-print format 80mm sesuai
+                                        class="text-gray-700">Cetak Nota</strong> - nota ter-print format 80mm sesuai
                                     printer thermal kafe.</p>
                             </div>
                         </div>
