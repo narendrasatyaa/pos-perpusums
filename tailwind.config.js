@@ -6,18 +6,23 @@ export default {
     content: [
         "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
         "./storage/framework/views/*.php",
-        "./resources/views/**/*.blade.php",
+        "./resources/**/*.blade.php",
+        "./resources/**/*.js",
+        "./resources/**/*.vue",
     ],
 
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Montserrat", ...defaultTheme.fontFamily.sans],
+                sans: ["Google Sans"],
             },
-            primary: "#323986",
-            secondary: "#2ac4ea",
-            accent: "#ecc25c",
-            info: "#BB52FE",
+            colors: {
+                primary: "#323986",
+                secondary: "#3e426b",
+                tertiary: "#2ac4ea",
+                accent: "#ecc25c",
+                info: "#c9b27e",
+            },
         },
     },
 
