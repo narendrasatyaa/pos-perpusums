@@ -8,7 +8,7 @@
                 <div class="flex items-center gap-5">
                     <div class="text-right leading-tight">
                         <p class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
-                        <p class="text-primary font-bold"><span class="clock-display">{{ date('H:i:s') }}</span> WIB</p>
+                        <p class="text-primary font-bold"><span class="clock-display">{{ date('H:i:s') }}</span></p>
                     </div>
                 </div>
             </header>
@@ -277,6 +277,17 @@
             });
 
             loadHistory();
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const clockEl = document.querySelector('.clock-display');
+            const updateTime = () => {
+                const now = new Date();
+                const formattedTime = now.toLocaleTimeString('id-ID');
+                if (clockEl) clockEl.textContent = `${formattedTime} WIB`;
+            };
+            updateTime();
+            setInterval(updateTime, 1000);
         });
     </script>
 </x-app-layout>

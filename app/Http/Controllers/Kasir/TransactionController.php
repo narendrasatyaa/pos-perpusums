@@ -95,8 +95,8 @@ class TransactionController extends Controller
                 $transferProofPath = $request->hasFile('transfer_proof')
                     ? $request->file('transfer_proof')->store('transfer-proofs', 'public')
                     : null;
-                $transactionStatus = $paymentMethod === 'qris_static' ? 'draft' : 'paid';
-                $paymentValidationStatus = $paymentMethod === 'qris_static' ? 'pending' : 'verified';
+                $transactionStatus = 'paid';
+                $paymentValidationStatus = 'verified';
 
                 $transaction = Transaction::create([
                     'order_code' => $orderCode,
@@ -114,7 +114,7 @@ class TransactionController extends Controller
                     'payment_method' => $paymentMethod,
                     'transfer_proof_path' => $transferProofPath,
                     'payment_validation_status' => $paymentValidationStatus,
-                    'paid_at' => $paymentMethod === 'cash' ? now() : null,
+                    'paid_at' => now(),
                     'is_active' => true,
                 ]);
 

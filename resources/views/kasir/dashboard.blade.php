@@ -8,8 +8,8 @@
                 class="bg-white/80 backdrop-blur-md h-[72px] px-8 flex items-center justify-end shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0">
                 <div class="flex items-center gap-5">
                     <div class="text-right leading-tight">
-                        <p class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
-                        <p class="text-primary font-bold">{{ date('H:i:s') }} WIB</p>
+                        <p id="current-date" class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
+                        <p id="current-time" class="text-primary font-bold">{{ date('H:i:s') }} WIB</p>
                     </div>
                 </div>
             </header>
@@ -84,3 +84,21 @@
         </main>
     </div>
 </x-app-layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const timeElement = document.getElementById('current-time');
+        const dateElement = document.getElementById('current-date');
+        const updateTime = () => {
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const formattedDate = now.toLocaleDateString('id-ID', options);
+            const formattedTime = now.toLocaleTimeString('id-ID');
+
+            if (dateElement) dateElement.textContent = formattedDate;
+            if (timeElement) timeElement.textContent = `${formattedTime} WIB`;
+        };
+        updateTime();
+        setInterval(updateTime, 1000);
+    });
+</script>

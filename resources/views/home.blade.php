@@ -1,4 +1,4 @@
-<x-app-layout :title="'Library Cafe'">
+<x-app-layout :title="'Library Cafe UM Surakarta'">
     <div class="min-h-screen bg-white font-sans selection:bg-accent selection:text-primary">
         <x-navbar />
         <main>

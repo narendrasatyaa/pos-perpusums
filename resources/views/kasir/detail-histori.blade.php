@@ -89,6 +89,13 @@
 										<span>Kembalian</span>
 										<span id="summary-change" class="text-primary font-bold">Rp 0</span>
 									</div>
+									<div id="summary-proof-row" class="hidden items-start justify-between gap-4 text-secondary/70 font-semibold">
+										<span>Bukti Transfer</span>
+										<a id="summary-proof-link" href="#" target="_blank" rel="noopener"
+											class="text-primary font-bold hover:text-secondary underline decoration-primary/30 underline-offset-4">
+											Lihat bukti
+										</a>
+									</div>
 								</div>
 
 								<div class="border-t border-[#eef2f9] mt-4 pt-4 flex items-center justify-between">
@@ -129,6 +136,8 @@
 			const reprintButton = document.getElementById('reprint-receipt');
 			const discountRow = document.getElementById('summary-discount-row');
 			const discountValueEl = document.getElementById('summary-discount');
+			const proofRow = document.getElementById('summary-proof-row');
+			const proofLink = document.getElementById('summary-proof-link');
 			const routeOrderId = @json($orderId ?? '');
 			const detailUrlTemplate = "{{ route('kasir.histori.show', ['id' => '__ID__']) }}";
 
@@ -144,6 +153,13 @@
 			}
 
 			const formatCurrency = (value) => `Rp ${new Intl.NumberFormat('id-ID').format(Number(value || 0))}`;
+			const formatPaymentMethod = (method) => {
+				if (method === 'qris_static') {
+					return 'QRIS';
+				}
+
+				return method === 'cash' ? 'Cash' : (method || '-');
+			};
 			const escapeHtml = (value) => String(value ?? '')
 				.replace(/&/g, '&amp;')
 				.replace(/</g, '&lt;')
@@ -173,6 +189,7 @@
 					const paidAmount = Number(order.paid_amount || 0);
 					const changeAmount = Number(order.change_amount || 0);
 					const discountAmount = Math.max(subtotal - total, 0);
+					const paymentMethod = order.payment_method || 'cash';
 
 					orderIdEl.textContent = order.order_code || '-';
 					orderDateEl.textContent = order.paid_at
@@ -208,10 +225,24 @@
 
 					document.getElementById('summary-total-items').textContent = String(totalItems);
 					document.getElementById('summary-subtotal').textContent = formatCurrency(subtotal);
-					document.getElementById('summary-method').textContent = isPaid ? 'Cash' : 'Belum dibayar';
+					document.getElementById('summary-method').textContent = isPaid ? formatPaymentMethod(paymentMethod) : 'Belum dibayar';
 					document.getElementById('summary-paid').textContent = formatCurrency(paidAmount);
 					document.getElementById('summary-change').textContent = formatCurrency(changeAmount);
 					document.getElementById('summary-total').textContent = formatCurrency(total);
+
+					if (proofRow && proofLink) {
+						const proofUrl = order.transfer_proof_url || null;
+
+						if (proofUrl) {
+							proofRow.classList.remove('hidden');
+							proofRow.classList.add('flex');
+							proofLink.href = proofUrl;
+						} else {
+							proofRow.classList.add('hidden');
+							proofRow.classList.remove('flex');
+							proofLink.removeAttribute('href');
+						}
+					}
 
 					if (discountRow && discountValueEl) {
 						if (discountAmount > 0) {
@@ -241,7 +272,7 @@
 								id: order.order_code,
 								status: order.status,
 								created_at: order.paid_at || order.created_at,
-								payment_method: 'cash',
+								payment_method: paymentMethod,
 								paid_amount: order.paid_amount,
 								change_amount: order.change_amount,
 								totalItems,
@@ -267,6 +298,17 @@
 			};
 
 			fetchOrder();
+		});
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const clockEl = document.querySelector('.clock-display');
+			const updateTime = () => {
+				const now = new Date();
+				const formattedTime = now.toLocaleTimeString('id-ID');
+				if (clockEl) clockEl.textContent = `${formattedTime} WIB`;
+			};
+			updateTime();
+			setInterval(updateTime, 1000);
 		});
 	</script>
 </x-app-layout>

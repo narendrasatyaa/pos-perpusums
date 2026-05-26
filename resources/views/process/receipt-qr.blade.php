@@ -1,4 +1,4 @@
-<x-app-layout :title="'Nota Digital'">
+<x-app-layout :title="'Digital Receipt'">
     <div class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div
             class="bg-white p-8 rounded-3xl shadow-lg shadow-slate-200/50 flex flex-col items-center max-w-sm w-full border border-slate-100">

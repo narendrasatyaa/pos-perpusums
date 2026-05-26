@@ -36,6 +36,6 @@ class LowStockProducts extends BaseWidget
                     ->label('Harga')
                     ->money('IDR'),
             ])
-            ->paginated(false);
+            ->paginated();
     }
 }

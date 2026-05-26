@@ -63,6 +63,7 @@ class ProductsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->paginated();
     }
 }

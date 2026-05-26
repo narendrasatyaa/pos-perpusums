@@ -60,16 +60,16 @@
                                 <div class="absolute inset-0 flex items-center">
                                     <span class="w-full border-t border-slate-200"></span>
                                 </div>
-                                <div class="relative flex justify-center text-xs uppercase">
+                                {{-- <div class="relative flex justify-center text-xs uppercase">
                                     <span class="bg-white px-2 text-slate-400">atau</span>
-                                </div>
+                                </div> --}}
                             </div>
 
-                            <button type="button"
+                            {{-- <button type="button"
                                 class="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 transition-all duration-200 ease-in-out hover:border-slate-400 hover:bg-slate-50">
                                 <i class="fa-brands fa-google text-base"></i>
                                 <span>Login with Google</span>
-                            </button>
+                            </button> --}}
 
                             <div class="mt-8 flex justify-center">
                                 <img src="{{ asset('img/sosmed-hitam.webp') }}" alt="footer" class="w-full max-w-sm md:max-w-md h-auto">

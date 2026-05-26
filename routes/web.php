@@ -1,14 +1,17 @@
 <?php
 
+use App\Exports\ProductTemplateExport;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\Kasir\TransactionController;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -25,6 +28,10 @@ Route::get('/akses', function () {
 
     return view('auth.method');
 })->name('access');
+
+Route::middleware('auth')->get('/admin/products/template', function () {
+    return Excel::download(new ProductTemplateExport(), 'template-produk.xlsx');
+})->name('products.template');
 
 // Login
 Route::get('/login', function () {
@@ -98,6 +105,21 @@ Route::middleware('auth')->prefix('kasir')->name('kasir.')->group(function () {
     Route::post('/vouchers/validate', [TransactionController::class, 'validateVoucher'])->name('vouchers.validate');
     Route::get('/histori/data', [TransactionController::class, 'indexHistory'])->name('histori.data');
     Route::get('/histori/{id}/data', [TransactionController::class, 'showHistory'])->name('histori.show');
+    Route::get('/transfer-proofs/{filename}', function (string $filename) {
+        $filename = basename($filename);
+        $path = 'transfer-proofs/' . $filename;
+
+        abort_unless(Storage::disk('public')->exists($path), 404);
+
+        $full = storage_path('app/public/' . $path);
+        $mime = Storage::disk('public')->mimeType($path) ?? 'application/octet-stream';
+
+        // Serve inline so browser opens in a new tab instead of forcing download
+        return response()->file($full, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    })->where('filename', '[A-Za-z0-9._-]+')->name('transfer-proofs.show');
 });
 
 Route::get('/nota/{order_code}', [TransactionController::class, 'showNota'])->name('kasir.nota.publik');
