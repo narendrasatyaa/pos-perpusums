@@ -1,13 +1,17 @@
 <x-app-layout :title="'Pilih Metode Login'">
+    <x-navbar />
     <div class="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-6 py-20 relative overflow-hidden font-sans">
+            <img src="{{ asset('img/bg-hero-1.webp') }}" alt="Library Background"
+                    class="absolute inset-0 h-full w-full object-cover object-bottom z-0">
+                <div class="absolute inset-0 bg-secondary/100 mix-blend-multiply z-0"></div>
 
         <div class="relative z-10 w-full max-w-4xl mx-auto">
             <div class="text-center mb-16">
                 {{-- <a href="{{ route('home') }}" class="text-accent hover:text-primary">balik home</a> --}}
-                <h1 class="text-4xl md:text-5xl font-extrabold text-primary mb-4 tracking-tight">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
                     Pilih Peran Anda
                 </h1>
-                <p class="text-slate-600 text-lg">Silakan tentukan peran login Anda untuk mengakses sistem Library Cafe.</p>
+                <p class="text-white text-lg">Silakan tentukan peran login Anda untuk mengakses sistem Library Cafe.</p>
             </div>
 
             {{-- role --}}
@@ -22,7 +26,7 @@
                     </div>
 
                     <div class="relative z-10">
-                        <div class="w-16 h-16 flex items-center justify-center rounded-xl bg-primary text-white mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <div class="w-16 h-16 flex items-center justify-center rounded-xl bg-primary text-white mb-6 transition-transform duration-300">
                             <i class="fa-solid fa-cash-register text-2xl"></i>
                         </div>
                         <div class="flex-grow">
@@ -30,7 +34,7 @@
                             <p class="text-slate-600 text-sm leading-relaxed">Akses antarmuka Point of Sale untuk memproses transaksi pesanan mahasiswa dengan cepat.</p>
                         </div>
                         <div class="mt-8 flex items-center text-sm font-bold text-accent group-hover:text-primary transition-colors">
-                            Masuk sebagai Kasir <i class="fa-solid fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                            Masuk sebagai Kasir <i class="fa-solid fa-arrow-right ml-2"></i>
                         </div>
                     </div>
                 </a>
@@ -44,7 +48,7 @@
                     </div>
 
                     <div class="relative z-10">
-                        <div class="w-16 h-16 flex items-center justify-center rounded-xl bg-secondary text-white mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <div class="w-16 h-16 flex items-center justify-center rounded-xl bg-secondary text-white mb-6 transition-transform duration-300">
                             <i class="fa-solid fa-user-shield text-2xl"></i>
                         </div>
                         <div class="flex-grow">
@@ -52,11 +56,15 @@
                             <p class="text-slate-600 text-sm leading-relaxed">Kelola sistem inventaris, rekap laporan keuangan/transaksi harian dari kasir Library Cafe.</p>
                         </div>
                         <div class="mt-8 flex items-center text-sm font-bold text-info group-hover:text-secondary transition-colors">
-                            Masuk sebagai Admin <i class="fa-solid fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                            Masuk sebagai Admin <i class="fa-solid fa-arrow-right ml-2"></i>
                         </div>
                     </div>
                 </a>
-
+            </div>
+            <div class="mt-8 flex items-center justify-center gap-4">
+                <a href="{{ route('doc') }}" class="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-bold text-primary hover:text-info transition">
+                    <i class="fa-solid fa-book-open mr-2"></i> Baca Dokumentasi & Fitur
+                </a>
             </div>
         </div>
     </div>

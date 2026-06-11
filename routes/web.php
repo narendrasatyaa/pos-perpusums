@@ -4,6 +4,7 @@ use App\Exports\ProductTemplateExport;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,14 @@ use App\Http\Controllers\Kasir\TransactionController;
 use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('kasir.dashboard');
+    }
+
+    return redirect()->route('access');
+});
+
+Route::get('/home', function () {
     if (Auth::check()) {
         return redirect()->route('kasir.dashboard');
     }
@@ -59,6 +68,8 @@ Route::post('/admin/login', function (Request $request) {
         'password' => ['required', 'string'],
     ]);
 
+    $credentials['role'] = User::ROLE_ADMIN;
+
     if (! Auth::attempt($credentials, $request->boolean('remember'))) {
         return back()->withErrors([
             'email' => 'Email atau password salah.',
@@ -75,6 +86,8 @@ Route::post('/finance/login', function (Request $request) {
         'email' => ['required', 'email'],
         'password' => ['required', 'string'],
     ]);
+
+    $credentials['role'] = User::ROLE_FINANCE;
 
     if (! Auth::attempt($credentials, $request->boolean('remember'))) {
         return back()->withErrors([
@@ -196,11 +209,32 @@ Route::middleware('auth')->get('/kasir/histori/{id}', function (string $id) {
     ]);
 })->where('id', '[^/]+')->name('kasir.histori.detail');
 
-Route::middleware('auth')->get('/kasir/stok', function () {
-    $categories = \App\Models\Category::all();
-    $products = \App\Models\Product::with('category')->get();
+Route::middleware('auth')->get('/kasir/stok', function (Illuminate\Http\Request $request) {
+    $selectedCategoryId = $request->query('category');
     
-    return view('kasir.stok', compact('categories', 'products'));
+    $categories = \App\Models\Category::withCount(['products' => function ($q) {
+        $q->whereNull('deleted_at'); // Only count non-soft-deleted products
+    }])->get();
+    
+    $query = \App\Models\Product::with('category');
+    if ($selectedCategoryId) {
+        $query->where('category_id', $selectedCategoryId);
+    }
+    
+    $products = $query->paginate(10)->withQueryString();
+    
+    $totalProducts = \App\Models\Product::count();
+    $availableProducts = \App\Models\Product::where('is_available', true)->count();
+    $unavailableProducts = $totalProducts - $availableProducts;
+    
+    return view('kasir.stok', compact(
+        'categories', 
+        'products', 
+        'totalProducts', 
+        'availableProducts', 
+        'unavailableProducts', 
+        'selectedCategoryId'
+    ));
 })->name('kasir.stok');
 
 Route::middleware('auth')->post('/kasir/stok/{product}/toggle', function (\App\Models\Product $product) {

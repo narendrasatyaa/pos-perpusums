@@ -6,7 +6,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -35,12 +34,17 @@ class FinancePanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Finance/Resources'), for: 'App\Filament\Finance\Resources')
             ->discoverPages(in: app_path('Filament/Finance/Pages'), for: 'App\Filament\Finance\Pages')
             ->pages([
-                Dashboard::class,
+                \App\Filament\Finance\Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Finance/Widgets'), for: 'App\Filament\Finance\Widgets')
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
+                \App\Filament\Widgets\CashFlowOverview::class,
+                \App\Filament\Widgets\HppSummary::class,
+                \App\Filament\Widgets\CashFlowTrendChart::class,
+                \App\Filament\Widgets\SalesChart::class,
+                \App\Filament\Widgets\SalesOverview::class,
+                \App\Filament\Widgets\PaymentMethodChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

@@ -9,7 +9,7 @@ class ProductAvailabilityChart extends ChartWidget
 {
     protected ?string $heading = 'Ketersediaan Menu';
     protected ?string $description = 'Perbandingan menu tersedia dan tidak tersedia';
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 6;
     protected int|string|array $columnSpan = 1;
 
     protected function getData(): array

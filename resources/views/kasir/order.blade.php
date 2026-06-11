@@ -71,7 +71,8 @@
                                     @if ($product->stock > 0) data-add-to-cart @else disabled @endif
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
-                                    data-product-price="{{ $product->price }}">
+                                    data-product-price="{{ $product->price }}"
+                                    data-product-stock="{{ $product->stock }}">
 
                                     <!-- Image Area - Kecil -->
                                     <div class="relative h-32 bg-slate-100 flex items-center justify-center overflow-hidden">
@@ -270,9 +271,21 @@
                     const id = this.dataset.productId;
                     const name = this.dataset.productName;
                     const price = Number(this.dataset.productPrice);
+                    const stock = Number(this.dataset.productStock || 0);
 
-                    if (cart.has(id)) cart.get(id).quantity++;
-                    else cart.set(id, {id, name, price, quantity: 1});
+                    if (stock <= 0) {
+                        return showToast(`${name} stok habis`);
+                    }
+
+                    if (cart.has(id)) {
+                        const item = cart.get(id);
+                        if (item.quantity >= item.stock) {
+                            return showToast(`Maksimal ${item.stock} untuk ${name}`);
+                        }
+                        item.quantity++;
+                    } else {
+                        cart.set(id, { id, name, price, stock, quantity: 1 });
+                    }
 
                     renderCart();
                     showToast(name + ' masuk keranjang');
@@ -287,7 +300,12 @@
                 const item = cart.get(id);
                 if (!item) return;
 
-                if (action === 'increase') item.quantity++;
+                if (action === 'increase') {
+                    if (item.quantity >= item.stock) {
+                        return showToast(`Maksimal ${item.stock} untuk ${item.name}`);
+                    }
+                    item.quantity++;
+                }
                 if (action === 'decrease') {
                     item.quantity--;
                     if (item.quantity <= 0) cart.delete(id);

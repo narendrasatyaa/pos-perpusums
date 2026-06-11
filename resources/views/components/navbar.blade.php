@@ -1,14 +1,14 @@
  <header id="main-navbar"
      class="fixed inset-x-0 top-0 z-30 border-b border-transparent bg-transparent text-accent transition-all duration-300">
      <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
-         <a href="{{ route('home') }}" class="flex items-center gap-3">
+         <a href="{{ route('doc') }}" class="flex items-center gap-3">
              <img src="{{ asset('img/logo-perpus-putih.webp') }}" alt="Logo UMS Library" class="h-11 w-auto">
          </a>
 
          <nav class="hidden items-center gap-8 text-sm font-semibold lg:flex">
-             <a href="{{ route('home') }}" class="text-accent transition hover:text-white">Home</a>
-             <a href="{{ route('home') }}#fitur" class="transition hover:text-white">Features</a>
-             <a href="{{ route('doc') }}" class="transition hover:text-white">What's Inside?</a>
+             {{-- <a href="{{ route('home') }}" class="text-accent transition hover:text-white">Home</a> --}}
+             {{-- <a href="{{ route('home') }}#fitur" class="transition hover:text-white">Features</a> --}}
+             {{-- <a href="{{ route('doc') }}" class="transition hover:text-white">What's Inside?</a> --}}
          </nav>
 
          {{-- <div class="flex items-center gap-3">

@@ -24,6 +24,16 @@ class TransactionResource extends Resource
     protected static \UnitEnum|string|null $navigationGroup = 'Laporan Penjualan';
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::whereDate('created_at', today())->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'info';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([]);

@@ -34,7 +34,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-secondary/60 mb-1">Total Produk</p>
-                            <h3 class="text-2xl font-extrabold text-primary">{{ $products->count() }}</h3>
+                            <h3 class="text-2xl font-extrabold text-primary">{{ $totalProducts }}</h3>
                         </div>
                     </div>
 
@@ -46,8 +46,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-secondary/60 mb-1">Tersedia</p>
-                            <h3 class="text-2xl font-extrabold text-primary">
-                                {{ $products->where('is_available', true)->count() }}</h3>
+                            <h3 class="text-2xl font-extrabold text-primary">{{ $availableProducts }}</h3>
                         </div>
                     </div>
 
@@ -58,49 +57,41 @@
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-secondary/60 mb-1">Tidak Tersedia</p>
-                            <h3 class="text-2xl font-extrabold text-primary">
-                                {{ $products->where('is_available', false)->count() }}</h3>
+                            <h3 class="text-2xl font-extrabold text-primary">{{ $unavailableProducts }}</h3>
                         </div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {{-- Kategori Table --}}
+                    {{-- Kategori Filter --}}
                     <div
                         class="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-                        <div class="p-6 border-b border-slate-100">
-                            <h2 class="text-lg font-bold text-primary">Daftar Jenis</h2>
+                        <div class="p-6 border-b border-slate-100 flex items-center justify-between gap-3">
+                            <h2 class="text-lg font-bold text-primary">Filter Kategori</h2>
+                            <a href="{{ route('kasir.stok') }}"
+                                class="text-xs font-bold text-primary hover:text-secondary transition-colors">Reset</a>
                         </div>
-                        <div class="p-0 overflow-auto flex-1">
-                            <table class="w-full text-left border-collapse">
-                                <thead class="bg-slate-50 text-secondary/70 text-sm">
-                                    <tr>
-                                        <th class="py-3 px-6 font-semibold">Nama Kategori</th>
-                                        <th class="py-3 px-6 font-semibold text-center">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($categories as $category)
-                                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                                            <td class="py-4 px-6 font-bold text-primary">{{ $category->name }}</td>
-                                            <td class="py-4 px-6 text-center">
-                                                @if ($category->is_active ?? true)
-                                                    <span
-                                                        class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Aktif</span>
-                                                @else
-                                                    <span
-                                                        class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">Nonaktif</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="2" class="py-6 text-center text-secondary/50">Belum ada
-                                                kategori.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                        <div class="p-4 overflow-auto flex-1 space-y-2">
+                            <a href="{{ route('kasir.stok') }}"
+                                class="flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-bold transition-colors {{ blank($selectedCategoryId) ? 'border-primary bg-primary text-white' : 'border-slate-200 bg-white text-primary hover:bg-slate-50' }}">
+                                <span>Semua Kategori</span>
+                                <span class="text-xs">{{ $totalProducts }}</span>
+                            </a>
+
+                            @forelse ($categories as $category)
+                                <a href="{{ route('kasir.stok', ['category' => $category->id]) }}"
+                                    class="flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-bold transition-colors {{ (string) $selectedCategoryId === (string) $category->id ? 'border-primary bg-primary text-white' : 'border-slate-200 bg-white text-primary hover:bg-slate-50' }}">
+                                    <div class="flex items-center gap-2">
+                                        <span>{{ $category->name }}</span>
+                                        @if (!($category->is_active ?? true))
+                                            <span class="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700">Nonaktif</span>
+                                        @endif
+                                    </div>
+                                    <span class="text-xs">{{ $category->products_count }}</span>
+                                </a>
+                            @empty
+                                <p class="py-6 text-center text-sm text-secondary/50">Belum ada kategori.</p>
+                            @endforelse
                         </div>
                     </div>
 
@@ -109,6 +100,9 @@
                         class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center">
                             <h2 class="text-lg font-bold text-primary">Data Stok Produk</h2>
+                            <p class="text-xs font-semibold text-secondary/60">
+                                Menampilkan {{ $products->count() }} dari {{ $products->total() }} produk
+                            </p>
                         </div>
                         <div class="p-0 overflow-auto flex-1">
                             <table class="w-full text-left border-collapse">
@@ -156,16 +150,18 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="py-6 text-center text-secondary/50">Belum ada
+                                            <td colspan="5" class="py-6 text-center text-secondary/50">Belum ada
                                                 produk.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
+                        <div class="px-6 py-4 border-t border-slate-100">
+                            {{ $products->links() }}
+                        </div>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>

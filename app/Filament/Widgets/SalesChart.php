@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\DB;
 class SalesChart extends ChartWidget
 {
     protected ?string $heading = 'Grafik Penjualan (7 Hari Terakhir)';
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
+
+    public function getColumnSpan(): int | string | array
+    {
+        return filament()->getCurrentPanel()?->getId() === 'admin' ? 2 : 'full';
+    }
 
     protected function getData(): array
     {

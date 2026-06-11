@@ -20,6 +20,10 @@ class ProductTemplateExport implements FromArray, WithHeadings
             'harga',
             'stok',
             'tersedia',
+            'hpp',
+            'titipan',
+            'tipe_bagi_hasil',
+            'bagi_hasil_penitip',
         ];
     }
 }

@@ -9,7 +9,9 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class SalesOverview extends BaseWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 2;
+
+    protected int | string | array $columnSpan = 'full';
 
     protected function getStats(): array
     {
@@ -29,6 +31,8 @@ class SalesOverview extends BaseWidget
         $trendColor = $trendToday >= 0 ? 'success' : 'danger';
         $trendDescription = $trendToday >= 0 ? 'Naik dari kemarin' : 'Turun dari kemarin';
 
+        $aovToday = $transactionsToday > 0 ? $revenueToday / $transactionsToday : 0;
+
         return [
             Stat::make('Pendapatan Hari Ini', 'Rp ' . number_format($revenueToday, 0, ',', '.'))
                 ->description($trendDescription)
@@ -44,6 +48,11 @@ class SalesOverview extends BaseWidget
                 ->description('Jumlah pesanan hari ini')
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('info'),
+
+            Stat::make('Rata-rata Transaksi (AOV)', 'Rp ' . number_format($aovToday, 0, ',', '.'))
+                ->description('Nilai keranjang belanja hari ini')
+                ->descriptionIcon('heroicon-m-calculator')
+                ->color('success'),
         ];
     }
 }

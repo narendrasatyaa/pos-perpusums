@@ -29,11 +29,12 @@
                                 </a>
                                 <a href="#fitur"
                                     class="inline-flex items-center text-sm font-semibold text-white/80 transition hover:text-accent">
-                                    Kenapa harus Library Cafe POS? &nbsp; <i class="fa-solid fa-arrow-down text-xs"></i>
+                                    Lihat Fitur & Kelebihan &nbsp; <i class="fa-solid fa-arrow-down text-xs"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
+                </div>
             </section>
 
             {{-- Fitur Section – Light Background --}}
@@ -41,57 +42,65 @@
                 <div class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
                     <div class="max-w-2xl mb-16">
                         <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl leading-tight">
-                            Semua yang dibutuhkan operasional Library Cafe
+                            Detail Fitur Utama (Kasir & Finance)
                         </h2>
                         <p class="mt-4 text-gray-500 text-lg">
-                            Dirancang khusus untuk keperluan internal kafe UPT Perpustakaan UMS tidak untuk penggunaan
-                            publik
+                            Semua fitur dirancang khusus untuk mendukung kelancaran operasional harian kasir dan pelaporan keuangan terperinci bagi tim finance.
                         </p>
                     </div>
 
                     <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                        <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50">
-                            <div
-                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg">
-                                <i class="fa-solid fa-desktop"></i>
+                        
+                        {{-- Fitur 1 --}}
+                        <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50 flex flex-col justify-between">
+                            <div>
+                                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg">
+                                    <i class="fa-solid fa-cash-register"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-gray-900">Layar POS Kasir Cepat</h3>
+                                <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+                                    Pencarian menu instan, pengaturan porsi belanja, input kupon/voucher promo diskon, serta kalkulasi total pembayaran harian.
+                                </p>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900">Terminal Kasir</h3>
-                            <p class="mt-2 text-sm text-gray-500 leading-relaxed">
-                                Antarmuka cepat untuk input pesanan dan terima pembayaran dari pelanggan kafe.
-                            </p>
                         </div>
 
-                        <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50">
-                            <div
-                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg">
-                                <i class="fa-solid fa-boxes-stacked"></i>
+                        {{-- Fitur 2 --}}
+                        <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50 flex flex-col justify-between">
+                            <div>
+                                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg">
+                                    <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-gray-900">Pisah Tagihan (Split Bill)</h3>
+                                <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+                                    Kemudahan bagi kasir membagi bill/nota pembayaran secara instan jika ada rombongan pelanggan yang ingin membayar masing-masing.
+                                </p>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900">Manajemen Stok</h3>
-                            <p class="mt-2 text-sm text-gray-500 leading-relaxed">
-                                Pantau dan kelola bahan baku serta menu secara real-time agar tidak kehabisan stok.
-                            </p>
                         </div>
 
-                        <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50">
-                            <div
-                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg">
-                                <i class="fa-solid fa-chart-pie"></i>
+                        {{-- Fitur 3 --}}
+                        <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50 flex flex-col justify-between">
+                            <div>
+                                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg">
+                                    <i class="fa-solid fa-toggle-on"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-gray-900">Manajemen Stok Kasir</h3>
+                                <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+                                    Kasir dapat langsung mematikan menu (Toggle OFF) jika stok bahan baku di bar/dapur kosong, menghindari salah order.
+                                </p>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900">Laporan Transaksi</h3>
-                            <p class="mt-2 text-sm text-gray-500 leading-relaxed">
-                                Rekap pendapatan harian dan bulanan secara otomatis untuk keperluan pelaporan UPT.
-                            </p>
                         </div>
 
-                        <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50">
-                            <div
-                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg">
-                                <i class="fa-solid fa-users-gear"></i>
+                        {{-- Fitur 4 --}}
+                        <div class="border border-gray-100 rounded-2xl p-6 bg-gray-50 flex flex-col justify-between">
+                            <div>
+                                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-gray-900">Laporan & Audit Finance</h3>
+                                <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+                                    Panel khusus keuangan untuk memantau omzet, grafik tren penjualan, serta verifikasi bukti transfer QRIS dari kasir.
+                                </p>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900">Manajemen User</h3>
-                            <p class="mt-2 text-sm text-gray-500 leading-relaxed">
-                                Kelola akun kasir dan admin dengan pembagian hak akses yang jelas dan aman.
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -103,45 +112,35 @@
                     <div class="grid gap-12 lg:grid-cols-2 items-center">
                         <div>
                             <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl leading-tight">
-                                Dibangun khusus bukan <br>solusi generik
+                                Dirancang Spesifik <br>Untuk Library Cafe UMS
                             </h2>
                             <p class="mt-5 text-gray-500 text-lg leading-relaxed">
-                                POS Library Cafe dirancang dari awal untuk kebutuhan spesifik kafe di dalam UPT
-                                Perpustakaan UMS, dari alur transaksi, pembagian role, hingga format laporan yang sesuai
-                                standar institusi.
+                                Sistem ini dibuat secara khusus untuk mempermudah pelayanan kasir dan pelaporan finance di UPT Perpustakaan UMS. Meminimalkan waktu antrean mahasiswa dan memberikan transparansi pembukuan.
                             </p>
                             <ul class="mt-8 space-y-4">
                                 <li class="flex items-start gap-3">
-                                    <span
-                                        class="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
+                                    <span class="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
-                                    <span class="text-gray-600 text-sm">Transaksi kasir selesai dalam hitungan
-                                        detik</span>
+                                    <span class="text-gray-600 text-sm">Transaksi penjualan selesai dalam hitungan detik</span>
                                 </li>
                                 <li class="flex items-start gap-3">
-                                    <span
-                                        class="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
+                                    <span class="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
-                                    <span class="text-gray-600 text-sm">Role kasir & admin terpisah dengan akses
-                                        terkontrol</span>
+                                    <span class="text-gray-600 text-sm">Akses terpisah antara kasir harian & pembukuan finance</span>
                                 </li>
                                 <li class="flex items-start gap-3">
-                                    <span
-                                        class="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
+                                    <span class="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
-                                    <span class="text-gray-600 text-sm">Laporan otomatis siap dicetak setiap akhir
-                                        hari</span>
+                                    <span class="text-gray-600 text-sm">Validasi bukti transfer pembayaran QRIS secara real-time</span>
                                 </li>
                                 <li class="flex items-start gap-3">
-                                    <span
-                                        class="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
+                                    <span class="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
-                                    <span class="text-gray-600 text-sm">Stok terupdate otomatis setiap transaksi
-                                        berlangsung</span>
+                                    <span class="text-gray-600 text-sm">Rekap penjualan shift kasir terintegrasi otomatis</span>
                                 </li>
                             </ul>
                         </div>
@@ -157,7 +156,7 @@
             </section>
 
             {{-- CTA --}}
-            {{-- <section class="bg-primary py-24">
+            <section class="bg-primary py-24">
                 <div class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
                     <div class="grid gap-8 lg:grid-cols-[1fr_auto] items-center">
                         <div>
@@ -165,7 +164,7 @@
                                 Siap menggunakan sistem?
                             </h2>
                             <p class="mt-3 text-white/60 text-lg max-w-xl">
-                                Masuk menggunakan akun yang telah diberikan oleh Admin UPT Perpustakaan.
+                                Masuk menggunakan akun terdaftar Anda untuk mulai mencatat transaksi atau rekap finansial.
                             </p>
                         </div>
                         <div>
@@ -176,7 +175,7 @@
                         </div>
                     </div>
                 </div>
-            </section> --}}
+            </section>
 
         </main>
         <x-footer />

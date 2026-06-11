@@ -26,6 +26,10 @@ class ProductsImport implements ToCollection, SkipsEmptyRows, WithChunkReading, 
                 'harga' => ['required'],
                 'stok' => ['required'],
                 'tersedia' => ['required'],
+                'hpp' => ['nullable'],
+                'titipan' => ['nullable'],
+                'tipe_bagi_hasil' => ['nullable'],
+                'bagi_hasil_penitip' => ['nullable'],
             ])->validate();
 
             $categoryName = trim((string) $data['kategori']);
@@ -39,12 +43,21 @@ class ProductsImport implements ToCollection, SkipsEmptyRows, WithChunkReading, 
                 ]);
             }
 
+            $isConsignment = isset($data['titipan']) ? $this->toBoolean($data['titipan']) : false;
+            $consignorShareType = isset($data['tipe_bagi_hasil']) ? (trim(strtolower((string) $data['tipe_bagi_hasil'])) === 'nominal' ? 'nominal' : 'percent') : 'percent';
+            $consignorShare = isset($data['bagi_hasil_penitip']) ? $this->toInteger($data['bagi_hasil_penitip']) : null;
+            $costPrice = isset($data['hpp']) ? $this->toInteger($data['hpp']) : null;
+
             $items[] = [
                 'category_id' => $category->id,
                 'name' => trim((string) $data['nama']),
                 'price' => $this->toInteger($data['harga']),
                 'stock' => $this->toInteger($data['stok']),
                 'is_available' => $this->toBoolean($data['tersedia']),
+                'is_consignment' => $isConsignment,
+                'consignor_share_type' => $consignorShareType,
+                'consignor_share' => $isConsignment ? $consignorShare : null,
+                'cost_price' => !$isConsignment ? $costPrice : null,
             ];
         }
 

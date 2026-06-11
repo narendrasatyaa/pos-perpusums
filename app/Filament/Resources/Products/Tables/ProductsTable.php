@@ -23,18 +23,44 @@ class ProductsTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('price')
+                    ->label('Harga Jual')
                     ->money('IDR')
+                    ->sortable(),
+                TextColumn::make('cost_price')
+                    ->label('HPP')
+                    ->money('IDR')
+                    ->getStateUsing(fn ($record) => $record->is_consignment 
+                        ? ($record->consignor_share_type === 'nominal' 
+                            ? $record->consignor_share 
+                            : intval(intdiv($record->price * $record->consignor_share, 100)))
+                        : $record->cost_price
+                    )
+                    ->sortable()
+                    ->placeholder('—'),
+                TextColumn::make('is_consignment')
+                    ->label('Tipe Produk')
+                    ->formatStateUsing(fn ($record): string => $record->is_consignment 
+                        ? 'Titipan (' . ($record->consignor_share_type === 'nominal' 
+                            ? 'Rp ' . number_format($record->consignor_share, 0, ',', '.') 
+                            : $record->consignor_share . '%') . ')' 
+                        : 'Normal'
+                    )
+                    ->badge()
+                    ->color(fn ($record): string => $record->is_consignment ? 'warning' : 'info')
                     ->sortable(),
                 TextColumn::make('stock')
                     ->numeric()
                     ->sortable()
                     ->label('Stok')
                     ->badge()
-                    ->color(fn (string $state): string => match (true) {
+                    ->color(fn ($state, $record): string => match (true) {
                         $state == 0 => 'danger',
-                        $state <= 10 => 'warning',
+                        $state <= $record->min_stock => 'warning',
                         default => 'success',
                     }),
+                TextColumn::make('unit')
+                    ->label('Satuan')
+                    ->sortable(),
                 IconColumn::make('is_available')
                     ->boolean(),
                 TextColumn::make('created_at')

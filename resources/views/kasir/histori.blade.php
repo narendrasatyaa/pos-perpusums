@@ -71,6 +71,9 @@
                             <tbody id="history-table-body"></tbody>
                         </table>
                     </div>
+                    <div class="pagination" id="history-pagination">
+                        
+                    </div>
                 </div>
             </div>
         </main>

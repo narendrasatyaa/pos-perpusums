@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Kasir;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\Voucher;
@@ -83,6 +84,44 @@ class TransactionController extends Controller
 
                 $total = max(0, $subtotal - $discountValue);
                 $paidAmount = (int) $data['paid_amount'];
+                $requiredStocks = [];
+
+                foreach ($data['items'] as $item) {
+                    $quantity = (int) ($item['quantity'] ?? ($item['qty'] ?? 0));
+                    $productId = (string) ($item['product_id'] ?? '');
+
+                    if ($quantity <= 0 || $productId === '') {
+                        continue;
+                    }
+
+                    $requiredStocks[$productId] = ($requiredStocks[$productId] ?? 0) + $quantity;
+                }
+
+                $lockedProducts = collect();
+
+                if (!empty($requiredStocks)) {
+                    $lockedProducts = Product::query()
+                        ->whereIn('id', array_keys($requiredStocks))
+                        ->lockForUpdate()
+                        ->get()
+                        ->keyBy(fn (Product $product) => (string) $product->id);
+
+                    foreach ($requiredStocks as $productId => $requestedQty) {
+                        $product = $lockedProducts->get((string) $productId);
+
+                        if (!$product) {
+                            throw ValidationException::withMessages([
+                                'items' => 'Produk tidak ditemukan. Silakan muat ulang halaman POS.',
+                            ]);
+                        }
+
+                        if ((int) $product->stock < (int) $requestedQty) {
+                            throw ValidationException::withMessages([
+                                'items' => "Stok {$product->name} tidak mencukupi. Tersedia {$product->stock}, diminta {$requestedQty}.",
+                            ]);
+                        }
+                    }
+                }
 
                 if ($paidAmount < $total) {
                     throw ValidationException::withMessages([
@@ -126,18 +165,37 @@ class TransactionController extends Controller
                         continue;
                     }
 
+                    $productId = (string) ($item['product_id'] ?? '');
+                    $product = $productId !== '' ? $lockedProducts->get($productId) : null;
+
+                    $costPrice = null;
+                    if ($product) {
+                        if ($product->is_consignment) {
+                            if ($product->consignor_share_type === 'nominal') {
+                                $costPrice = (int) $product->consignor_share;
+                            } else {
+                                $share = (int) $product->consignor_share;
+                                $costPrice = intval(intdiv((int) $item['price'] * $share, 100));
+                            }
+                        } else {
+                            $costPrice = $product->cost_price;
+                        }
+                    }
+
                     TransactionItem::create([
                         'transaction_id' => $transaction->id,
-                        'product_id' => (string) ($item['product_id'] ?? ''),
+                        'product_id' => $productId,
                         'product_name' => Str::limit($name, 255, ''),
                         'price' => (int) $item['price'],
                         'quantity' => $quantity,
                         'subtotal' => $quantity * (int) $item['price'],
+                        'cost_price' => $costPrice,
                         'is_active' => true,
                     ]);
 
-                    if (!empty($item['product_id'])) {
-                        \App\Models\Product::where('id', $item['product_id'])->decrement('stock', $quantity);
+                    if ($product) {
+                        $product->decrement('stock', $quantity);
+                        $product->stock = (int) $product->stock - $quantity;
                     }
                 }
 
@@ -236,11 +294,25 @@ class TransactionController extends Controller
     /**
      * Ambil list histori transaksi.
      */
-    public function indexHistory()
+    public function indexHistory(Request $request)
     {
+        $search = $request->query('search');
+        $status = $request->query('status');
+
         $transactions = Transaction::with(['user', 'items'])
             ->when(Auth::check(), function ($query) {
                 $query->where('user_id', Auth::id());
+            })
+            ->when($status && $status !== 'all', function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('order_code', 'like', "%{$search}%")
+                      ->orWhereHas('items', function ($qi) use ($search) {
+                          $qi->where('product_name', 'like', "%{$search}%");
+                      });
+                });
             })
             ->orderBy('id', 'desc')
             ->paginate(15);

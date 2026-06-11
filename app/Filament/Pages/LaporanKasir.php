@@ -27,6 +27,15 @@ class LaporanKasir extends Page implements HasTable
     protected static ?string $navigationLabel = 'Laporan Kasir';
     protected static \UnitEnum|string|null $navigationGroup = 'Laporan Penjualan';
     protected static ?int $navigationSort = 3;
+    public static function canAccess(): bool
+    {
+        return false;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public function table(Table $table): Table
     {
@@ -36,6 +45,8 @@ class LaporanKasir extends Page implements HasTable
                     ->select('users.id', 'users.name', 'users.email', 'users.role')
                     ->selectRaw('COUNT(transactions.id) as total_transactions')
                     ->selectRaw('COALESCE(SUM(transactions.total), 0) as total_revenue')
+                    ->selectRaw('COALESCE(SUM(CASE WHEN transactions.payment_method = \'cash\' THEN transactions.total ELSE 0 END), 0) as cash_revenue')
+                    ->selectRaw('COALESCE(SUM(CASE WHEN transactions.payment_method = \'qris_static\' THEN transactions.total ELSE 0 END), 0) as qris_revenue')
                     ->selectRaw('COALESCE(AVG(transactions.total), 0) as avg_per_transaction')
                     ->selectRaw('MAX(transactions.paid_at) as last_transaction_at')
                     ->join('transactions', function ($join) {
@@ -57,6 +68,22 @@ class LaporanKasir extends Page implements HasTable
                     ->badge()
                     ->color('info')
                     ->summarize(Sum::make()->label('Total')),
+
+                TextColumn::make('cash_revenue')
+                    ->label('Pendapatan Tunai')
+                    ->money('IDR')
+                    ->sortable()
+                    ->color('info')
+                    ->weight('semibold')
+                    ->summarize(Sum::make()->money('IDR')->label('Total Tunai')),
+
+                TextColumn::make('qris_revenue')
+                    ->label('Pendapatan QRIS')
+                    ->money('IDR')
+                    ->sortable()
+                    ->color('warning')
+                    ->weight('semibold')
+                    ->summarize(Sum::make()->money('IDR')->label('Total QRIS')),
 
                 TextColumn::make('total_revenue')
                     ->label('Total Pendapatan')

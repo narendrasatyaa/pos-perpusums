@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Transactions\Tables;
 
 use App\Models\User;
+use App\Exports\TransactionsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
@@ -64,7 +66,8 @@ class TransactionsTable
                     ->money('IDR')
                     ->sortable()
                     ->weight('bold')
-                    ->color('success'),
+                    ->color('success')
+                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()->money('IDR')->label('Total')),
 
                 TextColumn::make('payment_method')
                     ->label('Metode Bayar')
@@ -156,6 +159,16 @@ class TransactionsTable
                     ->label('Detail')
                     ->icon('heroicon-o-eye'),
             ])
-            ->paginated([10, 25, 50, 100]);
+            ->paginated([10, 25, 50, 100])
+            ->headerActions([
+                \Filament\Actions\Action::make('export_excel')
+                    ->label('Ekspor Excel')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(fn ($livewire) => Excel::download(
+                        new TransactionsExport($livewire->getFilteredTableQuery()),
+                        'laporan-transaksi-' . now()->format('Y-m-d') . '.xlsx'
+                    )),
+            ]);
     }
 }

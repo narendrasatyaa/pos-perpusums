@@ -3,6 +3,8 @@
 namespace App\Filament\Pages;
 
 use App\Models\Transaction;
+use App\Exports\TransactionsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use BackedEnum;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -27,6 +29,16 @@ class LaporanPenjualan extends Page implements HasTable
     protected static ?string $navigationLabel = 'Laporan Penjualan';
     protected static \UnitEnum|string|null $navigationGroup = 'Laporan Penjualan';
     protected static ?int $navigationSort = 2;
+
+    public static function canAccess(): bool
+    {
+        return false;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public function table(Table $table): Table
     {
@@ -117,6 +129,16 @@ class LaporanPenjualan extends Page implements HasTable
                         'qris_static' => 'QRIS',
                     ]),
             ])
-            ->paginated([10, 25, 50, 100]);
+            ->paginated([10, 25, 50, 100])
+            ->headerActions([
+                \Filament\Actions\Action::make('export_excel')
+                    ->label('Ekspor Excel')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(fn ($livewire) => Excel::download(
+                        new TransactionsExport($livewire->getFilteredTableQuery()),
+                        'laporan-penjualan-' . now()->format('Y-m-d') . '.xlsx'
+                    )),
+            ]);
     }
 }

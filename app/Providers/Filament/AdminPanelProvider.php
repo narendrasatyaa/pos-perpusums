@@ -7,7 +7,6 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -20,6 +19,9 @@ use App\Filament\Widgets\SalesOverview;
 use App\Filament\Widgets\SalesChart;
 use App\Filament\Widgets\TopProducts;
 use App\Filament\Widgets\LowStockProducts;
+use App\Filament\Widgets\HppSummary;
+use App\Filament\Pages\Dashboard;
+use App\Filament\Widgets\PaymentMethodChart;
 // use App\Filament\Widgets\ProductPriceRangeChart;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -37,6 +39,11 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('POS Library Cafe')
+            ->globalSearch(false)
+            ->sidebarCollapsibleOnDesktop()
+            ->brandLogo(asset('img/logo-perpus-putih.webp'))
+            ->brandLogoHeight('2.5rem')
+            ->favicon(asset('img/logo-perpus.webp'))
             ->login(
                 fn() => view('auth.login', [
                     'loginAction' => route('admin.login.store'),
@@ -49,8 +56,14 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Manajemen Produk')
                     ->label('Manajemen Produk')
                     ->collapsible(),
+                NavigationGroup::make('Manajemen Stok')
+                    ->label('Manajemen Stok')
+                    ->collapsible(),
                 NavigationGroup::make('Laporan Penjualan')
                     ->label('Laporan Penjualan')
+                    ->collapsible(),
+                NavigationGroup::make('Keuangan & Kas')
+                    ->label('Keuangan & Kas')
                     ->collapsible(),
                 NavigationGroup::make('Manajemen Akses')
                     ->label('Manajemen Akses')
@@ -63,12 +76,13 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 SalesOverview::class,
                 StatsOverview::class,
-                // StockAvailability::class,
+                HppSummary::class,
                 SalesChart::class,
                 TopProducts::class,
                 LowStockProducts::class,
                 ProductAvailabilityChart::class,
                 ProductsByCategoryChart::class,
+                PaymentMethodChart::class,
             ])
             ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, AuthenticateSession::class, ShareErrorsFromSession::class, PreventRequestForgery::class, SubstituteBindings::class, DisableBladeIconComponents::class, DispatchServingFilamentEvent::class])
             ->authMiddleware([Authenticate::class]);
