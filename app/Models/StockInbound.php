@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivity;
 
 class StockInbound extends Model
 {
+    use LogsActivity;
     use HasFactory;
 
     protected $guarded = [];
@@ -25,16 +27,35 @@ class StockInbound extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function mutation()
+    {
+        return $this->morphOne(StockMutation::class, 'reference');
+    }
+
     protected static function booted()
     {
         // Automatically adjust product stock on creation
         static::created(function ($stockInbound) {
             $product = $stockInbound->product;
             if ($product) {
-                $product->increment('stock', (int) $stockInbound->quantity);
+                $qty = (int) $stockInbound->quantity;
+                $oldStock = (int) $product->stock;
+                $newStock = $oldStock + $qty;
+                $product->increment('stock', $qty);
                 if (!$product->is_consignment) {
                     $product->update(['cost_price' => $stockInbound->cost_price]);
                 }
+
+                // Log stock mutation
+                $stockInbound->mutation()->create([
+                    'product_id' => $stockInbound->product_id,
+                    'user_id' => $stockInbound->user_id ?? auth()->id(),
+                    'type' => 'inbound',
+                    'quantity_before' => $oldStock,
+                    'quantity_change' => $qty,
+                    'quantity_after' => $newStock,
+                    'notes' => $stockInbound->notes ?? 'Stok Masuk (Supplier: ' . ($stockInbound->supplier ?? '-') . ')',
+                ]);
             }
         });
 
@@ -42,13 +63,26 @@ class StockInbound extends Model
         static::updated(function ($stockInbound) {
             $product = $stockInbound->product;
             if ($product) {
-                $diff = (int) $stockInbound->quantity - (int) $stockInbound->getOriginal('quantity');
+                $qty = (int) $stockInbound->quantity;
+                $oldQty = (int) $stockInbound->getOriginal('quantity');
+                $diff = $qty - $oldQty;
                 if ($diff !== 0) {
                     $product->increment('stock', $diff);
                 }
                 
                 if (!$product->is_consignment && $stockInbound->cost_price !== $stockInbound->getOriginal('cost_price')) {
                     $product->update(['cost_price' => $stockInbound->cost_price]);
+                }
+
+                // Update stock mutation
+                $mutation = $stockInbound->mutation;
+                if ($mutation) {
+                    $mutation->update([
+                        'quantity_change' => $qty,
+                        'quantity_after' => $mutation->quantity_before + $qty,
+                        'user_id' => $stockInbound->user_id ?? auth()->id(),
+                        'notes' => $stockInbound->notes ?? 'Stok Masuk (Supplier: ' . ($stockInbound->supplier ?? '-') . ')',
+                    ]);
                 }
             }
         });
@@ -58,6 +92,9 @@ class StockInbound extends Model
             $product = $stockInbound->product;
             if ($product) {
                 $product->decrement('stock', (int) $stockInbound->quantity);
+
+                // Delete stock mutation
+                $stockInbound->mutation()->delete();
             }
         });
     }

@@ -1,16 +1,8 @@
 <x-app-layout :title="'Stok Barang'">
-    <div class="flex h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary">
+    <div class="flex flex-col h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary">
         <x-sidebar />
 
-        <main class="flex-1 flex flex-col h-screen overflow-hidden">
-            {{-- Header --}}
-            <header
-                class="bg-white/80 backdrop-blur-md h-[72px] px-8 flex items-center justify-end shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0">
-                <div class="text-right leading-tight">
-                    <p class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
-                    <p class="text-primary font-bold clock-display">{{ date('H:i:s') }} WIB</p>
-                </div>
-            </header>
+        <main class="flex-1 flex flex-col overflow-hidden">
 
             <div class="flex-1 overflow-auto p-8 space-y-8">
 
@@ -69,18 +61,18 @@
                         <div class="p-6 border-b border-slate-100 flex items-center justify-between gap-3">
                             <h2 class="text-lg font-bold text-primary">Filter Kategori</h2>
                             <a href="{{ route('kasir.stok') }}"
-                                class="text-xs font-bold text-primary hover:text-secondary transition-colors">Reset</a>
+                                class="text-xs font-bold text-primary transition-colors">Reset</a>
                         </div>
                         <div class="p-4 overflow-auto flex-1 space-y-2">
                             <a href="{{ route('kasir.stok') }}"
-                                class="flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-bold transition-colors {{ blank($selectedCategoryId) ? 'border-primary bg-primary text-white' : 'border-slate-200 bg-white text-primary hover:bg-slate-50' }}">
+                                class="flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-bold transition-colors {{ blank($selectedCategoryId) ? 'border-primary bg-primary text-white' : 'border-slate-200 bg-white text-primary' }}">
                                 <span>Semua Kategori</span>
                                 <span class="text-xs">{{ $totalProducts }}</span>
                             </a>
 
                             @forelse ($categories as $category)
                                 <a href="{{ route('kasir.stok', ['category' => $category->id]) }}"
-                                    class="flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-bold transition-colors {{ (string) $selectedCategoryId === (string) $category->id ? 'border-primary bg-primary text-white' : 'border-slate-200 bg-white text-primary hover:bg-slate-50' }}">
+                                    class="flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-bold transition-colors {{ (string) $selectedCategoryId === (string) $category->id ? 'border-primary bg-primary text-white' : 'border-slate-200 bg-white text-primary' }}">
                                     <div class="flex items-center gap-2">
                                         <span>{{ $category->name }}</span>
                                         @if (!($category->is_active ?? true))
@@ -117,7 +109,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse ($products as $product)
-                                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                        <tr class="border-b border-slate-100 transition-colors">
                                             <td class="py-4 px-6">
                                                 <div class="flex items-center gap-3">
                                                     @if ($product->image)
@@ -143,7 +135,7 @@
                                             </td>
                                             <td class="py-4 px-6 text-center">
                                                 <button type="button" onclick="toggleStock({{ $product->id }}, this)"
-                                                    class="px-3 py-1 rounded-full text-xs font-bold w-24 transition-colors {{ $product->is_available ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }}">
+                                                    class="px-3 py-1 rounded-full text-xs font-bold w-24 transition-colors {{ $product->is_available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                                     {{ $product->is_available ? 'Tersedia' : 'Habis' }}
                                                 </button>
                                             </td>
@@ -202,11 +194,11 @@
                     if (data.success) {
                         if (data.is_available) {
                             btn.className =
-                                'px-3 py-1 rounded-full text-xs font-bold w-24 transition-colors bg-green-100 text-green-700 hover:bg-green-200';
+                                'px-3 py-1 rounded-full text-xs font-bold w-24 transition-colors bg-green-100 text-green-700';
                             btn.innerText = 'Tersedia';
                         } else {
                             btn.className =
-                                'px-3 py-1 rounded-full text-xs font-bold w-24 transition-colors bg-red-100 text-red-700 hover:bg-red-200';
+                                'px-3 py-1 rounded-full text-xs font-bold w-24 transition-colors bg-red-100 text-red-700';
                             btn.innerText = 'Habis';
                         }
                     }

@@ -24,7 +24,7 @@ class ListProducts extends ListRecords
                 ->color('gray')
                 ->url(route('products.template')),
             Action::make('importExcel')
-                ->label('Import Excel')
+                ->label('Upload Excel')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->modalSubmitActionLabel('Upload')
                 ->modalCancelAction(false)
