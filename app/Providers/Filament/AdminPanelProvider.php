@@ -65,6 +65,9 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Keuangan & Kas')
                     ->label('Keuangan & Kas')
                     ->collapsible(),
+                NavigationGroup::make('Log Aktivitas')
+                    ->label('Log Aktivitas')
+                    ->collapsible(),
                 NavigationGroup::make('Manajemen Akses')
                     ->label('Manajemen Akses')
                     ->collapsible(),

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@ums.ac.id'],
             [
                 'name' => 'Admin',
+                'username' => 'adminpos',
                 'password' => bcrypt('password'),
                 'role' => User::ROLE_ADMIN,
             ]
@@ -29,6 +30,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'kasir@ums.ac.id'],
             [
                 'name' => 'Kasir Abdul',
+                'username' => 'kasirpos',
                 'password' => bcrypt('password'),
                 'role' => User::ROLE_KASIR,
             ]
@@ -37,6 +39,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'finance@ums.ac.id'],
             [
                 'name' => 'Finance',
+                'username' => 'financepos',
                 'password' => bcrypt('password'),
                 'role' => User::ROLE_FINANCE,
             ]
