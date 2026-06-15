@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivity;
 
 class Transaction extends Model
 {
+    use LogsActivity;
     protected $guarded = [];
 
     protected $appends = [

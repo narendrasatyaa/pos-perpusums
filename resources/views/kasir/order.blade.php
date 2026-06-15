@@ -1,63 +1,58 @@
 <x-app-layout :title="'Order Kasir'">
-    <div class="flex h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary overflow-hidden">
+    <div class="flex flex-col h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary overflow-hidden">
         <x-sidebar />
 
-        <main class="flex-1 flex flex-col h-screen overflow-y-auto lg:overflow-hidden">
-            <!-- HEADER -->
-            <header class="bg-white/80 backdrop-blur-md min-h-[72px] py-4 px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between sm:justify-end shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0 gap-4">
-                <div class="flex items-center gap-5 w-full sm:w-auto">
-                    <form method="GET" action="{{ route('kasir.order') }}" class="relative w-full sm:w-64 flex-shrink-0">
-                        @if (request('category'))
-                            <input type="hidden" name="category" value="{{ request('category') }}">
-                        @endif
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-1">
-                            <button type="submit" class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center hover:bg-info transition-colors">
-                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                            </button>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            class="bg-white border text-primary text-sm rounded-full focus:ring-accent focus:border-accent border-secondary/10 block w-full pl-12 pr-4 py-2 font-medium placeholder:text-secondary/40"
-                            placeholder="Cari menu...">
-                    </form>
-                    <div class="text-right leading-tight hidden sm:block">
-                        <p class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
-                        <p id="live-clock" class="text-primary font-bold"></p>
-                    </div>
-                </div>
-            </header>
-
+        <main class="flex-1 flex flex-col overflow-hidden">
             <div class="flex-1 flex flex-col lg:flex-row p-4 sm:p-6 gap-6 lg:overflow-hidden">
                 <section class="flex-1 flex flex-col gap-5 lg:overflow-hidden">
                     
-                    <!-- Categories -->
-                    <div class="bg-white rounded-[28px] p-3 shadow-sm border border-slate-200 shrink-0 w-full overflow-x-auto custom-scrollbar">
-                        <div class="flex items-center gap-2 pb-1 w-max">
-                            <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}"
-                                class="inline-flex items-center rounded-full border px-4 py-2.5 text-sm font-bold whitespace-nowrap transition-colors {{ !request('category') ? 'border-primary bg-primary text-white' : 'border-secondary/10 bg-white text-secondary/70 hover:bg-slate-100 hover:text-primary' }}">
-                                All Menu
-                            </a>
-                            @foreach ($categories ?? [] as $category)
-                                <a href="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}"
-                                    class="inline-flex items-center rounded-full border px-4 py-2.5 text-sm font-bold whitespace-nowrap transition-colors {{ request('category') == $category->id ? 'border-primary bg-primary text-white' : 'border-secondary/10 bg-white text-secondary/70 hover:bg-slate-100 hover:text-primary' }}">
-                                    {{ $category->name ?? 'Category' }}
+                    <!-- Categories & Search Row -->
+                    <div class="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <!-- Categories Pills -->
+                        <div class="overflow-x-auto custom-scrollbar flex-1 pb-1">
+                            <div class="flex items-center gap-2 w-max">
+                                <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}"
+                                    class="inline-flex items-center rounded-full px-5 py-2.5 text-xs font-black whitespace-nowrap transition-all duration-200 {{ !request('category') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white border border-slate-200 text-secondary/60 hover:bg-slate-100 hover:text-primary' }}">
+                                    All Menu
                                 </a>
-                            @endforeach
+                                @foreach ($categories ?? [] as $category)
+                                    <a href="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}"
+                                        class="inline-flex items-center rounded-full px-5 py-2.5 text-xs font-black whitespace-nowrap transition-all duration-200 {{ request('category') == $category->id ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white border border-slate-200 text-secondary/60 hover:bg-slate-100 hover:text-primary' }}">
+                                        {{ $category->name ?? 'Category' }}
+                                    </a>
+                                @endforeach
+                            </div>
                         </div>
+
+                        <!-- Search Input (Aligned with Categories) -->
+                        <form method="GET" action="{{ route('kasir.order') }}" id="order-search-form" class="relative w-full md:w-64 flex-shrink-0">
+                            @if (request('category'))
+                                <input type="hidden" name="category" value="{{ request('category') }}">
+                            @endif
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-1">
+                                <button type="submit" class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center hover:bg-secondary transition-colors">
+                                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                </button>
+                            </div>
+                            <input type="text" name="search" id="order-search-input" value="{{ request('search') }}"
+                                class="bg-white border text-primary text-sm rounded-full focus:ring-accent focus:border-accent border-secondary/10 block w-full pl-12 pr-4 py-2 font-medium placeholder:text-secondary/40"
+                                placeholder="Cari menu...">
+                        </form>
                     </div>
 
-                    <!-- Product Grid - Kecil & Minimalis -->
-                    <div class="flex-1 bg-white rounded-[28px] p-4 sm:p-6 shadow-sm border border-slate-200 lg:overflow-y-auto custom-scrollbar">
+                    <!-- Product Grid - Minimalist & Premium (Ecomora Style) -->
+                    <div class="flex-1 bg-white rounded-[28px] p-4 sm:p-6 shadow-sm border border-slate-200/60 lg:overflow-y-auto custom-scrollbar">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-black text-primary">Daftar Menu</h2>
                                 <p class="text-sm text-secondary/60 mt-1">Pilih produk dari daftar berikut</p>
                             </div>
-                            <div class="inline-flex items-center self-start sm:self-center rounded-2xl bg-slate-100 px-4 py-2 text-xs font-black text-primary border border-slate-200">
+                            <div class="inline-flex items-center self-start sm:self-center rounded-2xl bg-slate-50 px-4 py-2 text-xs font-black text-primary border border-slate-200">
                                 {{ count($products ?? []) }} Items
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             @forelse($products ?? [] as $product)
                                 @php
                                     $words = explode(' ', $product->name);
@@ -67,49 +62,51 @@
                                 @endphp
 
                                 <button type="button"
-                                    class="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md hover:border-primary/30 transition-all duration-200 {{ $product->stock == 0 ? 'opacity-60 cursor-not-allowed grayscale' : 'cursor-pointer' }}"
+                                    class="group bg-white rounded-3xl border border-slate-100 p-3 flex flex-col justify-between transition-all duration-300 relative {{ $product->stock == 0 ? 'opacity-60 cursor-not-allowed grayscale' : 'cursor-pointer hover:shadow-md hover:-translate-y-0.5' }}"
                                     @if ($product->stock > 0) data-add-to-cart @else disabled @endif
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-price="{{ $product->price }}"
                                     data-product-stock="{{ $product->stock }}">
 
-                                    <!-- Image Area - Kecil -->
-                                    <div class="relative h-32 bg-slate-100 flex items-center justify-center overflow-hidden">
-                                        @if (!empty($product->image))
-                                            <img src="{{ asset('storage/' . $product->image) }}" 
-                                                 alt="{{ $product->name }}"
-                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                        @else
-                                            <span class="text-4xl font-black text-primary/70">
-                                                {{ $initials }}
-                                            </span>
-                                        @endif
+                                    <div class="w-full">
+                                        <!-- Image Area - Rounded inside the card -->
+                                        <div class="relative h-36 bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden mb-3">
+                                            @if (!empty($product->image))
+                                                <img src="{{ asset('storage/' . $product->image) }}" 
+                                                     alt="{{ $product->name }}"
+                                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                            @else
+                                                <span class="text-3xl font-black text-primary/20">
+                                                    {{ $initials }}
+                                                </span>
+                                            @endif
 
-                                        @if ($product->stock == 0)
-                                            <div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">Habis</div>
-                                        @elseif ($product->stock <= 10)
-                                            <div class="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">Sisa {{ $product->stock }}</div>
-                                        @endif
-                                    </div>
+                                            @if ($product->stock == 0)
+                                                <div class="absolute top-2 right-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-lg shadow-sm">Habis</div>
+                                            @elseif ($product->stock <= 10)
+                                                <div class="absolute top-2 right-2 bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-lg shadow-sm">Sisa {{ $product->stock }}</div>
+                                            @endif
+                                        </div>
 
-                                    <!-- Info -->
-                                    <div class="p-3">
-                                        <h3 class="font-semibold text-xs leading-tight line-clamp-2 mb-1 text-primary">
-                                            {{ $product->name }}
-                                        </h3>
-                                        <p class="text-base font-bold text-accent">
-                                            Rp{{ number_format($product->price, 0, ',', '.') }}
-                                        </p>
-                                        <p class="text-[10px] text-slate-500 mt-1">
-                                            Stok: {{ $product->stock }}
-                                        </p>
+                                        <!-- Info with alignment to the left -->
+                                        <div class="flex flex-col items-start w-full pr-0">
+                                            <h3 class="font-bold text-xs text-secondary leading-tight line-clamp-2 mb-1 text-left">
+                                                {{ $product->name }}
+                                            </h3>
+                                            <p class="text-sm font-black text-primary text-left">
+                                                Rp{{ number_format($product->price, 0, ',', '.') }}
+                                            </p>
+                                            <p class="text-[10px] font-semibold text-slate-400 mt-0.5 text-left">
+                                                Stok: {{ $product->stock }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </button>
                             @empty
                                 <div class="col-span-full h-48 flex flex-col items-center justify-center text-secondary/40">
                                     <i class="fa-solid fa-utensils text-4xl mb-3"></i>
-                                    <p class="font-medium">Belum ada menu tersedia</p>
+                                    <p class="font-medium text-sm">Belum ada menu tersedia</p>
                                 </div>
                             @endforelse
                         </div>
@@ -140,10 +137,10 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-2 sm:gap-3 pt-2">
-                            <button type="button" id="split-bill" class="inline-flex items-center justify-center rounded-2xl border border-primary bg-white px-4 py-3 text-xs sm:text-sm font-black text-primary hover:bg-slate-100">
+                            <button type="button" id="split-bill" class="inline-flex items-center justify-center rounded-2xl border border-primary bg-white px-4 py-3.5 text-xs sm:text-sm font-bold text-primary hover:bg-slate-50 transition-colors">
                                 Split Bill
                             </button>
-                            <button type="button" id="process-order" class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-3 text-xs sm:text-sm font-black text-white shadow-md shadow-primary/20 hover:bg-secondary">
+                            <button type="button" id="process-order" class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-3.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-primary/20 hover:bg-secondary transition-all">
                                 Checkout
                             </button>
                         </div>
@@ -186,16 +183,78 @@
     </div>
 
     <script>
-        // Live Clock
-        document.addEventListener('DOMContentLoaded', function() {
-            const clockEl = document.getElementById('live-clock');
-            const updateClock = () => {
-                const now = new Date();
-                const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                if (clockEl) clockEl.textContent = `${timeString} WIB`;
+        // Debounce Utility Function
+        function debounce(func, delay) {
+            let timeoutId;
+            return function(...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
             };
-            updateClock();
-            setInterval(updateClock, 1000);
+        }
+
+        // Order Page Client-side Search with Debounce
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('order-search-input');
+            const productCards = document.querySelectorAll('[data-product-id]');
+            const searchForm = document.getElementById('order-search-form');
+
+            if (searchForm) {
+                searchForm.addEventListener('submit', (e) => e.preventDefault());
+            }
+
+            const filterProducts = () => {
+                const query = (searchInput.value || '').trim().toLowerCase();
+                let visibleCount = 0;
+
+                productCards.forEach(card => {
+                    const name = (card.dataset.productName || '').toLowerCase();
+                    if (name.includes(query)) {
+                        card.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                // Update item count badge
+                const countBadge = document.querySelector('.inline-flex.items-center.self-start.sm\\:self-center.rounded-2xl');
+                if (countBadge) {
+                    countBadge.textContent = `${visibleCount} Items`;
+                }
+
+                // Show/hide empty state
+                let emptyState = document.getElementById('products-empty-state');
+                if (visibleCount === 0) {
+                    if (!emptyState) {
+                        const grid = document.querySelector('.grid.grid-cols-2, .grid.grid-cols-3, .grid.grid-cols-4, .grid.grid-cols-5');
+                        if (grid) {
+                            emptyState = document.createElement('div');
+                            emptyState.id = 'products-empty-state';
+                            emptyState.className = 'col-span-full h-48 flex flex-col items-center justify-center text-secondary/40';
+                            emptyState.innerHTML = `
+                                <i class="fa-solid fa-magnifying-glass text-4xl mb-3"></i>
+                                <p class="font-medium text-sm">Menu tidak ditemukan</p>
+                            `;
+                            grid.appendChild(emptyState);
+                        }
+                    } else {
+                        emptyState.classList.remove('hidden');
+                    }
+                } else if (emptyState) {
+                    emptyState.classList.add('hidden');
+                }
+            };
+
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(filterProducts, 300));
+                
+                // If there's an initial search query, run filter immediately
+                if (searchInput.value) {
+                    filterProducts();
+                }
+            }
         });
 
         // Cart Logic
@@ -241,22 +300,22 @@
                 let html = '';
                 cart.forEach(item => {
                     html += `
-                        <div class="flex gap-3 bg-slate-50 rounded-2xl p-3">
-                            <div class="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-xs font-bold text-primary ring-1 ring-slate-200">
+                        <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100">
+                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xs font-black text-primary border border-slate-200">
                                 ${item.name.substring(0,2).toUpperCase()}
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-xs font-medium text-primary">${item.name}</p>
-                                <div class="flex items-center gap-2 mt-2">
-                                    <button data-cart-action="decrease" data-product-id="${item.id}" class="w-5 h-5 rounded bg-white border text-xs flex items-center justify-center">-</button>
-                                    <span class="font-bold text-xs px-2">${item.quantity}</span>
-                                    <button data-cart-action="increase" data-product-id="${item.id}" class="w-5 h-5 rounded bg-primary text-white text-xs flex items-center justify-center">+</button>
+                                <p class="text-xs font-bold text-primary truncate">${item.name}</p>
+                                <div class="flex items-center gap-1.5 mt-1.5">
+                                    <button data-cart-action="decrease" data-product-id="${item.id}" class="w-5 h-5 rounded-lg bg-white border border-slate-200 text-xs font-bold flex items-center justify-center hover:bg-slate-100 transition-colors">-</button>
+                                    <span class="font-bold text-xs px-1 text-primary">${item.quantity}</span>
+                                    <button data-cart-action="increase" data-product-id="${item.id}" class="w-5 h-5 rounded-lg bg-primary text-white text-xs font-bold flex items-center justify-center hover:bg-secondary transition-colors">+</button>
                                 </div>
                             </div>
-                            <div class="text-right text-xs">
-                                <p class="font-bold">Rp ${formatCurrency(item.price * item.quantity)}</p>
-                                <button data-cart-action="remove" data-product-id="${item.id}" class="text-red-500 mt-1">
-                                    <i class="fa-solid fa-trash"></i>
+                            <div class="text-right flex flex-col items-end justify-between h-10">
+                                <p class="font-bold text-xs text-primary">Rp ${formatCurrency(item.price * item.quantity)}</p>
+                                <button data-cart-action="remove" data-product-id="${item.id}" class="text-slate-400 hover:text-red-500 transition-colors">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             </div>
                         </div>

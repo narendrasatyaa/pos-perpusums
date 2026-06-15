@@ -64,7 +64,7 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 
 Route::post('/admin/login', function (Request $request) {
     $credentials = $request->validate([
-        'email' => ['required', 'email'],
+        'username' => ['required', 'string'],
         'password' => ['required', 'string'],
     ]);
 
@@ -72,8 +72,8 @@ Route::post('/admin/login', function (Request $request) {
 
     if (! Auth::attempt($credentials, $request->boolean('remember'))) {
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+            'username' => 'Username atau password salah.',
+        ])->onlyInput('username');
     }
 
     $request->session()->regenerate();
@@ -83,7 +83,7 @@ Route::post('/admin/login', function (Request $request) {
 
 Route::post('/finance/login', function (Request $request) {
     $credentials = $request->validate([
-        'email' => ['required', 'email'],
+        'username' => ['required', 'string'],
         'password' => ['required', 'string'],
     ]);
 
@@ -91,8 +91,8 @@ Route::post('/finance/login', function (Request $request) {
 
     if (! Auth::attempt($credentials, $request->boolean('remember'))) {
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+            'username' => 'Username atau password salah.',
+        ])->onlyInput('username');
     }
 
     $request->session()->regenerate();

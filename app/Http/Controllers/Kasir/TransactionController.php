@@ -182,7 +182,7 @@ class TransactionController extends Controller
                         }
                     }
 
-                    TransactionItem::create([
+                    $transactionItem = TransactionItem::create([
                         'transaction_id' => $transaction->id,
                         'product_id' => $productId,
                         'product_name' => Str::limit($name, 255, ''),
@@ -194,8 +194,23 @@ class TransactionController extends Controller
                     ]);
 
                     if ($product) {
+                        $oldStock = (int) $product->stock;
+                        $newStock = $oldStock - $quantity;
                         $product->decrement('stock', $quantity);
-                        $product->stock = (int) $product->stock - $quantity;
+                        $product->stock = $newStock;
+
+                        // Log stock mutation
+                        \App\Models\StockMutation::create([
+                            'product_id' => $product->id,
+                            'user_id' => $transaction->user_id,
+                            'type' => 'outbound',
+                            'quantity_before' => $oldStock,
+                            'quantity_change' => -$quantity, // Negative for outflow
+                            'quantity_after' => $newStock,
+                            'reference_id' => $transactionItem->id,
+                            'reference_type' => get_class($transactionItem),
+                            'notes' => 'Penjualan POS (Nota: ' . $transaction->order_code . ')',
+                        ]);
                     }
                 }
 
