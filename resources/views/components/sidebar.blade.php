@@ -95,7 +95,7 @@
             <a href="{{ route('kasir.profile') }}"
                class="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-50 transition-all duration-200">
                 <span class="w-8 h-8 rounded-full overflow-hidden border border-slate-200 shadow-sm flex-shrink-0">
-                    <img src="{{ auth()->user()->avatar_url ?? asset('img/avatar-default.png') }}"
+                    <img src="{{ auth()->user()->avatar_url ?? asset('img/avatar-default.webp') }}"
                          onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'User') }}&background=f1f5f9&color=0f172a'"
                          alt="User" class="w-full h-full object-cover">
                 </span>

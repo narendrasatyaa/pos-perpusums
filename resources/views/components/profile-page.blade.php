@@ -28,7 +28,7 @@
                             <div class="w-32 h-32 rounded-full bg-slate-200 overflow-hidden border-4 border-white shadow-lg mb-6 relative group">
                                 {{-- <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'User') . '&background=ecc25c&color=fff&size=200' }}"
                                     alt="User Avatar" class="w-full h-full object-cover"> --}}
-                                    <img src="{{ asset('img/avatar-default.png') }}" alt="" class="w-full h-full object-cover">
+                                    <img src="{{ asset('img/avatar-default.webp') }}" alt="" class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                     <i class="fa-solid fa-camera text-white text-xl"></i>
                                 </div>

@@ -1,11 +1,11 @@
 <x-app-layout :title="'Dokumentasi Library Cafe'">
-    <div class="min-h-screen bg-slate-50/50 font-sans">
+    <div class="min-h-screen bg-white font-sans selection:bg-accent selection:text-primary">
         <x-navbar />
-
+        
         <main>
             {{-- Hero Section - Dipercantik --}}
             <section class="relative overflow-hidden min-h-screen flex items-center justify-center">
-                <img src="{{ asset('img/bg-doc-1.png') }}" alt="Library Background"
+                <img src="{{ asset('img/bg-doc-1.webp') }}" alt="Library Background"
                     class="absolute inset-0 h-full w-full object-cover object-bottom">
 
                 <!-- Overlay lebih elegan -->
@@ -323,4 +323,25 @@
 
         <x-footer />
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navbar = document.getElementById('main-navbar');
+            if (!navbar) return;
+            const updateNavbarState = () => {
+                if (window.scrollY > 24) {
+                    navbar.classList.remove('bg-transparent', 'border-transparent');
+                    navbar.classList.add('bg-slate-900/70', 'border-white/10', 'backdrop-blur-md', 'shadow-lg');
+                } else {
+                    navbar.classList.remove('bg-slate-900/70', 'border-white/10', 'backdrop-blur-md',
+                        'shadow-lg');
+                    navbar.classList.add('bg-transparent', 'border-transparent');
+                }
+            };
+            updateNavbarState();
+            window.addEventListener('scroll', updateNavbarState, {
+                passive: true
+            });
+        });
+    </script>
 </x-app-layout>
