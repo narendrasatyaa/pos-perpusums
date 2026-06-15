@@ -26,12 +26,12 @@
                         <form method="POST" action="{{ $loginAction ?? route('login.store') }}" class="mt-7 grid gap-5">
                             @csrf
                             <div>
-                                <label for="email"
-                                    class="mb-2 block text-sm font-medium text-slate-700">Email</label>
-                                <input id="email" name="email" type="email" required autofocus
-                                    value="{{ old('email') }}"
+                                <label for="username"
+                                    class="mb-2 block text-sm font-medium text-slate-700">Username</label>
+                                <input id="username" name="username" type="text" required autofocus
+                                    value="{{ old('username') }}"
                                     class="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder-slate-400 focus:border-primary focus:bg-white focus:ring-primary"
-                                    placeholder="upt@ums.ac.id">
+                                    placeholder="uptlibrary">
                             </div>
 
                             <div>
