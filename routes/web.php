@@ -22,13 +22,13 @@ Route::get('/', function () {
     return redirect()->route('access');
 });
 
-Route::get('/home', function () {
-    if (Auth::check()) {
-        return redirect()->route('kasir.dashboard');
-    }
+// Route::get('/home', function () {
+//     if (Auth::check()) {
+//         return redirect()->route('kasir.dashboard');
+//     }
 
-    return view('home');
-})->name('home');
+//     return view('home');
+// })->name('home');
 
 Route::get('/akses', function () {
     if (Auth::check()) {
