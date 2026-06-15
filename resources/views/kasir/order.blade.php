@@ -1,147 +1,130 @@
 <x-app-layout :title="'Order Kasir'">
-    <div class="flex h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary overflow-hidden">
+    <div class="flex flex-col h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary overflow-hidden">
         <x-sidebar />
 
-        <main class="flex-1 flex flex-col h-screen overflow-y-auto lg:overflow-hidden">
-            <header
-                class="bg-white/80 backdrop-blur-md min-h-[72px] py-4 px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between sm:justify-end shadow-sm z-20 border-b border-slate-100 flex-shrink-0 sticky top-0 gap-4">
-                
-                <!-- Hamburger menu placeholder if needed for mobile sidebar later -->
-                <div class="w-full sm:hidden flex justify-between items-center mb-2">
-                    <h1 class="font-black text-xl text-primary">Library Cafe</h1>
-                    <div class="text-right leading-tight">
-                        <p class="text-primary font-bold">{{ date('H:i:s') }} WIB</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-5 w-full sm:w-auto">
-                    <form method="GET" action="{{ route('kasir.order') }}" class="relative w-full sm:w-64 flex-shrink-0">
-                        @if (request('category'))
-                            <input type="hidden" name="category" value="{{ request('category') }}">
-                        @endif
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-1">
-                            <button type="submit"
-                                class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center hover:bg-info transition-colors">
-                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                            </button>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            class="bg-white border text-primary text-sm rounded-full focus:ring-accent focus:border-accent border-secondary/10 block w-full pl-12 pr-4 py-2 font-medium placeholder:text-secondary/40"
-                            placeholder="Cari menu...">
-                    </form>
-                    <div class="text-right leading-tight hidden sm:block">
-                        <p class="text-sm font-bold text-primary">{{ now()->translatedFormat('l, d F Y') }}</p>
-                        <p class="text-primary font-bold">{{ date('H:i:s') }} WIB</p>
-                    </div>
-                </div>
-            </header>
-            
+        <main class="flex-1 flex flex-col overflow-hidden">
             <div class="flex-1 flex flex-col lg:flex-row p-4 sm:p-6 gap-6 lg:overflow-hidden">
                 <section class="flex-1 flex flex-col gap-5 lg:overflow-hidden">
-                    <div class="bg-white rounded-[28px] p-3 shadow-sm border border-slate-200 shrink-0 w-full overflow-x-auto custom-scrollbar">
-                        <div class="flex items-center gap-2 pb-1 w-max">
-                            <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}"
-                                class="inline-flex items-center rounded-full border px-4 py-2.5 text-sm font-bold whitespace-nowrap transition-colors {{ !request('category') ? 'border-primary bg-primary text-white' : 'border-secondary/10 bg-white text-secondary/70 hover:bg-slate-100 hover:text-primary' }}">
-                                All Menu
-                            </a>
-                            @foreach ($categories ?? [] as $category)
-                                <a href="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}"
-                                    class="inline-flex items-center rounded-full border px-4 py-2.5 text-sm font-bold whitespace-nowrap transition-colors {{ request('category') == $category->id ? 'border-primary bg-primary text-white' : 'border-secondary/10 bg-white text-secondary/70 hover:bg-slate-100 hover:text-primary' }}">
-                                    {{ $category->name ?? 'Category' }}
+                    
+                    <!-- Categories & Search Row -->
+                    <div class="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <!-- Categories Pills -->
+                        <div class="overflow-x-auto custom-scrollbar flex-1 pb-1">
+                            <div class="flex items-center gap-2 w-max">
+                                <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}"
+                                    class="inline-flex items-center rounded-full px-5 py-2.5 text-xs font-black whitespace-nowrap transition-all duration-200 {{ !request('category') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white border border-slate-200 text-secondary/60 hover:bg-slate-100 hover:text-primary' }}">
+                                    All Menu
                                 </a>
-                            @endforeach
+                                @foreach ($categories ?? [] as $category)
+                                    <a href="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}"
+                                        class="inline-flex items-center rounded-full px-5 py-2.5 text-xs font-black whitespace-nowrap transition-all duration-200 {{ request('category') == $category->id ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white border border-slate-200 text-secondary/60 hover:bg-slate-100 hover:text-primary' }}">
+                                        {{ $category->name ?? 'Category' }}
+                                    </a>
+                                @endforeach
+                            </div>
                         </div>
+
+                        <!-- Search Input (Aligned with Categories) -->
+                        <form method="GET" action="{{ route('kasir.order') }}" id="order-search-form" class="relative w-full md:w-64 flex-shrink-0">
+                            @if (request('category'))
+                                <input type="hidden" name="category" value="{{ request('category') }}">
+                            @endif
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-1">
+                                <button type="submit" class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center hover:bg-secondary transition-colors">
+                                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                </button>
+                            </div>
+                            <input type="text" name="search" id="order-search-input" value="{{ request('search') }}"
+                                class="bg-white border text-primary text-sm rounded-full focus:ring-accent focus:border-accent border-secondary/10 block w-full pl-12 pr-4 py-2 font-medium placeholder:text-secondary/40"
+                                placeholder="Cari menu...">
+                        </form>
                     </div>
 
-                    <div class="flex-1 bg-white rounded-[28px] p-4 sm:p-6 shadow-sm border border-slate-200 lg:overflow-y-auto custom-scrollbar">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                    <!-- Product Grid - Minimalist & Premium (Ecomora Style) -->
+                    <div class="flex-1 bg-white rounded-[28px] p-4 sm:p-6 shadow-sm border border-slate-200/60 lg:overflow-y-auto custom-scrollbar">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-black text-primary">Daftar Menu</h2>
                                 <p class="text-sm text-secondary/60 mt-1">Pilih produk dari daftar berikut</p>
                             </div>
-                            <div class="inline-flex items-center self-start sm:self-center rounded-2xl bg-slate-100 px-4 py-2 text-xs font-black text-primary border border-slate-200">
+                            <div class="inline-flex items-center self-start sm:self-center rounded-2xl bg-slate-50 px-4 py-2 text-xs font-black text-primary border border-slate-200">
                                 {{ count($products ?? []) }} Items
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             @forelse($products ?? [] as $product)
                                 @php
                                     $words = explode(' ', $product->name);
-                                    if (count($words) >= 2) {
-                                        $productInitials = strtoupper(
-                                            substr($words[0], 0, 1) . substr($words[1], 0, 1),
-                                        );
-                                    } else {
-                                        $productInitials = strtoupper(substr($product->name, 0, 2));
-                                    }
+                                    $initials = count($words) >= 2 
+                                        ? strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1))
+                                        : strtoupper(substr($product->name, 0, 2));
                                 @endphp
+
                                 <button type="button"
-                                    class="group text-left flex flex-col aspect-square w-full rounded-2xl border border-[#eef2f9] bg-white p-3 sm:p-3.5 shadow-sm transition-all duration-200 hover:shadow-lg {{ $product->stock == 0 ? 'opacity-60 cursor-not-allowed grayscale-[50%]' : 'cursor-pointer' }}"
-                                    @if($product->stock > 0) data-add-to-cart @else disabled @endif 
+                                    class="group bg-white rounded-3xl border border-slate-100 p-3 flex flex-col justify-between transition-all duration-300 relative {{ $product->stock == 0 ? 'opacity-60 cursor-not-allowed grayscale' : 'cursor-pointer hover:shadow-md hover:-translate-y-0.5' }}"
+                                    @if ($product->stock > 0) data-add-to-cart @else disabled @endif
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
-                                    data-product-price="{{ $product->price }}">
+                                    data-product-price="{{ $product->price }}"
+                                    data-product-stock="{{ $product->stock }}">
 
-                                    <div class="relative flex-1 w-full flex items-center justify-center overflow-hidden rounded-xl bg-[#f4f7fe] border border-[#eef2f9]">
-                                        @if($product->stock == 0)
-                                            <div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg z-10 shadow-sm">
-                                                Habis
-                                            </div>
-                                            {{-- low stok --}}
-                                        @elseif($product->stock <= 10)
-                                            <div class="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg z-10 shadow-sm">
-                                                Sisa {{ $product->stock }}
-                                            </div>
-                                        @endif
-                                        <div class="flex aspect-square items-center justify-center text-6xl sm:text-8xl tracking-tighter text-primary">
-                                            {{ $productInitials }}
+                                    <div class="w-full">
+                                        <!-- Image Area - Rounded inside the card -->
+                                        <div class="relative h-36 bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden mb-3">
+                                            @if (!empty($product->image))
+                                                <img src="{{ asset('storage/' . $product->image) }}" 
+                                                     alt="{{ $product->name }}"
+                                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                            @else
+                                                <span class="text-3xl font-black text-primary/20">
+                                                    {{ $initials }}
+                                                </span>
+                                            @endif
+
+                                            @if ($product->stock == 0)
+                                                <div class="absolute top-2 right-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-lg shadow-sm">Habis</div>
+                                            @elseif ($product->stock <= 10)
+                                                <div class="absolute top-2 right-2 bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-lg shadow-sm">Sisa {{ $product->stock }}</div>
+                                            @endif
                                         </div>
-                                    </div>
 
-                                    <div class="mt-2 w-full">
-                                        <h3 class="truncate text-xs sm:text-[0.9rem] font-bold leading-tight text-primary">
-                                            {{ $product->name }}
-                                        </h3>
-                                        <p class="mt-0.5 text-sm sm:text-[1.1rem] font-black leading-none tracking-tight text-accent">
-                                            Rp{{ number_format($product->price, 0, ',', '.') }}
-                                        </p>
-                                        <p class="mt-1 text-[10px] sm:text-xs font-semibold {{ $product->stock == 0 ? 'text-red-500' : ($product->stock <= 5 ? 'text-amber-500' : 'text-secondary/60') }}">
-                                            Stok: {{ $product->stock }}
-                                        </p>
+                                        <!-- Info with alignment to the left -->
+                                        <div class="flex flex-col items-start w-full pr-0">
+                                            <h3 class="font-bold text-xs text-secondary leading-tight line-clamp-2 mb-1 text-left">
+                                                {{ $product->name }}
+                                            </h3>
+                                            <p class="text-sm font-black text-primary text-left">
+                                                Rp{{ number_format($product->price, 0, ',', '.') }}
+                                            </p>
+                                            <p class="text-[10px] font-semibold text-slate-400 mt-0.5 text-left">
+                                                Stok: {{ $product->stock }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </button>
                             @empty
-                                <div class="col-span-full h-48 flex flex-col items-center justify-center text-secondary/40 space-y-4 bg-slate-100 rounded-2xl border border-dashed border-slate-200">
-                                    <i class="fa-solid fa-utensils text-3xl sm:text-4xl"></i>
-                                    <p class="font-semibold text-xs sm:text-sm text-center px-4">Belum ada menu yang tersedia</p>
+                                <div class="col-span-full h-48 flex flex-col items-center justify-center text-secondary/40">
+                                    <i class="fa-solid fa-utensils text-4xl mb-3"></i>
+                                    <p class="font-medium text-sm">Belum ada menu tersedia</p>
                                 </div>
                             @endforelse
                         </div>
                     </div>
                 </section>
 
-                <aside
-                    class="w-full lg:max-w-[360px] bg-white rounded-[28px] shadow-sm border border-slate-200 flex flex-col overflow-hidden shrink-0 h-[500px] lg:h-auto mt-4 lg:mt-0">
+                <!-- CART SIDEBAR -->
+                <aside class="w-full lg:max-w-[360px] bg-white rounded-[28px] shadow-sm border border-slate-200 flex flex-col overflow-hidden shrink-0 h-[500px] lg:h-auto mt-4 lg:mt-0">
                     <div class="p-4 sm:p-6 border-b border-secondary/10 flex items-center justify-between gap-4">
-                        <div>
-                            <h2 class="font-black text-xl sm:text-2xl text-primary">Current Order</h2>
-                        </div>
-
-                        <button type="button" id="clear-cart"
-                            class="text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 transition-colors">
+                        <h2 class="font-black text-xl sm:text-2xl text-primary">Current Order</h2>
+                        <button type="button" id="clear-cart" class="text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 transition-colors">
                             Clear All
                         </button>
                     </div>
 
-                    <div class="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar space-y-3 sm:space-y-4" data-cart-items>
-                        <div class="flex flex-col items-center justify-center text-secondary/40 space-y-3 py-12">
-                            <i class="fa-solid fa-cart-shopping text-5xl sm:text-7xl"></i>
-                            <p class="font-bold text-xs sm:text-sm text-center px-4">Belum ada produk di keranjang</p>
-                        </div>
-                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar space-y-3 sm:space-y-4" data-cart-items></div>
 
-                    <div class="border-t border-slate-200 p-4 sm:p-6 space-y-4 bg-white">
+                    <div class="border-t border-slate-200 p-4 sm:p-6 space-y-4">
                         <div class="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                             <div class="flex items-center justify-between text-secondary/60 font-medium">
                                 <span>Subtotal</span>
@@ -154,13 +137,10 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-2 sm:gap-3 pt-2">
-                            <button type="button" id="split-bill"
-                                class="inline-flex items-center justify-center rounded-2xl border border-primary bg-white px-2 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm font-black text-primary transition-colors hover:bg-slate-100"
-                                title="Fitur split bill segera hadir">
+                            <button type="button" id="split-bill" class="inline-flex items-center justify-center rounded-2xl border border-primary bg-white px-4 py-3.5 text-xs sm:text-sm font-bold text-primary hover:bg-slate-50 transition-colors">
                                 Split Bill
                             </button>
-                            <button type="button" id="process-order"
-                                class="inline-flex items-center justify-center rounded-2xl bg-primary px-2 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm font-black text-white shadow-md shadow-primary/20 transition-colors hover:bg-secondary">
+                            <button type="button" id="process-order" class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-3.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-primary/20 hover:bg-secondary transition-all">
                                 Checkout
                             </button>
                         </div>
@@ -170,270 +150,336 @@
         </main>
     </div>
 
-    {{-- pop up tambah ke order kerangjang --}}
-    <div id="cart-toast"
-        class="fixed top-6 right-6 z-50 hidden min-w-[240px] sm:min-w-[280px] rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-2xl shadow-slate-950/30">
+    <!-- Toast -->
+    <div id="cart-toast" class="fixed top-6 right-6 z-50 hidden min-w-[240px] sm:min-w-[280px] rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-2xl shadow-slate-950/30">
         <p class="text-xs sm:text-sm font-semibold">Produk ditambahkan ke keranjang</p>
         <p class="text-[10px] sm:text-xs text-white/60 mt-1" data-toast-text></p>
     </div>
 
+    <!-- Split modal -->
+    <div id="split-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-modal-backdrop></div>
+        <div class="relative w-full max-w-md mx-4">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100">
+                    <h3 class="text-lg font-black text-primary">Bagi Tagihan</h3>
+                    <p class="text-xs text-secondary/60 mt-1">Pilih berapa bagian tagihan akan dibagi.</p>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <button type="button" id="split-decrease" class="h-9 w-9 rounded-lg bg-white border text-primary">-</button>
+                        <input id="split-count" type="number" min="2" max="20" value="2" class="w-20 text-center text-xl font-black border-0 bg-transparent focus:ring-0">
+                        <button type="button" id="split-increase" class="h-9 w-9 rounded-lg bg-primary text-white">+</button>
+                        <div class="ml-auto text-sm text-secondary/60">Maks 20</div>
+                    </div>
+                    <div class="text-xs text-secondary/70">Total saat ini: <span id="split-total-preview">Rp 0</span></div>
+                </div>
+                <div class="px-5 py-4 bg-slate-50 flex items-center justify-end gap-2">
+                    <button type="button" id="split-cancel" class="inline-flex items-center px-4 py-2 rounded-xl border bg-white text-sm font-bold text-primary">Batal</button>
+                    <button type="button" id="split-confirm" class="inline-flex items-center px-4 py-2 rounded-xl bg-primary text-sm font-black text-white">Lanjut</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // script jam
+        // Debounce Utility Function
+        function debounce(func, delay) {
+            let timeoutId;
+            return function(...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+
+        // Order Page Client-side Search with Debounce
         document.addEventListener('DOMContentLoaded', function() {
-            const clockEl = document.querySelector('.clock-display');
-            if (clockEl) {
-                setInterval(() => {
-                    const now = new Date();
-                    clockEl.textContent = now.toLocaleTimeString('id-ID', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                    }) + ' WIB';
-                }, 1000);
+            const searchInput = document.getElementById('order-search-input');
+            const productCards = document.querySelectorAll('[data-product-id]');
+            const searchForm = document.getElementById('order-search-form');
+
+            if (searchForm) {
+                searchForm.addEventListener('submit', (e) => e.preventDefault());
+            }
+
+            const filterProducts = () => {
+                const query = (searchInput.value || '').trim().toLowerCase();
+                let visibleCount = 0;
+
+                productCards.forEach(card => {
+                    const name = (card.dataset.productName || '').toLowerCase();
+                    if (name.includes(query)) {
+                        card.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                // Update item count badge
+                const countBadge = document.querySelector('.inline-flex.items-center.self-start.sm\\:self-center.rounded-2xl');
+                if (countBadge) {
+                    countBadge.textContent = `${visibleCount} Items`;
+                }
+
+                // Show/hide empty state
+                let emptyState = document.getElementById('products-empty-state');
+                if (visibleCount === 0) {
+                    if (!emptyState) {
+                        const grid = document.querySelector('.grid.grid-cols-2, .grid.grid-cols-3, .grid.grid-cols-4, .grid.grid-cols-5');
+                        if (grid) {
+                            emptyState = document.createElement('div');
+                            emptyState.id = 'products-empty-state';
+                            emptyState.className = 'col-span-full h-48 flex flex-col items-center justify-center text-secondary/40';
+                            emptyState.innerHTML = `
+                                <i class="fa-solid fa-magnifying-glass text-4xl mb-3"></i>
+                                <p class="font-medium text-sm">Menu tidak ditemukan</p>
+                            `;
+                            grid.appendChild(emptyState);
+                        }
+                    } else {
+                        emptyState.classList.remove('hidden');
+                    }
+                } else if (emptyState) {
+                    emptyState.classList.add('hidden');
+                }
+            };
+
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(filterProducts, 300));
+                
+                // If there's an initial search query, run filter immediately
+                if (searchInput.value) {
+                    filterProducts();
+                }
             }
         });
 
+        // Cart Logic
         document.addEventListener('DOMContentLoaded', function() {
             const cart = new Map();
-            const cartItems = document.querySelector('[data-cart-items]');
-            const cartTotal = document.querySelector('[data-cart-total]');
-            const cartSubtotal = document.querySelector('[data-cart-subtotal]');
+            const cartItemsContainer = document.querySelector('[data-cart-items]');
+            const cartTotalEl = document.querySelector('[data-cart-total]');
+            const cartSubtotalEl = document.querySelector('[data-cart-subtotal]');
             const toast = document.getElementById('cart-toast');
             const toastText = document.querySelector('[data-toast-text]');
-            const processButton = document.getElementById('process-order');
-            const clearButton = document.getElementById('clear-cart');
-            const splitBillButton = document.getElementById('split-bill');
-            let toastTimer = null;
-
-            const activeCheckout = JSON.parse(localStorage.getItem('kasir-active-checkout') || 'null');
-
-            if (activeCheckout?.items?.length) {
-                activeCheckout.items.forEach((item) => {
-                    cart.set(String(item.id), {
-                        id: String(item.id),
-                        name: item.name,
-                        price: Number(item.price || 0),
-                        quantity: Number(item.quantity || 1),
-                    });
-                });
-            }
 
             const formatCurrency = (value) => new Intl.NumberFormat('id-ID').format(value);
 
             const showToast = (message) => {
                 if (!toast || !toastText) {
+                    console.warn('Toast not available:', message);
                     return;
                 }
-
                 toastText.textContent = message;
                 toast.classList.remove('hidden');
-
-                if (toastTimer) {
-                    clearTimeout(toastTimer);
-                }
-
-                toastTimer = setTimeout(() => {
-                    toast.classList.add('hidden');
-                }, 2200);
-            };
-
-            const getCartSnapshot = () => {
-                return Array.from(cart.values()).map((item) => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    subtotal: item.quantity * item.price,
-                }));
+                setTimeout(() => toast.classList.add('hidden'), 2200);
             };
 
             const updateTotals = () => {
-                let totalItems = 0;
-                let totalPrice = 0;
-
-                cart.forEach((item) => {
-                    totalItems += item.quantity;
-                    totalPrice += item.quantity * item.price;
-                });
-
-                if (cartSubtotal) {
-                    cartSubtotal.textContent = `Rp ${formatCurrency(totalPrice)}`;
-                }
-
-                if (cartTotal) {
-                    cartTotal.textContent = `Rp ${formatCurrency(totalPrice)}`;
-                }
-
-                return {
-                    totalItems,
-                    totalPrice
-                };
+                let total = 0;
+                cart.forEach(item => total += item.price * item.quantity);
+                if (cartSubtotalEl) cartSubtotalEl.textContent = `Rp ${formatCurrency(total)}`;
+                if (cartTotalEl) cartTotalEl.textContent = `Rp ${formatCurrency(total)}`;
             };
 
             const renderCart = () => {
-                if (!cartItems) {
-                    return;
-                }
-
                 if (cart.size === 0) {
-                    cartItems.innerHTML = `
+                    cartItemsContainer.innerHTML = `
                         <div class="flex flex-col items-center justify-center text-secondary/40 space-y-3 py-12">
                             <i class="fa-solid fa-cart-shopping text-5xl"></i>
-                            <p class="font-bold text-sm text-center">Belum ada produk di keranjang</p>
+                            <p class="font-bold text-xs sm:text-sm text-center">Belum ada produk di keranjang</p>
                         </div>
                     `;
                     updateTotals();
                     return;
                 }
 
-                cartItems.innerHTML = Array.from(cart.values()).map((item) => `
-                    <div class="flex items-center gap-4 rounded-[22px] border border-slate-200 bg-slate-100 p-3.5">
-                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-sm font-black text-primary ring-1 ring-slate-200">
-                            ${String(item.name || 'P')
-                                .trim()
-                                .split(/\s+/)
-                                .filter(Boolean)
-                                .slice(0, 2)
-                                .map((part) => part.charAt(0))
-                                .join('')
-                                .toUpperCase()}
-                        </div>
-
-                        <div class="min-w-0 flex-1">
-                            <h3 class="truncate text-sm font-black text-primary">${item.name}</h3>
-                            <p class="mt-0.5 text-xs font-semibold text-secondary/55">Single item</p>
-
-                            <div class="mt-2 inline-flex items-center rounded-2xl bg-white px-2 py-1 shadow-sm ring-1 ring-slate-200">
-                                <button type="button" class="h-7 w-7 rounded-xl bg-slate-100 text-secondary hover:text-primary transition-colors" data-cart-action="decrease" data-product-id="${item.id}">
-                                    <i class="fa-solid fa-minus text-[10px]"></i>
-                                </button>
-                                <span class="min-w-10 px-2 text-center text-xs font-black text-primary">${item.quantity}</span>
-                                <button type="button" class="h-7 w-7 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors" data-cart-action="increase" data-product-id="${item.id}">
-                                    <i class="fa-solid fa-plus text-[10px]"></i>
+                let html = '';
+                cart.forEach(item => {
+                    html += `
+                        <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100">
+                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xs font-black text-primary border border-slate-200">
+                                ${item.name.substring(0,2).toUpperCase()}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-bold text-primary truncate">${item.name}</p>
+                                <div class="flex items-center gap-1.5 mt-1.5">
+                                    <button data-cart-action="decrease" data-product-id="${item.id}" class="w-5 h-5 rounded-lg bg-white border border-slate-200 text-xs font-bold flex items-center justify-center hover:bg-slate-100 transition-colors">-</button>
+                                    <span class="font-bold text-xs px-1 text-primary">${item.quantity}</span>
+                                    <button data-cart-action="increase" data-product-id="${item.id}" class="w-5 h-5 rounded-lg bg-primary text-white text-xs font-bold flex items-center justify-center hover:bg-secondary transition-colors">+</button>
+                                </div>
+                            </div>
+                            <div class="text-right flex flex-col items-end justify-between h-10">
+                                <p class="font-bold text-xs text-primary">Rp ${formatCurrency(item.price * item.quantity)}</p>
+                                <button data-cart-action="remove" data-product-id="${item.id}" class="text-slate-400 hover:text-red-500 transition-colors">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             </div>
                         </div>
-
-                        <div class="text-right">
-                            <p class="text-sm font-black text-primary">Rp ${formatCurrency(item.price * item.quantity)}</p>
-                            <button type="button" class="mt-2 text-xs font-bold text-secondary/55 hover:text-red-500 transition-colors" data-cart-action="remove" data-product-id="${item.id}">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
+                    `;
+                });
+                cartItemsContainer.innerHTML = html;
                 updateTotals();
             };
 
-            document.querySelectorAll('[data-add-to-cart]').forEach((card) => {
+            document.querySelectorAll('[data-add-to-cart]').forEach(card => {
                 card.addEventListener('click', function() {
-                    const id = String(this.dataset.productId);
+                    const id = this.dataset.productId;
                     const name = this.dataset.productName;
-                    const price = Number(this.dataset.productPrice || 0);
+                    const price = Number(this.dataset.productPrice);
+                    const stock = Number(this.dataset.productStock || 0);
+
+                    if (stock <= 0) {
+                        return showToast(`${name} stok habis`);
+                    }
 
                     if (cart.has(id)) {
-                        cart.get(id).quantity += 1;
+                        const item = cart.get(id);
+                        if (item.quantity >= item.stock) {
+                            return showToast(`Maksimal ${item.stock} untuk ${name}`);
+                        }
+                        item.quantity++;
                     } else {
-                        cart.set(id, {
-                            id,
-                            name,
-                            price,
-                            quantity: 1
-                        });
+                        cart.set(id, { id, name, price, stock, quantity: 1 });
                     }
 
                     renderCart();
-                    showToast(`${name} masuk keranjang`);
+                    showToast(name + ' masuk keranjang');
                 });
             });
 
-            document.addEventListener('click', function(event) {
-                const actionButton = event.target.closest('[data-cart-action]');
-
-                if (!actionButton) {
-                    return;
-                }
-
-                const id = String(actionButton.dataset.productId);
-                const action = actionButton.dataset.cartAction;
+            document.addEventListener('click', e => {
+                const btn = e.target.closest('[data-cart-action]');
+                if (!btn) return;
+                const id = btn.dataset.productId;
+                const action = btn.dataset.cartAction;
                 const item = cart.get(id);
-
-                if (!item) {
-                    return;
-                }
+                if (!item) return;
 
                 if (action === 'increase') {
-                    item.quantity += 1;
-                }
-
-                if (action === 'decrease') {
-                    item.quantity -= 1;
-                    if (item.quantity <= 0) {
-                        cart.delete(id);
+                    if (item.quantity >= item.stock) {
+                        return showToast(`Maksimal ${item.stock} untuk ${item.name}`);
                     }
+                    item.quantity++;
                 }
-
-                if (action === 'remove') {
-                    cart.delete(id);
+                if (action === 'decrease') {
+                    item.quantity--;
+                    if (item.quantity <= 0) cart.delete(id);
                 }
+                if (action === 'remove') cart.delete(id);
 
                 renderCart();
             });
 
-            if (clearButton) {
-                clearButton.addEventListener('click', function() {
-                    cart.clear();
-                    localStorage.removeItem('kasir-active-checkout');
-                    renderCart();
-                });
-            }
+            document.getElementById('clear-cart').addEventListener('click', () => { cart.clear(); renderCart(); });
+            document.getElementById('process-order').addEventListener('click', () => {
+                if (cart.size === 0) return showToast('Keranjang kosong');
 
-            if (processButton) {
-                processButton.addEventListener('click', function() {
-                    if (cart.size === 0) {
-                        showToast('Keranjang masih kosong');
-                        return;
+                const items = Array.from(cart.values()).map(i => ({
+                    id: i.id,
+                    product_id: i.id,
+                    name: i.name,
+                    product_name: i.name,
+                    price: Number(i.price || 0),
+                    quantity: Number(i.quantity || 0),
+                    subtotal: Number(i.price || 0) * Number(i.quantity || 0),
+                }));
+
+                const totalItems = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
+                const totalPrice = items.reduce((s, it) => s + Number(it.subtotal || 0), 0);
+
+                const payload = {
+                    id: `order-${Date.now()}`,
+                    created_at: new Date().toISOString(),
+                    items,
+                    totalItems,
+                    totalPrice,
+                    totalPriceDisplay: `Rp ${new Intl.NumberFormat('id-ID').format(totalPrice)}`,
+                };
+
+                localStorage.setItem('kasir-active-checkout', JSON.stringify(payload));
+                window.location.href = "{{ route('kasir.payment') }}";
+            });
+
+            // Split Bill: open modal to choose split count, then compute and redirect
+            (function() {
+                const splitBtn = document.getElementById('split-bill');
+                const modal = document.getElementById('split-modal');
+                const backdrop = modal?.querySelector('[data-modal-backdrop]');
+                const input = document.getElementById('split-count');
+                const inc = document.getElementById('split-increase');
+                const dec = document.getElementById('split-decrease');
+                const cancel = document.getElementById('split-cancel');
+                const confirm = document.getElementById('split-confirm');
+                const preview = document.getElementById('split-total-preview');
+
+                const openModal = () => {
+                    if (!modal) return;
+                    // ensure cart not empty
+                    if (cart.size === 0) return showToast('Keranjang kosong');
+                    // set default
+                    input.value = 2;
+                    updatePreviewTotal();
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                };
+
+                const closeModal = () => {
+                    if (!modal) return;
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                };
+
+                const clamp = (v) => Math.min(20, Math.max(2, Number(v) || 2));
+
+                const updatePreviewTotal = () => {
+                    let total = 0;
+                    cart.forEach(item => total += item.price * item.quantity);
+                    if (preview) preview.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(total)}`;
+                };
+
+                if (inc) inc.addEventListener('click', () => { input.value = clamp(Number(input.value) + 1); });
+                if (dec) dec.addEventListener('click', () => { input.value = clamp(Number(input.value) - 1); });
+                if (input) input.addEventListener('input', () => { input.value = clamp(input.value); });
+                if (backdrop) backdrop.addEventListener('click', closeModal);
+                if (cancel) cancel.addEventListener('click', closeModal);
+
+                if (confirm) confirm.addEventListener('click', () => {
+                    const parts = clamp(Number(input.value));
+                    let total = 0;
+                    cart.forEach(item => total += item.price * item.quantity);
+
+                    const base = Math.floor(total / parts);
+                    let remainder = total - base * parts;
+                    const splits = [];
+                    for (let i = 0; i < parts; i++) {
+                        let amt = base + (remainder > 0 ? 1 : 0);
+                        if (remainder > 0) remainder--;
+                        splits.push({ index: i + 1, amount: amt });
                     }
 
-                    const snapshot = getCartSnapshot();
-                    const totals = updateTotals();
-
-                    localStorage.setItem('kasir-active-checkout', JSON.stringify({
-                        id: `order-${Date.now()}`,
-                        status: 'pending_payment',
-                        created_at: new Date().toISOString(),
-                        items: snapshot,
-                        totalItems: totals.totalItems,
-                        totalPrice: totals.totalPrice,
+                    const items = Array.from(cart.values()).map(i => ({
+                        id: i.id,
+                        product_id: i.id,
+                        name: i.name,
+                        product_name: i.name,
+                        price: Number(i.price || 0),
+                        quantity: Number(i.quantity || 0),
+                        subtotal: Number(i.price || 0) * Number(i.quantity || 0),
                     }));
+                    const totalItems = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
+                    const totalPrice = items.reduce((s, it) => s + Number(it.subtotal || 0), 0);
 
-                    window.location.href = "{{ route('kasir.payment') }}";
-                });
-            }
-
-            if (splitBillButton) {
-                splitBillButton.addEventListener('click', function() {
-                    if (cart.size === 0) {
-                        showToast('Keranjang masih kosong');
-                        return;
-                    }
-
-                    const snapshot = getCartSnapshot();
-                    const totals = updateTotals();
-
-                    localStorage.setItem('kasir-split-checkout', JSON.stringify({
-                        id: `split-${Date.now()}`,
-                        status: 'pending_split',
-                        created_at: new Date().toISOString(),
-                        items: snapshot,
-                        totalItems: totals.totalItems,
-                        totalPrice: totals.totalPrice,
-                    }));
-
+                    localStorage.setItem('kasir-split-checkout', JSON.stringify({ items, totalItems, totalPrice: totalPrice, total, splits }));
+                    closeModal();
                     window.location.href = "{{ route('kasir.split-bill') }}";
                 });
-            }
+
+                if (splitBtn) splitBtn.addEventListener('click', openModal);
+            })();
 
             renderCart();
         });

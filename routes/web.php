@@ -1,16 +1,28 @@
 <?php
 
+use App\Exports\ProductTemplateExport;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\Kasir\TransactionController;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('kasir.dashboard');
+    }
+
+    return redirect()->route('access');
+});
+
+Route::get('/home', function () {
     if (Auth::check()) {
         return redirect()->route('kasir.dashboard');
     }
@@ -25,6 +37,10 @@ Route::get('/akses', function () {
 
     return view('auth.method');
 })->name('access');
+
+Route::middleware('auth')->get('/admin/products/template', function () {
+    return Excel::download(new ProductTemplateExport(), 'template-produk.xlsx');
+})->name('products.template');
 
 // Login
 Route::get('/login', function () {
@@ -48,14 +64,16 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 
 Route::post('/admin/login', function (Request $request) {
     $credentials = $request->validate([
-        'email' => ['required', 'email'],
+        'username' => ['required', 'string'],
         'password' => ['required', 'string'],
     ]);
 
+    $credentials['role'] = User::ROLE_ADMIN;
+
     if (! Auth::attempt($credentials, $request->boolean('remember'))) {
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+            'username' => 'Username atau password salah.',
+        ])->onlyInput('username');
     }
 
     $request->session()->regenerate();
@@ -65,14 +83,16 @@ Route::post('/admin/login', function (Request $request) {
 
 Route::post('/finance/login', function (Request $request) {
     $credentials = $request->validate([
-        'email' => ['required', 'email'],
+        'username' => ['required', 'string'],
         'password' => ['required', 'string'],
     ]);
 
+    $credentials['role'] = User::ROLE_FINANCE;
+
     if (! Auth::attempt($credentials, $request->boolean('remember'))) {
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+            'username' => 'Username atau password salah.',
+        ])->onlyInput('username');
     }
 
     $request->session()->regenerate();
@@ -98,6 +118,21 @@ Route::middleware('auth')->prefix('kasir')->name('kasir.')->group(function () {
     Route::post('/vouchers/validate', [TransactionController::class, 'validateVoucher'])->name('vouchers.validate');
     Route::get('/histori/data', [TransactionController::class, 'indexHistory'])->name('histori.data');
     Route::get('/histori/{id}/data', [TransactionController::class, 'showHistory'])->name('histori.show');
+    Route::get('/transfer-proofs/{filename}', function (string $filename) {
+        $filename = basename($filename);
+        $path = 'transfer-proofs/' . $filename;
+
+        abort_unless(Storage::disk('public')->exists($path), 404);
+
+        $full = storage_path('app/public/' . $path);
+        $mime = Storage::disk('public')->mimeType($path) ?? 'application/octet-stream';
+
+        // Serve inline so browser opens in a new tab instead of forcing download
+        return response()->file($full, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    })->where('filename', '[A-Za-z0-9._-]+')->name('transfer-proofs.show');
 });
 
 Route::get('/nota/{order_code}', [TransactionController::class, 'showNota'])->name('kasir.nota.publik');
@@ -174,11 +209,32 @@ Route::middleware('auth')->get('/kasir/histori/{id}', function (string $id) {
     ]);
 })->where('id', '[^/]+')->name('kasir.histori.detail');
 
-Route::middleware('auth')->get('/kasir/stok', function () {
-    $categories = \App\Models\Category::all();
-    $products = \App\Models\Product::with('category')->get();
+Route::middleware('auth')->get('/kasir/stok', function (Illuminate\Http\Request $request) {
+    $selectedCategoryId = $request->query('category');
     
-    return view('kasir.stok', compact('categories', 'products'));
+    $categories = \App\Models\Category::withCount(['products' => function ($q) {
+        $q->whereNull('deleted_at'); // Only count non-soft-deleted products
+    }])->get();
+    
+    $query = \App\Models\Product::with('category');
+    if ($selectedCategoryId) {
+        $query->where('category_id', $selectedCategoryId);
+    }
+    
+    $products = $query->paginate(10)->withQueryString();
+    
+    $totalProducts = \App\Models\Product::count();
+    $availableProducts = \App\Models\Product::where('is_available', true)->count();
+    $unavailableProducts = $totalProducts - $availableProducts;
+    
+    return view('kasir.stok', compact(
+        'categories', 
+        'products', 
+        'totalProducts', 
+        'availableProducts', 
+        'unavailableProducts', 
+        'selectedCategoryId'
+    ));
 })->name('kasir.stok');
 
 Route::middleware('auth')->post('/kasir/stok/{product}/toggle', function (\App\Models\Product $product) {

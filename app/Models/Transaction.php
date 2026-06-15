@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivity;
 
 class Transaction extends Model
 {
+    use LogsActivity;
     protected $guarded = [];
+
+    protected $appends = [
+        'transfer_proof_url',
+    ];
 
     public function voucher()
     {
@@ -33,4 +39,15 @@ class Transaction extends Model
         'transfer_proof_path' => 'string',
         'payment_validation_status' => 'string',
     ];
+
+    public function getTransferProofUrlAttribute(): ?string
+    {
+        if (blank($this->transfer_proof_path)) {
+            return null;
+        }
+
+        return route('kasir.transfer-proofs.show', [
+            'filename' => basename($this->transfer_proof_path),
+        ]);
+    }
 }

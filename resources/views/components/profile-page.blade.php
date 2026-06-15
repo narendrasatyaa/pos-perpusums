@@ -1,8 +1,8 @@
 <x-app-layout :title="'Profil Pengguna'">
-    <div class="flex h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary">
+    <div class="flex flex-col h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary">
         <x-sidebar />
 
-        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <main class="flex-1 flex flex-col overflow-hidden">
             <header class="bg-white h-24 px-10 flex items-center justify-between shadow-sm z-10 rounded-b-3xl mx-4 mt-4 border border-slate-100 flex-shrink-0">
                 <div class="flex flex-col space-y-1">
                     <h1 class="text-2xl font-extrabold text-primary">
@@ -35,7 +35,7 @@
                             </div>
                             
                             <h2 class="text-2xl font-extrabold text-primary mb-1">{{ auth()->user()->name ?? 'Nama Pengguna' }}</h2>
-                            <p class="text-sm font-semibold text-secondary/60 mb-6">{{ auth()->user()->email ?? 'email@example.com' }}</p>
+                            <p class="text-sm font-semibold text-secondary/60 mb-6">{{ auth()->user()->email ?? 'email@ums.ac.id' }}</p>
                             <div class="w-full space-y-4 border-t border-slate-100 pt-6">
                                 {{-- <div class="flex justify-between items-center text-sm">
                                     <span class="text-secondary/60 font-semibold">Bergabung Pada</span>

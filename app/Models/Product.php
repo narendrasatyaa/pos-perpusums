@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\LogsActivity;
 
 class Product extends Model
 {
+    use LogsActivity;
+    use HasFactory;
+    use SoftDeletes;
+
     protected $guarded = [];
 
     public function category()
@@ -16,5 +23,18 @@ class Product extends Model
     public function transactionItems()
     {
         return $this->hasMany(TransactionItem::class, 'product_id', 'id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (empty($product->sku)) {
+                $maxId = \DB::table('products')->max('id') ?? 0;
+                $next = $maxId + 1;
+                $product->sku = sprintf('PRD-%06d', $next);
+            }
+        });
     }
 }

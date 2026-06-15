@@ -36,14 +36,17 @@ class VoucherForm
                         'percent' => 'Persentase (%)',
                         'nominal' => 'Nominal (Rp)',
                     ])
-                    ->native(false),
+                    ->native(false)
+                    ->live(),
                 TextInput::make('discount_value')
                     ->label('Nilai Diskon')
                     ->required()
                     ->numeric()
                     ->minValue(1)
                     ->maxValue(fn (callable $get) => $get('discount_type') === 'percent' ? 100 : 999999999)
-                    ->maxLength(3)
+                    ->maxLength(fn (callable $get) => $get('discount_type') === 'percent' ? 3 : null)
+                    ->prefix(fn (callable $get) => $get('discount_type') === 'nominal' ? 'Rp' : null)
+                    ->suffix(fn (callable $get) => $get('discount_type') === 'percent' ? '%' : null)
                     ->helperText('Untuk tipe Persentase, maksimal 100%.')
                     ->rules([
                         fn (callable $get) => $get('discount_type') === 'percent'
@@ -74,10 +77,12 @@ class VoucherForm
                     ->dehydrated(false),
                 DateTimePicker::make('starts_at')
                     ->label('Mulai Berlaku')
-                    ->seconds(false),
+                    ->seconds(false)
+                    ->required(),
                 DateTimePicker::make('expires_at')
                     ->label('Tanggal Kadaluarsa')
-                    ->seconds(false),
+                    ->seconds(false)
+                    ->required(),
                 Toggle::make('is_active')
                     ->label('Aktif')
                     ->required()

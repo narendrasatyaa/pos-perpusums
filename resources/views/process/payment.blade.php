@@ -142,16 +142,16 @@
                                 <div class="grid grid-cols-4 gap-2 mb-3">
                                     <button type="button"
                                         class="py-2 rounded-xl bg-slate-100 font-bold text-primary text-[13px] quick-btn"
-                                        data-val="10000">10k</button>
+                                        data-val="10000">10.000</button>
                                     <button type="button"
                                         class="py-2 rounded-xl bg-slate-100 font-bold text-primary text-[13px] quick-btn"
-                                        data-val="20000">20k</button>
+                                        data-val="20000">20.000</button>
                                     <button type="button"
                                         class="py-2 rounded-xl bg-slate-100 font-bold text-primary text-[13px] quick-btn"
-                                        data-val="50000">50k</button>
+                                        data-val="50000">50.000</button>
                                     <button type="button"
                                         class="py-2 rounded-xl bg-slate-100 font-bold text-primary text-[13px] quick-btn"
-                                        data-val="100000">100k</button>
+                                        data-val="100000">100.000</button>
                                 </div>
 
                                 <div class="grid grid-cols-3 gap-2">

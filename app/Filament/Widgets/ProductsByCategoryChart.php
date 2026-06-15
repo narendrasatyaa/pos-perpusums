@@ -9,7 +9,7 @@ class ProductsByCategoryChart extends ChartWidget
 {
     protected ?string $heading = 'Produk per Kategori';
     protected ?string $description = 'Distribusi jumlah produk di setiap kategori';
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 4;
     protected int|string|array $columnSpan = 1;
 
     protected function getData(): array

@@ -10,6 +10,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class LowStockProducts extends BaseWidget
 {
     protected static ?int $sort = 4;
+    protected int | string | array $columnSpan = 2;
     protected static ?string $heading = 'Produk Stok Menipis';
 
     public function table(Table $table): Table
@@ -17,7 +18,7 @@ class LowStockProducts extends BaseWidget
         return $table
             ->query(
                 Product::query()
-                    ->where('stock', '<=', 10)
+                    ->whereColumn('stock', '<=', 'min_stock')
                     ->orderBy('stock', 'asc')
             )
             ->columns([
@@ -26,16 +27,16 @@ class LowStockProducts extends BaseWidget
                     ->searchable(),
                 Tables\Columns\TextColumn::make('stock')
                     ->label('Stok Tersisa')
-                    ->numeric()
+                    ->formatStateUsing(fn ($state, $record) => $state . ' ' . $record->unit)
                     ->badge()
                     ->color(fn (string $state): string => match (true) {
-                        $state == 0 => 'danger',
+                        intval($state) == 0 => 'danger',
                         default => 'warning',
                     }),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
                     ->money('IDR'),
             ])
-            ->paginated(false);
+            ->paginated();
     }
 }
