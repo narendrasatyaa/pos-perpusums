@@ -38,6 +38,7 @@ class Transaction extends Model
         'payment_method' => 'string',
         'transfer_proof_path' => 'string',
         'payment_validation_status' => 'string',
+        'split_data' => 'array',
     ];
 
     public function getTransferProofUrlAttribute(): ?string
