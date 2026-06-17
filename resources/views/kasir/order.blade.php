@@ -259,7 +259,13 @@
 
         // Cart Logic
         document.addEventListener('DOMContentLoaded', function() {
-            const cart = new Map();
+            const savedCart = JSON.parse(localStorage.getItem('kasir-cart-items') || '[]');
+            const cart = new Map(savedCart);
+            
+            const saveCartToLocalStorage = () => {
+                localStorage.setItem('kasir-cart-items', JSON.stringify(Array.from(cart.entries())));
+            };
+
             const cartItemsContainer = document.querySelector('[data-cart-items]');
             const cartTotalEl = document.querySelector('[data-cart-total]');
             const cartSubtotalEl = document.querySelector('[data-cart-subtotal]');
@@ -286,6 +292,7 @@
             };
 
             const renderCart = () => {
+                saveCartToLocalStorage();
                 if (cart.size === 0) {
                     cartItemsContainer.innerHTML = `
                         <div class="flex flex-col items-center justify-center text-secondary/40 space-y-3 py-12">
@@ -404,81 +411,29 @@
                 window.location.href = "{{ route('kasir.payment') }}";
             });
 
-            // Split Bill: open modal to choose split count, then compute and redirect
+            // Split Bill: redirect to split page with cart items
             (function() {
                 const splitBtn = document.getElementById('split-bill');
-                const modal = document.getElementById('split-modal');
-                const backdrop = modal?.querySelector('[data-modal-backdrop]');
-                const input = document.getElementById('split-count');
-                const inc = document.getElementById('split-increase');
-                const dec = document.getElementById('split-decrease');
-                const cancel = document.getElementById('split-cancel');
-                const confirm = document.getElementById('split-confirm');
-                const preview = document.getElementById('split-total-preview');
+                if (splitBtn) {
+                    splitBtn.addEventListener('click', () => {
+                        if (cart.size === 0) return showToast('Keranjang kosong');
+                        
+                        const items = Array.from(cart.values()).map(i => ({
+                            id: i.id,
+                            product_id: i.id,
+                            name: i.name,
+                            product_name: i.name,
+                            price: Number(i.price || 0),
+                            quantity: Number(i.quantity || 0),
+                            subtotal: Number(i.price || 0) * Number(i.quantity || 0),
+                        }));
+                        const totalItems = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
+                        const totalPrice = items.reduce((s, it) => s + Number(it.subtotal || 0), 0);
 
-                const openModal = () => {
-                    if (!modal) return;
-                    // ensure cart not empty
-                    if (cart.size === 0) return showToast('Keranjang kosong');
-                    // set default
-                    input.value = 2;
-                    updatePreviewTotal();
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                };
-
-                const closeModal = () => {
-                    if (!modal) return;
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                };
-
-                const clamp = (v) => Math.min(20, Math.max(2, Number(v) || 2));
-
-                const updatePreviewTotal = () => {
-                    let total = 0;
-                    cart.forEach(item => total += item.price * item.quantity);
-                    if (preview) preview.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(total)}`;
-                };
-
-                if (inc) inc.addEventListener('click', () => { input.value = clamp(Number(input.value) + 1); });
-                if (dec) dec.addEventListener('click', () => { input.value = clamp(Number(input.value) - 1); });
-                if (input) input.addEventListener('input', () => { input.value = clamp(input.value); });
-                if (backdrop) backdrop.addEventListener('click', closeModal);
-                if (cancel) cancel.addEventListener('click', closeModal);
-
-                if (confirm) confirm.addEventListener('click', () => {
-                    const parts = clamp(Number(input.value));
-                    let total = 0;
-                    cart.forEach(item => total += item.price * item.quantity);
-
-                    const base = Math.floor(total / parts);
-                    let remainder = total - base * parts;
-                    const splits = [];
-                    for (let i = 0; i < parts; i++) {
-                        let amt = base + (remainder > 0 ? 1 : 0);
-                        if (remainder > 0) remainder--;
-                        splits.push({ index: i + 1, amount: amt });
-                    }
-
-                    const items = Array.from(cart.values()).map(i => ({
-                        id: i.id,
-                        product_id: i.id,
-                        name: i.name,
-                        product_name: i.name,
-                        price: Number(i.price || 0),
-                        quantity: Number(i.quantity || 0),
-                        subtotal: Number(i.price || 0) * Number(i.quantity || 0),
-                    }));
-                    const totalItems = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
-                    const totalPrice = items.reduce((s, it) => s + Number(it.subtotal || 0), 0);
-
-                    localStorage.setItem('kasir-split-checkout', JSON.stringify({ items, totalItems, totalPrice: totalPrice, total, splits }));
-                    closeModal();
-                    window.location.href = "{{ route('kasir.split-bill') }}";
-                });
-
-                if (splitBtn) splitBtn.addEventListener('click', openModal);
+                        localStorage.setItem('kasir-split-checkout', JSON.stringify({ items, totalItems, totalPrice, total: totalPrice }));
+                        window.location.href = "{{ route('kasir.split-bill') }}";
+                    });
+                }
             })();
 
             renderCart();

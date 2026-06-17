@@ -215,6 +215,17 @@
 
             document.getElementById('order-id').textContent = checkout.order_id;
 
+            if (checkout.isSequentialSplit && checkout.currentPersonLabel) {
+                const summaryTitle = Array.from(document.querySelectorAll('h2')).find(el => el.textContent.includes('Order Summary'));
+                if (summaryTitle) {
+                    summaryTitle.textContent = `Summary (${checkout.currentPersonLabel})`;
+                }
+                const processTitle = Array.from(document.querySelectorAll('h2')).find(el => el.textContent.includes('Process Payment'));
+                if (processTitle) {
+                    processTitle.textContent = `Payment (${checkout.currentPersonLabel})`;
+                }
+            }
+
             const formatCurrency = (val) => new Intl.NumberFormat('id-ID').format(val);
             let subtotal = checkout.totalPrice || 0;
             let discount = 0;
@@ -457,6 +468,9 @@
                     payload.append('discount_type', appliedVoucher ? `voucher_${appliedVoucher.discount_type}` : 'none');
                     payload.append('discount_value', String(discount));
                     payload.append('items', JSON.stringify(checkout.items));
+                    if (checkout.splitBill) {
+                        payload.append('split_data', JSON.stringify(checkout.splitBill));
+                    }
 
                     if (activePaymentMethod === 'qris_static' && transferProofInput.files.length) {
                         payload.append('transfer_proof', transferProofInput.files[0]);
@@ -493,6 +507,9 @@
                             quantity: Number(item.quantity || 0),
                             subtotal: Number(item.subtotal || (Number(item.price || 0) * Number(item.quantity || 0))),
                         })),
+                        isSequentialSplit: checkout.isSequentialSplit || false,
+                        currentPersonLabel: checkout.currentPersonLabel || '',
+                        split_data: trx.split_data || checkout.splitBill || null,
                     };
 
                     localStorage.setItem('kasir-last-receipt', JSON.stringify(lastReceipt));

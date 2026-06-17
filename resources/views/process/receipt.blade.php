@@ -339,27 +339,78 @@
                 if (printPaid) printPaid.textContent = formatNumber(paid);
                 if (printChange) printChange.textContent = formatNumber(change);
 
-                if (receiptItems) {
-                    receiptItems.innerHTML = items.map((item) => `
-                    <div class="flex justify-between items-start text-sm">
-                        <div>
-                            <p class="font-bold text-primary">${item.name || item.product_name || 'Item'}</p>
-                            <p class="text-[11px] text-slate-500">${Number(item.quantity || 0)} x ${formatCurrency(Number(item.price || 0))}</p>
+                const splitData = receipt.split_data || receipt.splitBill || null;
+                
+                if (splitData && splitData.people && splitData.people.length > 0) {
+                    if (receiptItems) {
+                        receiptItems.innerHTML = splitData.people.map((person) => {
+                            const personItemsHtml = person.items.map((item) => `
+                                <div class="flex justify-between items-start text-xs pl-2">
+                                    <div>
+                                        <p class="font-semibold text-primary/80">${item.name || item.product_name || 'Item'}</p>
+                                        <p class="text-[10px] text-slate-500">${Number(item.quantity || 0)} x ${formatCurrency(Number(item.price || 0))}</p>
+                                    </div>
+                                    <p class="font-semibold text-primary/80">${formatCurrency(Number(item.subtotal || 0))}</p>
+                                </div>
+                            `).join('');
+                            
+                            return `
+                                <div class="space-y-2 border border-slate-100 rounded-xl p-3 bg-slate-50/50">
+                                    <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-1">
+                                        <span class="text-xs font-bold text-primary">${person.personLabel}</span>
+                                        <span class="text-xs font-bold text-primary">${formatCurrency(person.total)}</span>
+                                    </div>
+                                    <div class="space-y-2">
+                                        ${personItemsHtml}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('<div class="border-t-[1.5px] border-dashed border-slate-200 my-4"></div>');
+                    }
+                    
+                    if (printItems) {
+                        printItems.innerHTML = splitData.people.map((person) => {
+                            const personItemsHtml = person.items.map((item) => `
+                                 <div style="display: flex; justify-content: space-between; padding-left: 8px;">
+                                     <span>${Number(item.quantity || 0)} ${item.name || item.product_name || 'Item'}</span>
+                                     <span>${formatNumber(Number(item.subtotal || 0))}</span>
+                                 </div>
+                            `).join('');
+                            
+                            return `
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-weight: bold; border-b: 1px dashed #000; padding-bottom: 2px; margin-bottom: 4px;">
+                                        <span>${person.personLabel}</span>
+                                        <span>${formatNumber(person.total)}</span>
+                                    </div>
+                                    ${personItemsHtml}
+                                </div>
+                            `;
+                        }).join('<div style="border-top: 1px dashed #000; margin: 8px 0;"></div>');
+                    }
+                } else {
+                    if (receiptItems) {
+                        receiptItems.innerHTML = items.map((item) => `
+                        <div class="flex justify-between items-start text-sm">
+                            <div>
+                                <p class="font-bold text-primary">${item.name || item.product_name || 'Item'}</p>
+                                <p class="text-[11px] text-slate-500">${Number(item.quantity || 0)} x ${formatCurrency(Number(item.price || 0))}</p>
+                            </div>
+                            <p class="font-bold text-primary">${formatCurrency(Number(item.subtotal || 0))}</p>
                         </div>
-                        <p class="font-bold text-primary">${formatCurrency(Number(item.subtotal || 0))}</p>
-                    </div>
-                `).join('');
-                }
+                    `).join('');
+                    }
 
-                if (printItems) {
-                    printItems.innerHTML = items.map((item) => `
-                     <div style="margin-bottom: 2px;">
-                         <div style="display: flex; justify-content: space-between;">
-                             <span style="font-weight: 600;">${Number(item.quantity || 0)} ${item.name || item.product_name || 'Item'}</span>
-                             <span>${formatNumber(Number(item.subtotal || 0))}</span>
+                    if (printItems) {
+                        printItems.innerHTML = items.map((item) => `
+                         <div style="margin-bottom: 2px;">
+                             <div style="display: flex; justify-content: space-between;">
+                                 <span style="font-weight: 600;">${Number(item.quantity || 0)} ${item.name || item.product_name || 'Item'}</span>
+                                 <span>${formatNumber(Number(item.subtotal || 0))}</span>
+                             </div>
                          </div>
-                     </div>
-                `).join('');
+                    `).join('');
+                    }
                 }
 
                 printButton?.addEventListener('click', function() {
@@ -408,6 +459,7 @@
                         quantity: Number(item.quantity || 0),
                         subtotal: Number(item.subtotal || 0),
                     })),
+                    split_data: order.split_data || null,
                 };
             };
 

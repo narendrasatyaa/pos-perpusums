@@ -45,21 +45,49 @@
 
                 <!-- Items List -->
                 <div class="space-y-5">
-                    @foreach ($transaction->items as $item)
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1 pr-4">
-                                <h4
-                                    class="text-[13px] font-black text-slate-800 leading-tight uppercase tracking-tight">
-                                    {{ $item->product_name }}</h4>
-                                <p class="text-[11px] text-slate-500 font-bold mt-0.5">
-                                    {{ $item->quantity }} x {{ number_format($item->price, 0, ',', '.') }}
-                                </p>
+                    @if (!empty($transaction->split_data) && is_array($transaction->split_data) && !empty($transaction->split_data['people']))
+                        @foreach ($transaction->split_data['people'] as $person)
+                            <div class="space-y-3 border border-slate-100 rounded-2xl p-3 bg-slate-50/50">
+                                <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-1 font-black text-slate-800 text-xs uppercase">
+                                    <span>{{ $person['personLabel'] }}</span>
+                                    <span>{{ number_format($person['total'], 0, ',', '.') }}</span>
+                                </div>
+                                <div class="space-y-3">
+                                    @foreach ($person['items'] as $item)
+                                        <div class="flex justify-between items-start pl-2">
+                                            <div class="flex-1 pr-4">
+                                                <h4 class="text-[12px] font-bold text-slate-700 leading-tight uppercase tracking-tight">
+                                                    {{ $item['name'] ?? ($item['product_name'] ?? 'Item') }}
+                                                </h4>
+                                                <p class="text-[10px] text-slate-500 font-bold mt-0.5">
+                                                    {{ $item['quantity'] }} x {{ number_format($item['price'], 0, ',', '.') }}
+                                                </p>
+                                            </div>
+                                            <span class="text-[12px] font-bold text-slate-700 tracking-tighter">
+                                                {{ number_format($item['subtotal'], 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                            <span class="text-[13px] font-black text-slate-800 tracking-tighter">
-                                {{ number_format($item->subtotal, 0, ',', '.') }}
-                            </span>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    @else
+                        @foreach ($transaction->items as $item)
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1 pr-4">
+                                    <h4
+                                        class="text-[13px] font-black text-slate-800 leading-tight uppercase tracking-tight">
+                                        {{ $item->product_name }}</h4>
+                                    <p class="text-[11px] text-slate-500 font-bold mt-0.5">
+                                        {{ $item->quantity }} x {{ number_format($item->price, 0, ',', '.') }}
+                                    </p>
+                                </div>
+                                <span class="text-[13px] font-black text-slate-800 tracking-tighter">
+                                    {{ number_format($item->subtotal, 0, ',', '.') }}
+                                </span>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
 
                 <div class="border-t border-dashed border-slate-200 my-6"></div>

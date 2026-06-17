@@ -14,63 +14,90 @@
 					</div>
 					<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 						<div class="xl:col-span-2 space-y-4">
-							<div class="border-b border-slate-200 bg-white px-5 py-4">
-								<div class="flex flex-wrap items-end gap-4">
-								<div>
-									<label for="split-people" class="block text-sm font-bold text-primary">Jumlah Orang</label>
-									<p class="text-xs text-secondary/60 mt-1">Atur jumlah orang untuk membagi item.</p>
-								</div>
-
-								<div class="inline-flex items-center border border-slate-200 bg-slate-50 px-2 py-2">
-									<button type="button" id="decrease-people"
-										class="h-8 w-8 bg-white text-primary hover:bg-slate-100 transition-colors">
-										<i class="fa-solid fa-minus text-xs"></i>
-									</button>
-									<input id="split-people" type="number" min="2" max="10" value="2"
-										class="w-16 border-0 bg-transparent text-center text-lg font-black text-primary focus:ring-0">
-									<button type="button" id="increase-people"
-										class="h-8 w-8 bg-primary text-white hover:bg-secondary transition-colors">
-										<i class="fa-solid fa-plus text-xs"></i>
-									</button>
-								</div>
+							{{-- Option Selector Card --}}
+							<div class="border border-slate-200 bg-white p-5 rounded-2xl shadow-sm">
+								<h2 class="text-base font-bold text-primary mb-3">Pilih Tipe Split Bill</h2>
+								<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<label class="relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all border-primary bg-primary/5" id="label-opt-together">
+										<input type="radio" name="split-type" value="together" checked class="sr-only">
+										<div class="flex items-center gap-3">
+											<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm"><i class="fa-solid fa-receipt"></i></div>
+											<div>
+												<span class="block text-sm font-bold text-primary">Bayar Bersama</span>
+												<span class="block text-xs text-secondary/60 mt-0.5">1x Bayar, struk terbagi garis putus-putus</span>
+											</div>
+										</div>
+									</label>
+									<label class="relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all border-slate-200 hover:border-slate-300" id="label-opt-separated">
+										<input type="radio" name="split-type" value="separated" class="sr-only">
+										<div class="flex items-center gap-3">
+											<div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm"><i class="fa-solid fa-users"></i></div>
+											<div>
+												<span class="block text-sm font-bold text-slate-800">Bayar Terpisah</span>
+												<span class="block text-xs text-secondary/60 mt-0.5">Bayar satu per satu, terbit struk berbeda</span>
+											</div>
+										</div>
+									</label>
 								</div>
 							</div>
 
-							<div class="border border-slate-200 bg-white">
-								<div class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
-								<div>
-									<h2 class="text-lg font-black text-primary">Pembagian Item</h2>
-									<p class="text-xs text-secondary/60 mt-1">Total qty per baris harus sama dengan qty item.</p>
+							<div class="border border-slate-200 bg-white p-5 rounded-2xl shadow-sm space-y-4">
+								<div class="flex flex-wrap items-center justify-between gap-4">
+									<div>
+										<label for="split-people" class="block text-sm font-bold text-primary">Jumlah Orang</label>
+										<p class="text-xs text-secondary/60 mt-1">Atur jumlah bagian untuk membagi item.</p>
+									</div>
+
+									<div class="inline-flex items-center border border-slate-200 bg-slate-50 p-1 rounded-xl">
+										<button type="button" id="decrease-people"
+											class="h-8 w-8 rounded-lg bg-white border text-primary hover:bg-slate-100 transition-colors flex items-center justify-center">
+											<i class="fa-solid fa-minus text-xs"></i>
+										</button>
+										<input id="split-people" type="number" min="2" max="10" value="2" readonly
+											class="w-12 border-0 bg-transparent text-center text-base font-black text-primary focus:ring-0">
+										<button type="button" id="increase-people"
+											class="h-8 w-8 rounded-lg bg-primary text-white hover:bg-secondary transition-colors flex items-center justify-center">
+											<i class="fa-solid fa-plus text-xs"></i>
+										</button>
+									</div>
 								</div>
-								<button type="button" id="reset-allocation"
-									class="inline-flex items-center border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-primary hover:bg-slate-100 transition-colors">
-									Reset Otomatis
-								</button>
+							</div>
+
+							<div class="border border-slate-200 bg-white rounded-2xl shadow-sm overflow-hidden">
+								<div class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
+									<div>
+										<h2 class="text-base font-bold text-primary">Pembagian Item</h2>
+										<p class="text-xs text-secondary/60 mt-1">Total qty per baris harus sama dengan qty item.</p>
+									</div>
+									<button type="button" id="reset-allocation"
+										class="inline-flex items-center border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-primary hover:bg-slate-100 transition-colors rounded-xl shadow-sm">
+										Reset Otomatis
+									</button>
 								</div>
 
 								<div class="px-5 py-4">
 									<div id="split-table-wrap" class="overflow-x-auto custom-scrollbar"></div>
 									<p id="split-warning" class="mt-3 text-xs font-semibold text-red-500 hidden"></p>
 								</div>
+							</div>
 						</div>
-					</div>
 
 					<aside class="space-y-4">
-						<div class="border border-slate-200 bg-white">
+						<div class="border border-slate-200 bg-white rounded-2xl shadow-sm overflow-hidden">
 							<div class="border-b border-slate-200 px-5 py-4">
-								<h2 class="text-lg font-black text-primary">Ringkasan per Orang</h2>
+								<h2 class="text-base font-bold text-primary">Ringkasan per Orang</h2>
 							</div>
 							<div id="summary-cards" class="divide-y divide-slate-200"></div>
 						</div>
 
-						<div class="border border-slate-200 bg-white px-5 py-4 space-y-4">
+						<div class="border border-slate-200 bg-white p-5 rounded-2xl shadow-sm space-y-4">
 							<div class="flex items-center justify-between text-sm">
 								<span class="font-semibold text-secondary/70">Total Bill</span>
 								<span id="grand-total" class="text-xl font-black text-primary">Rp 0</span>
 							</div>
 							<div class="grid grid-cols-1 gap-3">
 								<button id="proceed-payment" type="button"
-									class="inline-flex items-center justify-center bg-primary px-4 py-3 text-sm font-black text-white transition-colors hover:bg-secondary">
+									class="inline-flex items-center justify-center bg-primary px-4 py-3.5 text-sm font-black text-white transition-colors hover:bg-secondary rounded-xl shadow-md shadow-primary/20 w-full">
 									Lanjut ke Pembayaran
 								</button>
 							</div>
@@ -84,7 +111,6 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			const splitKey = 'kasir-split-checkout';
-			const fallbackKey = 'kasir-active-checkout';
 			const splitTableWrap = document.getElementById('split-table-wrap');
 			const summaryCards = document.getElementById('summary-cards');
 			const grandTotalEl = document.getElementById('grand-total');
@@ -95,13 +121,48 @@
 			const resetAllocationBtn = document.getElementById('reset-allocation');
 			const proceedPaymentBtn = document.getElementById('proceed-payment');
 
-			const checkout = JSON.parse(localStorage.getItem(splitKey) || localStorage.getItem(fallbackKey) || 'null');
+			// Radio selectors
+			const radioTogether = document.querySelector('input[value="together"]');
+			const radioSeparated = document.querySelector('input[value="separated"]');
+			const labelTogether = document.getElementById('label-opt-together');
+			const labelSeparated = document.getElementById('label-opt-separated');
+
+			let splitType = 'together'; // 'together' or 'separated'
+
+			const checkout = JSON.parse(localStorage.getItem(splitKey) || 'null');
 			const items = Array.isArray(checkout?.items) ? checkout.items : [];
 			let peopleCount = 2;
 			let allocation = {};
+			let personNames = {};
 
 			const clampPeople = (value) => Math.min(10, Math.max(2, Number(value) || 2));
 			const formatCurrency = (value) => `Rp ${new Intl.NumberFormat('id-ID').format(value || 0)}`;
+
+			// Handle Split Type radio change styling
+			const updateRadioStyles = () => {
+				if (radioTogether.checked) {
+					splitType = 'together';
+					labelTogether.className = "relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all border-primary bg-primary/5";
+					labelSeparated.className = "relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all border-slate-200 hover:border-slate-300";
+					labelTogether.querySelector('.w-8').className = "w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm";
+					labelSeparated.querySelector('.w-8').className = "w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm";
+					labelTogether.querySelector('span.block.text-sm').className = "block text-sm font-bold text-primary";
+					labelSeparated.querySelector('span.block.text-sm').className = "block text-sm font-bold text-slate-800";
+				} else {
+					splitType = 'separated';
+					labelTogether.className = "relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all border-slate-200 hover:border-slate-300";
+					labelSeparated.className = "relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all border-primary bg-primary/5";
+					labelTogether.querySelector('.w-8').className = "w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm";
+					labelSeparated.querySelector('.w-8').className = "w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm";
+					labelTogether.querySelector('span.block.text-sm').className = "block text-sm font-bold text-slate-800";
+					labelSeparated.querySelector('span.block.text-sm').className = "block text-sm font-bold text-primary";
+				}
+			};
+
+			radioTogether.addEventListener('change', updateRadioStyles);
+			radioSeparated.addEventListener('change', updateRadioStyles);
+			labelTogether.addEventListener('click', () => { radioTogether.checked = true; updateRadioStyles(); });
+			labelSeparated.addEventListener('click', () => { radioSeparated.checked = true; updateRadioStyles(); });
 
 			const buildEqualAllocation = () => {
 				allocation = {};
@@ -143,12 +204,15 @@
 					});
 				});
 
-				summaryCards.innerHTML = personTotals.map((total, idx) => `
-					<div class="flex items-center justify-between gap-3 px-5 py-4">
-						<p class="text-sm font-bold text-primary">Orang ${idx + 1}</p>
-						<p class="text-base font-black text-primary">${formatCurrency(total)}</p>
-					</div>
-				`).join('');
+				summaryCards.innerHTML = personTotals.map((total, idx) => {
+					const name = personNames[idx] || `Orang ${idx + 1}`;
+					return `
+						<div class="flex items-center justify-between gap-3 px-5 py-4">
+							<p class="text-sm font-bold text-primary" data-summary-name-idx="${idx}">${name}</p>
+							<p class="text-base font-black text-primary">${formatCurrency(total)}</p>
+						</div>
+					`;
+				}).join('');
 
 				grandTotalEl.textContent = formatCurrency(personTotals.reduce((sum, value) => sum + value, 0));
 			};
@@ -156,7 +220,7 @@
 			const renderTable = () => {
 				if (items.length === 0) {
 					splitTableWrap.innerHTML = `
-						<div class="h-44 flex flex-col items-center justify-center border border-dashed border-slate-200 bg-slate-50 text-secondary/40">
+						<div class="h-44 flex flex-col items-center justify-center border border-dashed border-slate-200 bg-slate-50 text-secondary/40 rounded-2xl">
 							<i class="fa-solid fa-cart-shopping text-3xl"></i>
 							<p class="mt-3 text-sm font-semibold">Belum ada item untuk split bill</p>
 						</div>
@@ -172,7 +236,20 @@
 
 				const headCols = Array.from({
 					length: peopleCount
-				}, (_, idx) => `<th class="px-3 py-2 text-right font-bold text-primary whitespace-nowrap">Orang ${idx + 1}</th>`).join('');
+				}, (_, idx) => {
+					const currentVal = personNames[idx] || `Orang ${idx + 1}`;
+					return `
+						<th class="px-2 py-2 text-right whitespace-nowrap">
+							<input
+								type="text"
+								value="${currentVal}"
+								data-person-index="${idx}"
+								class="person-name-input w-28 border border-slate-200 bg-white px-2 py-1 text-right text-xs font-bold text-primary focus:border-accent focus:ring-accent rounded-lg"
+								placeholder="Orang ${idx + 1}"
+							>
+						</th>
+					`;
+				}).join('');
 
 				const rows = items.map((item) => {
 					const assigned = getItemSum(item.id);
@@ -192,7 +269,7 @@
 									value="${val}"
 									data-item-id="${item.id}"
 									data-person-index="${idx}"
-										class="split-qty-input w-16 border border-slate-200 bg-white px-2 py-1 text-right text-sm font-bold text-primary focus:border-accent focus:ring-accent"
+										class="split-qty-input w-16 border border-slate-200 bg-white px-2 py-1 text-right text-sm font-bold text-primary focus:border-accent focus:ring-accent rounded-lg"
 								>
 							</td>
 						`;
@@ -211,7 +288,7 @@
 				}).join('');
 
 						splitTableWrap.innerHTML = `
-						<table class="w-full border border-slate-200 overflow-hidden">
+						<table class="w-full border border-slate-200 overflow-hidden rounded-xl">
 						<thead class="bg-slate-50">
 							<tr>
 								<th class="px-3 py-2 text-left text-xs font-black uppercase tracking-wide text-secondary/60">Item</th>
@@ -248,10 +325,6 @@
 				return;
 			}
 
-			peopleInput.addEventListener('change', function() {
-				updatePeopleCount(this.value);
-			});
-
 			decreasePeople.addEventListener('click', function() {
 				updatePeopleCount(peopleCount - 1);
 			});
@@ -265,8 +338,22 @@
 				renderTable();
 			});
 
+			// Handle input on person name text field
 			splitTableWrap.addEventListener('input', function(event) {
 				const target = event.target;
+				if (target.classList.contains('person-name-input')) {
+					const idx = Number(target.dataset.personIndex || 0);
+					const nameVal = target.value.trim() || target.placeholder;
+					personNames[idx] = nameVal;
+
+					// Real-time update summary cards label
+					const labelEl = document.querySelector(`[data-summary-name-idx="${idx}"]`);
+					if (labelEl) {
+						labelEl.textContent = nameVal;
+					}
+					return;
+				}
+
 				if (!target.classList.contains('split-qty-input')) {
 					return;
 				}
@@ -295,7 +382,7 @@
 				const splitPeople = Array.from({
 					length: peopleCount
 				}, (_, idx) => ({
-					personLabel: `Orang ${idx + 1}`,
+					personLabel: personNames[idx] || `Orang ${idx + 1}`,
 					items: items
 					.map((item) => {
 						const qty = Number(allocation[item.id]?.[idx] || 0);
@@ -305,7 +392,9 @@
 						const price = Number(item.price || 0);
 						return {
 							id: item.id,
+							product_id: item.id,
 							name: item.name,
+							product_name: item.name,
 							quantity: qty,
 							price,
 							subtotal: qty * price,
@@ -317,22 +406,69 @@
 					total: person.items.reduce((sum, item) => sum + Number(item.subtotal || 0), 0),
 				}));
 
-				const payload = {
-					id: checkout?.id || `order-${Date.now()}`,
-					status: 'pending_payment',
-					created_at: checkout?.created_at || new Date().toISOString(),
-					items,
-					totalItems: items.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
-					totalPrice: items.reduce((sum, item) => sum + (Number(item.quantity || 0) * Number(item.price || 0)), 0),
-					splitBill: {
-						peopleCount,
-						people: splitPeople,
-					},
-				};
+				// Filter out people who have no items allocated to them
+				const activePeople = splitPeople.filter(p => p.items.length > 0);
 
-				localStorage.setItem('kasir-active-checkout', JSON.stringify(payload));
-				localStorage.removeItem(splitKey);
-				window.location.href = "{{ route('kasir.payment') }}";
+				if (activePeople.length === 0) {
+					alert('Belum ada pembagian item untuk siapapun.');
+					return;
+				}
+
+				if (splitType === 'together') {
+					// Option 1: Bayar Bersama
+					const payload = {
+						id: checkout?.id || `order-${Date.now()}`,
+						status: 'pending_payment',
+						created_at: checkout?.created_at || new Date().toISOString(),
+						items,
+						totalItems: items.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
+						totalPrice: items.reduce((sum, item) => sum + (Number(item.quantity || 0) * Number(item.price || 0)), 0),
+						splitBill: {
+							splitType: 'together',
+							peopleCount: activePeople.length,
+							people: activePeople,
+						},
+					};
+
+					localStorage.setItem('kasir-active-checkout', JSON.stringify(payload));
+					localStorage.removeItem(splitKey);
+					
+					// Clear sequential states
+					localStorage.removeItem('kasir-split-payments');
+					localStorage.removeItem('kasir-split-current-index');
+					
+					window.location.href = "{{ route('kasir.payment') }}";
+				} else {
+					// Option 2: Bayar Terpisah (Sequential Multi-payment)
+					const splitPayments = activePeople.map((person, idx) => {
+						return {
+							personLabel: person.personLabel,
+							items: person.items,
+							totalItems: person.items.reduce((sum, item) => sum + item.quantity, 0),
+							totalPrice: person.total,
+						};
+					});
+
+					localStorage.setItem('kasir-split-payments', JSON.stringify(splitPayments));
+					localStorage.setItem('kasir-split-current-index', '0');
+					
+					// Set active checkout to the first person
+					const firstPerson = splitPayments[0];
+					const payload = {
+						id: `order-${Date.now()}-1`, // Append index suffix
+						status: 'pending_payment',
+						created_at: new Date().toISOString(),
+						items: firstPerson.items,
+						totalItems: firstPerson.totalItems,
+						totalPrice: firstPerson.totalPrice,
+						isSequentialSplit: true,
+						currentPersonLabel: firstPerson.personLabel,
+					};
+					
+					localStorage.setItem('kasir-active-checkout', JSON.stringify(payload));
+					localStorage.removeItem(splitKey);
+					window.location.href = "{{ route('kasir.payment') }}";
+				}
 			});
 
 			buildEqualAllocation();
