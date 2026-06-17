@@ -39,6 +39,7 @@ class TransactionController extends Controller
             'voucher_code' => 'nullable|string|max:50',
             'discount_type' => 'nullable|string|max:50',
             'discount_value' => 'nullable|integer|min:0',
+            'split_data' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'nullable',
             'items.*.name' => 'nullable|string|max:255',
@@ -153,6 +154,7 @@ class TransactionController extends Controller
                     'payment_method' => $paymentMethod,
                     'transfer_proof_path' => $transferProofPath,
                     'payment_validation_status' => $paymentValidationStatus,
+                    'split_data' => isset($data['split_data']) ? json_decode($data['split_data'], true) : null,
                     'paid_at' => now(),
                     'is_active' => true,
                 ]);
@@ -315,9 +317,6 @@ class TransactionController extends Controller
         $status = $request->query('status');
 
         $transactions = Transaction::with(['user', 'items'])
-            ->when(Auth::check(), function ($query) {
-                $query->where('user_id', Auth::id());
-            })
             ->when($status && $status !== 'all', function ($query) use ($status) {
                 $query->where('status', $status);
             })
@@ -344,9 +343,6 @@ class TransactionController extends Controller
     public function showHistory($id)
     {
         $transaction = Transaction::with(['items', 'user'])
-            ->when(Auth::check(), function ($query) {
-                $query->where('user_id', Auth::id());
-            })
             ->where(function ($query) use ($id) {
                 $query->where('order_code', $id);
 

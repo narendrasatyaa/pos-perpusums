@@ -1,5 +1,5 @@
 <x-app-layout :title="'Detail Histori Order'">
-	<div class="flex h-screen bg-[#f4f7fe] font-sans selection:bg-accent selection:text-primary">
+	<div class="flex flex-col h-screen bg-[#f4f7fe] font-sans selection:bg-accent selection:text-primary">
 		<x-sidebar />
 
 		<main class="flex-1 flex flex-col h-screen overflow-hidden">
