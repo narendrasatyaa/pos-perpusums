@@ -15,7 +15,7 @@
             </div>
 
             {{-- role --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <div class="grid grid-cols-3 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
                 
                 {{-- kasir --}}
                 <a href="{{ route('login') }}"
@@ -52,7 +52,29 @@
                             <i class="fa-solid fa-user-shield text-2xl"></i>
                         </div>
                         <div class="flex-grow">
-                            <h3 class="text-2xl font-bold text-primary mb-2">Administrator/Finance</h3>
+                            <h3 class="text-2xl font-bold text-primary mb-2">Administrator</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">Kelola sistem inventaris, rekap laporan keuangan/transaksi harian dari kasir Library Cafe.</p>
+                        </div>
+                        <div class="mt-8 flex items-center text-sm font-bold text-info group-hover:text-secondary transition-colors">
+                            Masuk sebagai Admin <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                </a>
+
+                {{-- finance --}}
+                <a href="{{ url('/finance/login') }}"
+                    class="group relative bg-white border-2 border-slate-100 hover:border-secondary p-8 md:p-10 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full overflow-hidden">
+                    
+                    <div class="absolute -right-6 -top-6 text-slate-50 group-hover:text-secondary/5 transition-colors duration-500">
+                        <i class="fa-solid fa-user-shield text-9xl"></i>
+                    </div>
+
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 flex items-center justify-center rounded-xl bg-secondary text-white mb-6 transition-transform duration-300">
+                            <i class="fa-solid fa-user-shield text-2xl"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-2xl font-bold text-primary mb-2">Finance</h3>
                             <p class="text-slate-600 text-sm leading-relaxed">Kelola sistem inventaris, rekap laporan keuangan/transaksi harian dari kasir Library Cafe.</p>
                         </div>
                         <div class="mt-8 flex items-center text-sm font-bold text-info group-hover:text-secondary transition-colors">

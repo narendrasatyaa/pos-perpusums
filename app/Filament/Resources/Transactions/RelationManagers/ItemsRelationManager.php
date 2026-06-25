@@ -18,7 +18,10 @@ class ItemsRelationManager extends RelationManager
                 TextColumn::make('product_name')
                     ->label('Nama Produk')
                     ->searchable()
-                    ->weight('bold'),
+                    ->weight('bold')
+                    ->description(fn ($record) => $record->selected_options 
+                        ? implode(', ', array_values($record->selected_options)) 
+                        : null),
 
                 TextColumn::make('price')
                     ->label('Harga')

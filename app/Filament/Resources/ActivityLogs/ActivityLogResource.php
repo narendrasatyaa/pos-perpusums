@@ -30,6 +30,12 @@ class ActivityLogResource extends Resource
 
     protected static ?int $navigationSort = 99;
 
+    // Hanya Admin yang bisa melihat log aktivitas
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->role === \App\Models\User::ROLE_ADMIN;
+    }
+
     // Menonaktifkan pembuatan log secara manual dari UI
     public static function canCreate(): bool
     {

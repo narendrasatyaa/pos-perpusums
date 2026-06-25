@@ -15,7 +15,10 @@ use App\Filament\Widgets\PaymentMethodChart;
 
 class Dashboard extends BaseDashboard
 {
-    protected static ?string $title = 'Dashboard Admin';
+    public function getTitle(): string
+    {
+        return auth()->user()?->role === \App\Models\User::ROLE_ADMIN ? 'Dashboard Admin' : 'Dashboard Finance';
+    }
 
     public function getWidgets(): array
     {

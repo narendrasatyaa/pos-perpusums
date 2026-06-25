@@ -15,6 +15,10 @@ class Product extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'options' => 'array',
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class);

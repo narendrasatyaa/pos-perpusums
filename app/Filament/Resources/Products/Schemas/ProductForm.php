@@ -6,6 +6,8 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TagsInput;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
 
@@ -113,6 +115,19 @@ class ProductForm
                             "<span class='text-lg font-bold {$colorClass}'>{$formattedProfit} ({$formattedPercentage})</span>"
                         );
                     }),
+                Repeater::make('options')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->label('Nama Opsi (e.g. Suhu, Kemanisan, Ukuran)'),
+                        TagsInput::make('choices')
+                            ->required()
+                            ->label('Daftar Pilihan')
+                            ->placeholder('Masukkan pilihan dan tekan Enter'),
+                    ])
+                    ->label('Opsi Tambahan (Opsional)')
+                    ->columnSpanFull()
+                    ->default([]),
             ]);
     }
 }

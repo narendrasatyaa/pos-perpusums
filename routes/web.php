@@ -97,7 +97,7 @@ Route::post('/finance/login', function (Request $request) {
 
     $request->session()->regenerate();
 
-    return redirect()->intended('/finance');
+    return redirect()->intended('/admin');
 })->name('finance.login.store');
 
 Route::middleware('auth')->get('/kasir', function () {

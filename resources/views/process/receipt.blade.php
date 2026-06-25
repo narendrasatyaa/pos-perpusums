@@ -1,57 +1,45 @@
 <x-app-layout :title="'Receipt'">
     {{-- template nota --}}
     <div class="hidden print:block"
-        style="width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 12px; color: #000; padding: 2px;">
+        style="width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #000; padding: 2px;">
 
         {{-- header --}}
-        <div style="text-align: center; margin-bottom: 10px;">
-            <img src="{{ asset('img/logo-perpus.webp') }}" alt="">
-            <div style="font-weight: 900; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">
-            </div>
-            <div style="font-size: 10px; margin-top: 4px;">UPT Perpustakaan dan Layanan Digital</div>
-            <div style="font-size: 10px;">Jl. A. Yani Tromol Pos I, Pabelan</div>
-            <div style="font-size: 10px;">Surakarta 57102</div>
-        </div>
-
-        <div style="border-top: 1px dashed #000; margin: 6px 0;"></div>
-
-        {{-- info transaksi --}}
-        <div style="font-size: 11px; margin-bottom: 8px;">
-            <div style="display: flex; justify-content: space-between;">
-                <span>Penjualan</span>
-                <span>: <span data-print-number>-</span></span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>Tanggal</span>
-                <span>: <span data-print-date>-</span></span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>Kasir</span>
-                <span>: {{ auth()->user()->name ?? 'Kasir' }}</span>
+        <div style="text-align: center; margin-bottom: 8px;">
+            <img src="{{ asset('img/logo-perpus.webp') }}" alt="" style="max-height: 45px; margin: 0 auto 5px; display: block;">
+            <div style="font-weight: 900; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Library Cafe</div>
+            <div style="font-size: 9px; margin-top: 2px; line-height: 1.3;">
+                UPT Perpustakaan dan Layanan Digital<br>
+                Jl. A. Yani Tromol Pos I, Pabelan, Surakarta 57102
             </div>
         </div>
 
-        <div style="border-top: 1px dashed #000; margin: 6px 0;"></div>
+        {{-- info transaksi (langsung di bawah header tanpa divider, persis di gambar) --}}
+        <div style="font-size: 9px; line-height: 1.4; color: #000; margin-bottom: 5px;">
+            <div>Order Date: <span data-print-date>-</span></div>
+            <div>Order ID  : <span data-print-number>-</span></div>
+            <div>Kasir     : {{ auth()->user()->name ?? 'Kasir' }}</div>
+        </div>
+
+        <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
 
         {{-- item --}}
-        <div style="font-size: 11px; margin-bottom: 8px;" data-print-items>
+        <div style="font-size: 10px; margin-bottom: 5px;" data-print-items>
             {{-- diisi via JS --}}
         </div>
 
-        <div style="border-top: 1px dashed #000; margin: 6px 0;"></div>
+        <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
 
         {{-- ringkasan harga --}}
-        <div style="font-size: 11px;">
+        <div style="font-size: 10px; line-height: 1.4;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
                 <span>Subtotal (<span data-print-itemcount>0</span> item)</span>
                 <span data-print-subtotal>0</span>
             </div>
-            <div
-                style="display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; margin-top: 4px; border-top: 1px dashed #000; padding-top: 4px;">
+            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 11px; margin-top: 3px; border-top: 1px dashed #000; padding-top: 3px;">
                 <span>Total</span>
                 <span data-print-total>0</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+            <div style="display: flex; justify-content: space-between; margin-top: 3px;">
                 <span data-print-method-label>Tunai</span>
                 <span data-print-paid>0</span>
             </div>
@@ -61,15 +49,14 @@
             </div>
         </div>
 
-        <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
+        <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
 
         {{-- footer --}}
-        <div style="text-align: center; font-size: 10px; line-height: 1.4;">
+        <div style="text-align: center; font-size: 9px; line-height: 1.4;">
             <div style="margin-bottom: 4px; font-style: italic;">"Makan, Minum, Baca, Santai"</div>
             <div>Instagram: @perpusums</div>
-            <div style="margin-top: 8px;">Wifi : UMS Wifi</div>
-            <div>Password : ums.wifi</div>
-            <div style="margin-top: 8px;">-- Terima Kasih --</div>
+            <div>Wifi: UMS Wifi | Password: ums.wifi</div>
+            <div style="margin-top: 6px; font-weight: bold;">-- Terima Kasih --</div>
         </div>
 
     </div>
@@ -77,122 +64,80 @@
     {{-- web ui --}}
     <div
         class="min-h-screen bg-slate-50 font-sans selection:bg-accent selection:text-primary print:hidden flex flex-col">
-        {{-- <!-- Top Nav -->
-    <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3 font-bold text-primary text-lg">
-            <i class="fa-solid fa-mug-hot"></i>
-            <span>Library Cafe POS</span>
-        </div>
-        <div class="flex items-center gap-6 text-sm text-slate-500 font-medium">
-            <button class="flex items-center gap-2 hover:text-primary transition-colors">
-                <i class="fa-regular fa-circle-question"></i>
-                Support
-            </button>
-            <div class="flex items-center gap-3 border-l border-slate-200 pl-6">
-                <div class="text-right leading-tight">
-                    <p class="text-[10px] uppercase tracking-wider">Operator</p>
-                    <p class="text-primary font-bold">{{ explode(' ', auth()->user()->name ?? 'Admin')[0] }}</p>
-                </div>
-                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <i class="fa-regular fa-user"></i>
-                </div>
-            </div>
-        </div>
-    </header> --}}
 
         <!-- Main Content -->
         <main class="flex-1 flex flex-col items-center py-12 px-4 relative">
-            <!-- Success Header -->
-            {{-- <div class="text-center mb-8">
-            <div class="w-12 h-12 rounded-full bg-tertiary flex items-center justify-center text-white text-xl mx-auto mb-4 shadow-lg shadow-tertiary/30">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            <h1 class="text-[28px] font-bold text-primary mb-2">Payment Successful</h1>
-            <p class="text-slate-500 text-sm">The digital receipt has been generated.</p>
-        </div> --}}
 
             <!-- Receipt Card -->
             <div
-                class="bg-white w-full max-w-[420px] rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 relative z-10 overflow-hidden">
+                class="bg-white w-full max-w-[400px] rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden relative p-8 sm:p-10">
                 <!-- Decorative cutouts on sides (optional, for receipt look) -->
-                <div class="absolute -left-3 top-[55%] w-6 h-6 rounded-full bg-slate-50 shadow-inner"></div>
-                <div class="absolute -right-3 top-[55%] w-6 h-6 rounded-full bg-slate-50 shadow-inner"></div>
+                <div class="absolute -left-3 top-[60%] w-6 h-6 rounded-full bg-slate-50 shadow-inner"></div>
+                <div class="absolute -right-3 top-[60%] w-6 h-6 rounded-full bg-slate-50 shadow-inner"></div>
 
                 <!-- Header -->
                 <div class="text-center mb-6">
-                    <img src="{{ asset('img/logo-perpus.webp') }}" alt="" class="h-14 mx-auto mb-3">
-                    <h2 class="text-xl font-bold text-primary mb-1">Library Cafe</h2>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">
+                    <img src="{{ asset('img/logo-perpus.webp') }}" alt="" class="h-16 mx-auto mb-4 grayscale opacity-90">
+                    <h2 class="text-xl font-black text-slate-800 uppercase tracking-tighter">Library Cafe</h2>
+                    <p class="text-[11px] text-slate-500 leading-relaxed mt-1 font-medium">
                         UPT Perpustakaan dan Layanan Digital<br>
                         Jl. A. Yani Tromol Pos I, Pabelan<br>
                         Surakarta 57102
                     </p>
                 </div>
 
-                <div class="border-t-[1.5px] border-dashed border-slate-200 my-5"></div>
-
-                <!-- Meta -->
-                <div class="flex justify-between text-[10px] text-slate-500 uppercase tracking-wider mb-2">
-                    <div>
-                        <p class="mb-1 font-semibold">Date Time</p>
-                        <p class="text-primary font-bold normal-case" data-receipt-date>-</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="mb-1 font-semibold">Transaction ID</p>
-                        <p class="text-primary font-bold normal-case" data-receipt-number>-</p>
-                    </div>
+                <!-- Meta (Langsung di bawah, persis di foto) -->
+                <div class="space-y-1.5 text-[11px] text-slate-600 font-medium mb-4">
+                    <div>Order Date: <span class="font-bold text-slate-800" data-receipt-date>-</span></div>
+                    <div>Order ID  : <span class="font-bold text-slate-800" data-receipt-number>-</span></div>
+                    <div>Kasir     : <span class="font-bold text-slate-800">{{ auth()->user()->name ?? 'Kasir' }}</span></div>
                 </div>
 
-                <div class="border-t-[1.5px] border-dashed border-slate-200 my-5"></div>
+                <div class="border-t-[1.5px] border-dashed border-slate-200 my-4"></div>
 
                 <!-- Items -->
                 <div class="space-y-3" data-receipt-items>
                     <!-- JS will populate this -->
                 </div>
 
-                <div class="border-t-[1.5px] border-dashed border-slate-200 mt-4 mb-5"></div>
+                <div class="border-t-[1.5px] border-dashed border-slate-200 my-4"></div>
 
-                <!-- Totals -->
-                <div class="space-y-2 mb-4">
-                    <div class="flex justify-between text-sm text-slate-500 font-medium">
+                <!-- Totals (Gada tax) -->
+                <div class="space-y-2 mb-4 text-xs font-semibold text-slate-600">
+                    <div class="flex justify-between">
                         <span>Subtotal</span>
                         <span data-receipt-subtotal>Rp 0</span>
                     </div>
-                    <div id="receipt-discount-row" class="hidden justify-between text-sm text-slate-500 font-medium">
+                    <div id="receipt-discount-row" class="hidden justify-between text-red-500">
                         <span>Discount</span>
                         <span data-receipt-discount>- Rp 0</span>
                     </div>
-                </div>
-
-                <div class="flex justify-between items-end mb-8">
-                    <span class="text-lg font-bold text-primary">Total</span>
-                    <span class="text-[26px] font-bold text-primary tracking-tight" data-receipt-total>Rp 0</span>
-                </div>
-
-                <!-- Payment Method -->
-                <div
-                    class="bg-slate-50 rounded-xl p-3.5 flex items-center justify-between border border-slate-100 mb-6">
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600">
-                            <i class="fa-solid fa-credit-card" id="method-icon"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Payment Method</p>
-                            <p class="text-sm font-bold text-primary" data-receipt-method>-</p>
-                        </div>
+                    <div class="flex justify-between pt-2 border-t border-dashed border-slate-200 text-sm font-black text-slate-800 uppercase">
+                        <span>Total</span>
+                        <span class="text-lg font-black text-slate-900 tracking-tighter" data-receipt-total>Rp 0</span>
                     </div>
-                    <i class="fa-solid fa-circle-check text-tertiary text-lg"></i>
+                    <div class="flex justify-between pt-2">
+                        <span data-receipt-method-label>Tunai</span>
+                        <span data-receipt-paid>Rp 0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Kembalian</span>
+                        <span data-receipt-change>Rp 0</span>
+                    </div>
                 </div>
+
+                <div class="border-t-[1.5px] border-dashed border-slate-200 my-5"></div>
 
                 <!-- Footer -->
-                <div class="text-center">
-                    <p class="text-xs text-slate-500 mb-4">Thank you for your visit!<br>Enjoy your reading time with us.
-                    </p>
-                    {{-- <div class="flex justify-center text-slate-300 text-[40px] leading-none opacity-50">
-                    <i class="fa-solid fa-barcode"></i>
-                    <i class="fa-solid fa-barcode"></i>
-                </div> --}}
+                <div class="text-center font-medium">
+                    <p class="text-[11px] text-slate-500 italic mb-4">"Makan, Minum, Baca, Santai"</p>
+                    <div class="space-y-1 text-[10px] text-slate-400 tracking-widest">
+                        <p>Instagram: @perpusums</p>
+                        <p>Wifi: UMS Wifi | Password: ums.wifi</p>
+                    </div>
+                    <div class="mt-6 text-[12px] font-black text-slate-800 tracking-[0.3em] opacity-30 uppercase">
+                        -- Terima Kasih --
+                    </div>
                 </div>
             </div>
             {{--  --}}
@@ -255,6 +200,9 @@
             const receiptItems = document.querySelector('[data-receipt-items]');
             const methodIcon = document.getElementById('method-icon');
             const receiptDiscountRow = document.getElementById('receipt-discount-row');
+            const receiptPaid = document.querySelector('[data-receipt-paid]');
+            const receiptChange = document.querySelector('[data-receipt-change]');
+            const receiptMethodLabel = document.querySelector('[data-receipt-method-label]');
 
             // Print area elements
             const printNumber = document.querySelector('[data-print-number]');
@@ -281,7 +229,23 @@
                     return;
                 }
 
-                const items = receipt.items || [];
+                const items = (receipt.items || []).map(item => {
+                    let formattedOpts = item.formatted_options || '';
+                    if (!formattedOpts && item.selected_options) {
+                        try {
+                            const opts = typeof item.selected_options === 'string' 
+                                ? JSON.parse(item.selected_options) 
+                                : item.selected_options;
+                            formattedOpts = Object.entries(opts).map(([key, val]) => `${key} - ${val}`).join(', ');
+                        } catch(e) {
+                            formattedOpts = '';
+                        }
+                    }
+                    return {
+                        ...item,
+                        formatted_options: formattedOpts
+                    };
+                });
                 const totalItems = Number(receipt.totalItems || items.reduce((acc, item) => acc + Number(item
                     .quantity || 0), 0));
                 const total = Number(receipt.totalPrice || receipt.total || 0);
@@ -313,6 +277,9 @@
                 if (printFooterDate) printFooterDate.textContent = dateShort;
 
                 if (receiptMethod) receiptMethod.textContent = methodStr;
+                if (receiptMethodLabel) receiptMethodLabel.textContent = isCash ? 'Tunai' : methodStr;
+                if (receiptPaid) receiptPaid.textContent = formatCurrency(paid);
+                if (receiptChange) receiptChange.textContent = formatCurrency(change);
                 if (printMethodLabel) printMethodLabel.textContent = isCash ? 'Tunai' : methodStr;
 
                 if (methodIcon) {
@@ -344,15 +311,30 @@
                 if (splitData && splitData.people && splitData.people.length > 0) {
                     if (receiptItems) {
                         receiptItems.innerHTML = splitData.people.map((person) => {
-                            const personItemsHtml = person.items.map((item) => `
-                                <div class="flex justify-between items-start text-xs pl-2">
-                                    <div>
-                                        <p class="font-semibold text-primary/80">${item.name || item.product_name || 'Item'}</p>
-                                        <p class="text-[10px] text-slate-500">${Number(item.quantity || 0)} x ${formatCurrency(Number(item.price || 0))}</p>
+                            const personItemsHtml = person.items.map((item) => {
+                                let formattedOpts = item.formatted_options || '';
+                                if (!formattedOpts && item.selected_options) {
+                                    try {
+                                        const opts = typeof item.selected_options === 'string' 
+                                            ? JSON.parse(item.selected_options) 
+                                            : item.selected_options;
+                                        formattedOpts = Object.entries(opts).map(([key, val]) => `${key} - ${val}`).join(', ');
+                                    } catch(e) {
+                                        formattedOpts = '';
+                                    }
+                                }
+                                return `
+                                    <div class="flex justify-between items-start text-xs pl-2 mb-2">
+                                        <div class="max-w-[80%]">
+                                            <p class="font-semibold text-primary/80 leading-tight">
+                                                ${Number(item.quantity || 0)}x ${item.name || item.product_name || 'Item'}
+                                            </p>
+                                            ${formattedOpts ? `<p class="text-[9px] text-slate-400 font-semibold mt-0.5">${formattedOpts}</p>` : ''}
+                                        </div>
+                                        <p class="font-semibold text-primary/80">${formatNumber(Number(item.subtotal || 0))}</p>
                                     </div>
-                                    <p class="font-semibold text-primary/80">${formatCurrency(Number(item.subtotal || 0))}</p>
-                                </div>
-                            `).join('');
+                                `;
+                            }).join('');
                             
                             return `
                                 <div class="space-y-2 border border-slate-100 rounded-xl p-3 bg-slate-50/50">
@@ -370,12 +352,30 @@
                     
                     if (printItems) {
                         printItems.innerHTML = splitData.people.map((person) => {
-                            const personItemsHtml = person.items.map((item) => `
-                                 <div style="display: flex; justify-content: space-between; padding-left: 8px;">
-                                     <span>${Number(item.quantity || 0)} ${item.name || item.product_name || 'Item'}</span>
-                                     <span>${formatNumber(Number(item.subtotal || 0))}</span>
-                                 </div>
-                            `).join('');
+                            const personItemsHtml = person.items.map((item) => {
+                                let formattedOpts = item.formatted_options || '';
+                                if (!formattedOpts && item.selected_options) {
+                                    try {
+                                        const opts = typeof item.selected_options === 'string' 
+                                            ? JSON.parse(item.selected_options) 
+                                            : item.selected_options;
+                                        formattedOpts = Object.entries(opts).map(([key, val]) => `${key} - ${val}`).join(', ');
+                                    } catch(e) {
+                                        formattedOpts = '';
+                                    }
+                                }
+                                return `
+                                     <div style="padding-left: 8px; line-height: 1.4; margin-bottom: 4px;">
+                                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                             <span style="max-width: 75%; word-break: break-word; font-weight: 600;">
+                                                 ${Number(item.quantity || 0)} ${item.name || item.product_name || 'Item'}
+                                             </span>
+                                             <span style="font-weight: 600;">${formatNumber(Number(item.subtotal || 0))}</span>
+                                         </div>
+                                         ${formattedOpts ? `<div style="font-size: 8px; color: #555; padding-left: 10px;">${formattedOpts}</div>` : ''}
+                                     </div>
+                                `;
+                            }).join('');
                             
                             return `
                                 <div>
@@ -391,24 +391,29 @@
                 } else {
                     if (receiptItems) {
                         receiptItems.innerHTML = items.map((item) => `
-                        <div class="flex justify-between items-start text-sm">
-                            <div>
-                                <p class="font-bold text-primary">${item.name || item.product_name || 'Item'}</p>
-                                <p class="text-[11px] text-slate-500">${Number(item.quantity || 0)} x ${formatCurrency(Number(item.price || 0))}</p>
+                        <div class="flex justify-between items-start text-sm mb-3">
+                            <div class="max-w-[80%]">
+                                <p class="font-bold text-primary leading-tight">
+                                    ${Number(item.quantity || 0)}x ${item.name || item.product_name || 'Item'}
+                                </p>
+                                ${item.formatted_options ? `<p class="text-[10px] text-slate-400 font-semibold mt-0.5">${item.formatted_options}</p>` : ''}
                             </div>
-                            <p class="font-bold text-primary">${formatCurrency(Number(item.subtotal || 0))}</p>
+                            <p class="font-bold text-primary">${formatNumber(Number(item.subtotal || 0))}</p>
                         </div>
                     `).join('');
                     }
 
                     if (printItems) {
                         printItems.innerHTML = items.map((item) => `
-                         <div style="margin-bottom: 2px;">
-                             <div style="display: flex; justify-content: space-between;">
-                                 <span style="font-weight: 600;">${Number(item.quantity || 0)} ${item.name || item.product_name || 'Item'}</span>
-                                 <span>${formatNumber(Number(item.subtotal || 0))}</span>
-                             </div>
-                         </div>
+                          <div style="margin-bottom: 5px; line-height: 1.4;">
+                              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                  <span style="font-weight: 600; max-width: 75%; word-break: break-word;">
+                                      ${Number(item.quantity || 0)} ${item.name || item.product_name || 'Item'}
+                                  </span>
+                                  <span style="font-weight: 600;">${formatNumber(Number(item.subtotal || 0))}</span>
+                              </div>
+                              ${item.formatted_options ? `<div style="font-size: 8px; color: #555; padding-left: 10px;">${item.formatted_options}</div>` : ''}
+                          </div>
                     `).join('');
                     }
                 }
@@ -458,6 +463,7 @@
                         price: Number(item.price || 0),
                         quantity: Number(item.quantity || 0),
                         subtotal: Number(item.subtotal || 0),
+                        selected_options: item.selected_options || null,
                     })),
                     split_data: order.split_data || null,
                 };

@@ -67,7 +67,8 @@
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-price="{{ $product->price }}"
-                                    data-product-stock="{{ $product->stock }}">
+                                    data-product-stock="{{ $product->stock }}"
+                                    data-product-options="{{ json_encode($product->options) }}">
 
                                     <div class="w-full">
                                         <!-- Image Area - Rounded inside the card -->
@@ -182,6 +183,37 @@
         </div>
     </div>
 
+    <!-- Product Options Modal -->
+    <div id="options-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-modal-backdrop></div>
+        <div class="relative w-full max-w-md mx-4">
+            <div class="bg-white rounded-[28px] shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+                <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-black text-primary" id="options-modal-product-name">Pilih Opsi</h3>
+                        <p class="text-xs text-secondary/60 mt-0.5">Tentukan preferensi pesanan pelanggan</p>
+                    </div>
+                    <button type="button" id="options-modal-close" class="text-slate-400 hover:text-slate-600 transition-colors text-lg p-1">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1" id="options-modal-container">
+                    <!-- Dynamic options will be rendered here -->
+                </div>
+                
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 shrink-0">
+                    <button type="button" id="options-modal-cancel" class="inline-flex items-center justify-center px-5 py-3 rounded-2xl border bg-white text-xs font-black text-primary hover:bg-slate-50 transition-colors">
+                        Batal
+                    </button>
+                    <button type="button" id="options-modal-confirm" class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-primary text-xs font-black text-white shadow-md shadow-primary/20 hover:bg-secondary transition-all">
+                        Tambah ke Keranjang
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Debounce Utility Function
         function debounce(func, delay) {
@@ -272,6 +304,15 @@
             const toast = document.getElementById('cart-toast');
             const toastText = document.querySelector('[data-toast-text]');
 
+            // Options Modal elements
+            const optionsModal = document.getElementById('options-modal');
+            const optionsModalContainer = document.getElementById('options-modal-container');
+            const optionsModalProductName = document.getElementById('options-modal-product-name');
+            const optionsModalConfirmBtn = document.getElementById('options-modal-confirm');
+            const optionsModalCancelBtn = document.getElementById('options-modal-cancel');
+            const optionsModalCloseBtn = document.getElementById('options-modal-close');
+            let activeProductForOptions = null;
+
             const formatCurrency = (value) => new Intl.NumberFormat('id-ID').format(value);
 
             const showToast = (message) => {
@@ -282,6 +323,19 @@
                 toastText.textContent = message;
                 toast.classList.remove('hidden');
                 setTimeout(() => toast.classList.add('hidden'), 2200);
+            };
+
+            const getCartKey = (id, selectedOptions) => {
+                const keys = Object.keys(selectedOptions).sort();
+                if (keys.length === 0) return String(id);
+                const optParts = keys.map(k => `${k}:${selectedOptions[k]}`);
+                return `${id}-[${optParts.join(',')}]`;
+            };
+
+            const getFormattedOptions = (selectedOptions) => {
+                return Object.entries(selectedOptions)
+                    .map(([key, val]) => `${key} - ${val}`)
+                    .join(', ');
             };
 
             const updateTotals = () => {
@@ -313,15 +367,16 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-xs font-bold text-primary truncate">${item.name}</p>
+                                ${item.formattedOptions ? `<p class="text-[10px] text-slate-400 font-semibold mt-0.5">${item.formattedOptions}</p>` : ''}
                                 <div class="flex items-center gap-1.5 mt-1.5">
-                                    <button data-cart-action="decrease" data-product-id="${item.id}" class="w-5 h-5 rounded-lg bg-white border border-slate-200 text-xs font-bold flex items-center justify-center hover:bg-slate-100 transition-colors">-</button>
+                                    <button data-cart-action="decrease" data-cart-key="${item.cartKey}" class="w-5 h-5 rounded-lg bg-white border border-slate-200 text-xs font-bold flex items-center justify-center hover:bg-slate-100 transition-colors">-</button>
                                     <span class="font-bold text-xs px-1 text-primary">${item.quantity}</span>
-                                    <button data-cart-action="increase" data-product-id="${item.id}" class="w-5 h-5 rounded-lg bg-primary text-white text-xs font-bold flex items-center justify-center hover:bg-secondary transition-colors">+</button>
+                                    <button data-cart-action="increase" data-cart-key="${item.cartKey}" class="w-5 h-5 rounded-lg bg-primary text-white text-xs font-bold flex items-center justify-center hover:bg-secondary transition-colors">+</button>
                                 </div>
                             </div>
                             <div class="text-right flex flex-col items-end justify-between h-10">
                                 <p class="font-bold text-xs text-primary">Rp ${formatCurrency(item.price * item.quantity)}</p>
-                                <button data-cart-action="remove" data-product-id="${item.id}" class="text-slate-400 hover:text-red-500 transition-colors">
+                                <button data-cart-action="remove" data-cart-key="${item.cartKey}" class="text-slate-400 hover:text-red-500 transition-colors">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             </div>
@@ -332,68 +387,202 @@
                 updateTotals();
             };
 
+            const addToCart = (id, name, price, stock, selectedOptions) => {
+                const cartKey = getCartKey(id, selectedOptions);
+                const formattedOptions = getFormattedOptions(selectedOptions);
+                
+                // Count existing total quantity for this product across all variants
+                let currentTotalQty = 0;
+                cart.forEach(item => {
+                    if (String(item.id) === String(id)) {
+                        currentTotalQty += item.quantity;
+                    }
+                });
+                
+                if (currentTotalQty >= stock) {
+                    return showToast(`Maksimal ${stock} untuk ${name} (stok terbatas)`);
+                }
+                
+                if (cart.has(cartKey)) {
+                    const item = cart.get(cartKey);
+                    item.quantity++;
+                } else {
+                    cart.set(cartKey, {
+                        cartKey,
+                        id,
+                        name,
+                        price,
+                        stock,
+                        quantity: 1,
+                        selectedOptions,
+                        formattedOptions
+                    });
+                }
+                
+                renderCart();
+                showToast(name + (formattedOptions ? ` (${formattedOptions})` : '') + ' masuk keranjang');
+            };
+
+            const openOptionsModal = (product) => {
+                activeProductForOptions = product;
+                optionsModalProductName.textContent = product.name;
+                optionsModalContainer.innerHTML = '';
+                
+                product.options.forEach((opt, optIndex) => {
+                    const optionEl = document.createElement('div');
+                    optionEl.className = 'space-y-3';
+                    
+                    const labelEl = document.createElement('p');
+                    labelEl.className = 'text-xs font-bold uppercase tracking-wider text-slate-500';
+                    labelEl.textContent = opt.name;
+                    optionEl.appendChild(labelEl);
+                    
+                    const choicesGrid = document.createElement('div');
+                    choicesGrid.className = 'grid grid-cols-2 gap-2';
+                    
+                    opt.choices.forEach((choice, choiceIndex) => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'choice-btn py-3 px-4 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 bg-slate-50/50 hover:bg-slate-50 transition-all text-center';
+                        btn.textContent = choice;
+                        btn.dataset.optionName = opt.name;
+                        btn.dataset.choiceValue = choice;
+                        
+                        if (choiceIndex === 0) {
+                            btn.classList.remove('border-slate-200', 'text-slate-700', 'bg-slate-50/50', 'hover:bg-slate-50');
+                            btn.classList.add('border-primary', 'bg-primary/5', 'text-primary', 'active-choice');
+                        }
+                        
+                        btn.onclick = function() {
+                            choicesGrid.querySelectorAll('.choice-btn').forEach(sibling => {
+                                if (sibling.dataset.optionName === opt.name) {
+                                    sibling.classList.remove('border-primary', 'bg-primary/5', 'text-primary', 'active-choice');
+                                    sibling.classList.add('border-slate-200', 'text-slate-700', 'bg-slate-50/50', 'hover:bg-slate-50');
+                                }
+                            });
+                            btn.classList.remove('border-slate-200', 'text-slate-700', 'bg-slate-50/50', 'hover:bg-slate-50');
+                            btn.classList.add('border-primary', 'bg-primary/5', 'text-primary', 'active-choice');
+                        };
+                        
+                        choicesGrid.appendChild(btn);
+                    });
+                    
+                    optionEl.appendChild(choicesGrid);
+                    optionsModalContainer.appendChild(optionEl);
+                });
+                
+                optionsModal.classList.remove('hidden');
+                optionsModal.classList.add('flex');
+            };
+
+            const closeOptionsModal = () => {
+                optionsModal.classList.remove('flex');
+                optionsModal.classList.add('hidden');
+                activeProductForOptions = null;
+            };
+
+            optionsModalCloseBtn.onclick = closeOptionsModal;
+            optionsModalCancelBtn.onclick = closeOptionsModal;
+            optionsModal.querySelector('[data-modal-backdrop]').onclick = closeOptionsModal;
+
+            optionsModalConfirmBtn.onclick = function() {
+                if (!activeProductForOptions) return;
+                
+                const selectedOptions = {};
+                const activeChoiceButtons = optionsModalContainer.querySelectorAll('.active-choice');
+                activeChoiceButtons.forEach(btn => {
+                    selectedOptions[btn.dataset.optionName] = btn.dataset.choiceValue;
+                });
+                
+                addToCart(
+                    activeProductForOptions.id,
+                    activeProductForOptions.name,
+                    activeProductForOptions.price,
+                    activeProductForOptions.stock,
+                    selectedOptions
+                );
+                
+                closeOptionsModal();
+            };
+
             document.querySelectorAll('[data-add-to-cart]').forEach(card => {
                 card.addEventListener('click', function() {
                     const id = this.dataset.productId;
                     const name = this.dataset.productName;
                     const price = Number(this.dataset.productPrice);
                     const stock = Number(this.dataset.productStock || 0);
+                    let options = [];
+                    try {
+                        options = JSON.parse(this.dataset.productOptions || '[]') || [];
+                    } catch(e) {
+                        options = [];
+                    }
 
                     if (stock <= 0) {
                         return showToast(`${name} stok habis`);
                     }
 
-                    if (cart.has(id)) {
-                        const item = cart.get(id);
-                        if (item.quantity >= item.stock) {
-                            return showToast(`Maksimal ${item.stock} untuk ${name}`);
-                        }
-                        item.quantity++;
-                    } else {
-                        cart.set(id, { id, name, price, stock, quantity: 1 });
-                    }
+                    const validOptions = Array.isArray(options)
+                        ? options.filter(opt => opt.name && Array.isArray(opt.choices) && opt.choices.length > 0)
+                        : [];
 
-                    renderCart();
-                    showToast(name + ' masuk keranjang');
+                    if (validOptions.length > 0) {
+                        openOptionsModal({ id, name, price, stock, options: validOptions });
+                    } else {
+                        addToCart(id, name, price, stock, {});
+                    }
                 });
             });
 
             document.addEventListener('click', e => {
                 const btn = e.target.closest('[data-cart-action]');
                 if (!btn) return;
-                const id = btn.dataset.productId;
+                const key = btn.dataset.cartKey;
                 const action = btn.dataset.cartAction;
-                const item = cart.get(id);
+                const item = cart.get(key);
                 if (!item) return;
 
                 if (action === 'increase') {
-                    if (item.quantity >= item.stock) {
+                    // Count existing total quantity for this product in cart
+                    let totalInCart = 0;
+                    cart.forEach(it => {
+                        if (String(it.id) === String(item.id)) {
+                            totalInCart += it.quantity;
+                        }
+                    });
+
+                    if (totalInCart >= item.stock) {
                         return showToast(`Maksimal ${item.stock} untuk ${item.name}`);
                     }
                     item.quantity++;
                 }
                 if (action === 'decrease') {
                     item.quantity--;
-                    if (item.quantity <= 0) cart.delete(id);
+                    if (item.quantity <= 0) cart.delete(key);
                 }
-                if (action === 'remove') cart.delete(id);
+                if (action === 'remove') cart.delete(key);
 
                 renderCart();
             });
 
             document.getElementById('clear-cart').addEventListener('click', () => { cart.clear(); renderCart(); });
+            
             document.getElementById('process-order').addEventListener('click', () => {
                 if (cart.size === 0) return showToast('Keranjang kosong');
 
-                const items = Array.from(cart.values()).map(i => ({
-                    id: i.id,
-                    product_id: i.id,
-                    name: i.name,
-                    product_name: i.name,
-                    price: Number(i.price || 0),
-                    quantity: Number(i.quantity || 0),
-                    subtotal: Number(i.price || 0) * Number(i.quantity || 0),
-                }));
+                const items = Array.from(cart.values()).map(i => {
+                    return {
+                        id: i.cartKey,
+                        product_id: i.id,
+                        name: i.name,
+                        product_name: i.name,
+                        price: Number(i.price || 0),
+                        quantity: Number(i.quantity || 0),
+                        subtotal: Number(i.price || 0) * Number(i.quantity || 0),
+                        selected_options: i.selectedOptions || null,
+                        formatted_options: i.formattedOptions || ''
+                    };
+                });
 
                 const totalItems = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
                 const totalPrice = items.reduce((s, it) => s + Number(it.subtotal || 0), 0);
@@ -418,15 +607,19 @@
                     splitBtn.addEventListener('click', () => {
                         if (cart.size === 0) return showToast('Keranjang kosong');
                         
-                        const items = Array.from(cart.values()).map(i => ({
-                            id: i.id,
-                            product_id: i.id,
-                            name: i.name,
-                            product_name: i.name,
-                            price: Number(i.price || 0),
-                            quantity: Number(i.quantity || 0),
-                            subtotal: Number(i.price || 0) * Number(i.quantity || 0),
-                        }));
+                        const items = Array.from(cart.values()).map(i => {
+                            return {
+                                id: i.cartKey,
+                                product_id: i.id,
+                                name: i.name,
+                                product_name: i.name,
+                                price: Number(i.price || 0),
+                                quantity: Number(i.quantity || 0),
+                                subtotal: Number(i.price || 0) * Number(i.quantity || 0),
+                                selected_options: i.selectedOptions || null,
+                                formatted_options: i.formattedOptions || ''
+                            };
+                        });
                         const totalItems = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
                         const totalPrice = items.reduce((s, it) => s + Number(it.subtotal || 0), 0);
 
