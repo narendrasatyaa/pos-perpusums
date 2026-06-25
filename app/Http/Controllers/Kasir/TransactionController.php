@@ -47,6 +47,7 @@ class TransactionController extends Controller
             'items.*.price' => 'required|integer|min:0',
             'items.*.quantity' => 'nullable|integer|min:1',
             'items.*.qty' => 'nullable|integer|min:1',
+            'items.*.selected_options' => 'nullable|array',
         ]);
 
         try {
@@ -188,6 +189,7 @@ class TransactionController extends Controller
                         'transaction_id' => $transaction->id,
                         'product_id' => $productId,
                         'product_name' => Str::limit($name, 255, ''),
+                        'selected_options' => $item['selected_options'] ?? null,
                         'price' => (int) $item['price'],
                         'quantity' => $quantity,
                         'subtotal' => $quantity * (int) $item['price'],

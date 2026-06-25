@@ -8,6 +8,10 @@ class TransactionItem extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'selected_options' => 'array',
+    ];
+
     public function transaction()
     {
         return $this->belongsTo(Transaction::class);

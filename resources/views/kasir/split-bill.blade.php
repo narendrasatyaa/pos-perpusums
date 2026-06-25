@@ -279,6 +279,7 @@
 							<tr class="border-t border-slate-100">
 							<td class="px-3 py-3 min-w-[220px]">
 								<p class="text-sm font-black text-primary">${item.name}</p>
+								${item.formatted_options ? `<p class="text-xs text-slate-400 font-semibold mt-0.5">${item.formatted_options}</p>` : ''}
 								<p class="text-xs text-secondary/60 mt-1">${formatCurrency(item.price)} x ${expected}</p>
 								<p class="text-xs ${mismatchClass} mt-1">Assigned: ${assigned}/${expected}</p>
 							</td>

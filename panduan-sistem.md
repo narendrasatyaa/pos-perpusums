@@ -93,12 +93,12 @@ Aplikasi ini dibangun menggunakan arsitektur web modern yang terbagi ke dalam be
 Sistem memiliki arsitektur data terstruktur dengan relasi model utama sebagai berikut:
 1. **User**: Menyimpan data akun pengguna sistem, membedakan hak akses berdasarkan kolom *role* (`admin`, `finance`, `kasir`). Login aman menggunakan autentikasi berbasis *username*.
 2. **Category**: Menyimpan data pengelompokan produk/menu (Makanan, Minuman, Merchandise, Snack).
-3. **Product**: Menyimpan katalog produk aktif, jumlah stok saat ini, batas minimum stok, HPP awal, harga jual, status ketersediaan, serta tipe pembagian hasil konsinyasi.
+3. **Product**: Menyimpan katalog produk aktif, jumlah stok saat ini, batas minimum stok, HPP awal, harga jual, status ketersediaan, tipe pembagian hasil konsinyasi, serta data JSON konfigurasi pilihan opsi produk (`options`).
 4. **StockInbound**: Menyimpan data barang masuk dari supplier, berelasi dengan `Product` dan mencatat HPP terbaru.
 5. **StockAdjustment**: Menyimpan koreksi persediaan manual akibat kerusakan (*damage*), penyusutan (*waste*), atau selisih opname fisik (+/-).
 6. **StockMutation**: Log mutasi stok terpusat yang mencatat histori kuantitas sebelum dan sesudah perubahan data, menggunakan relasi *polymorphic* (`reference_id`, `reference_type`).
 7. **Transaction**: Menyimpan kepala data transaksi penjualan POS (kode order, nominal bayar, diskon kupon, metode bayar, bukti transfer QRIS, status transaksi).
-8. **TransactionItem**: Menyimpan daftar rincian produk/menu yang dibeli per transaksi, termasuk mengunci data harga jual dan HPP historis pada saat transaksi terjadi.
+8. **TransactionItem**: Menyimpan daftar rincian produk/menu yang dibeli per transaksi, termasuk mengunci data harga jual, HPP historis, dan data JSON pilihan opsi produk yang dipilih pelanggan (`selected_options`) pada saat transaksi terjadi.
 9. **Voucher**: Menyimpan data kode promo diskon beserta minimum belanja, tipe diskon (nominal/persentase), dan masa berlaku.
 10. **CashFlow**: Mencatat arus kas non-POS masuk/keluar untuk kebutuhan operasional harian cafe.
 
@@ -275,14 +275,21 @@ Halaman utama kasir diakses melalui URL: `/login` (menggunakan akun ber-role **K
 
 ---
 
-## B. Layar POS & Pemesanan (Transaksi Baru)
+### B. Layar POS & Pemesanan (Transaksi Baru)
 * **Tujuan Fitur**: Membuat pesanan, memasukkan produk/menu ke keranjang belanja, dan memproses transaksi pelanggan.
 * **Lokasi Halaman**: Menu **Transaksi POS** (`/kasir/order`).
 * **Cara Penggunaan**:
   1. Gunakan kotak **Pencarian Produk** di bagian atas untuk mengetikkan nama produk/menu (misal: "Kopi Susu").
   2. Gunakan **Filter Kategori** (Makanan, Minuman, Merchandise, Snack, dsb.) untuk mempersempit daftar pencarian.
   3. Klik pada kartu produk/menu untuk menambahkannya ke **Keranjang Belanja** (*Shopping Cart*) di sebelah kanan layar.
-  4. Di dalam keranjang, Anda dapat menambah/mengurangi jumlah produk dengan tombol `+` atau `-`, atau menghapus item dengan ikon tempat sampah.
+  4. **Pemilihan Opsi Produk (Opsional)**: Jika produk yang diklik memiliki konfigurasi opsi tambahan (misal: Suhu, Kemanisan, Ukuran), sistem akan otomatis menampilkan modal popup **Pilih Opsi**. Pilih opsi yang sesuai dengan pesanan pelanggan, lalu klik **Tambah ke Keranjang**.
+  5. Di dalam keranjang, produk dengan kombinasi opsi yang berbeda akan otomatis dipisahkan menjadi baris item mandiri. Pilihan opsi akan ditampilkan di bawah nama produk terformat `NamaOpsi - Nilai` (misal: `Suhu - Es, Gula - No Gula`).
+  6. **Format Item Keranjang**:
+     * Kuantitas/jumlah barang dicantumkan sebagai awalan nama produk (contoh: `1x Latte Ice`).
+     * Informasi harga satuan di bawah nama produk ditiadakan (tidak ada baris `1 x Rp 25.000` di bawah nama produk).
+     * Nilai subtotal di sisi kanan baris item dicetak hanya berupa nominal angka desimal bersih tanpa simbol `Rp` (contoh: `25.000` atau `50.000`).
+  7. Di dalam keranjang, Anda dapat menambah/mengurangi jumlah produk dengan tombol `+` atau `-`, atau menghapus item dengan ikon tempat sampah.
+
 
 ![Antarmuka Layar POS Kasir](docs/images/kasir-pos.png)
 *Gambar 9.2: Antarmuka POS, katalog produk/menu, filter kategori, dan keranjang belanja.*
@@ -295,9 +302,10 @@ Halaman utama kasir diakses melalui URL: `/login` (menggunakan akun ber-role **K
 * **Cara Penggunaan**:
   1. Klik tombol **Split Bill** setelah semua produk/menu yang dipesan dimasukkan ke dalam keranjang.
   2. Sistem akan membuka modal *Split Bill*.
-  3. Klik produk mana saja yang akan dipisah ke struk pertama (Struk A), dan tentukan jumlah kuantitasnya.
-  4. Klik tombol **Proses Pembayaran A** untuk membayar bagian tagihan pertama.
-  5. Setelah selesai, bayar sisa produk/menu yang tertinggal di keranjang utama (Struk B), atau lakukan split kembali jika ingin dipecah ke struk C.
+  3. Dalam modal ini, setiap item produk ditampilkan lengkap dengan detail pilihan opsi tambahannya (contoh: `Suhu - Es, Gula - No Gula`) di bawah nama produk untuk memudahkan kasir memilah porsi secara presisi.
+  4. Klik produk mana saja yang akan dipisah ke struk pertama (Struk A), dan tentukan jumlah kuantitasnya.
+  5. Klik tombol **Proses Pembayaran A** untuk membayar bagian tagihan pertama.
+  6. Setelah selesai, bayar sisa produk/menu yang tertinggal di keranjang utama (Struk B), atau lakukan split kembali jika ingin dipecah ke struk C.
 
 ![Modal Layar Split Bill](docs/images/kasir-split-bill.png)
 *Gambar 9.3: Modal alokasi produk/menu untuk membagi tagihan ke beberapa struk belanja.*
@@ -309,11 +317,12 @@ Halaman utama kasir diakses melalui URL: `/login` (menggunakan akun ber-role **K
 * **Lokasi Halaman**: Tombol **Bayar / Checkout** di keranjang belanja POS.
 * **Cara Penggunaan**:
   1. Klik tombol **Bayar**.
-  2. Jika pelanggan membawa voucher diskon, ketikkan kode kupon di input **Kode Voucher** lalu klik **Terapkan**.
-  3. Pilih metode pembayaran:
+  2. Di layar detail pembayaran, daftar pesanan akan ditampilkan kembali dengan format kuantitas sebagai awalan nama produk (contoh: `1x Latte Ice`), detail pilihan opsi di bawah nama produk (contoh: `Es, No Gula`), serta nominal subtotal di sisi kanan.
+  3. Jika pelanggan membawa voucher diskon, ketikkan kode kupon di input **Kode Voucher** lalu klik **Terapkan**.
+  4. Pilih metode pembayaran:
      * **Tunai**: Masukkan nominal uang yang diserahkan pelanggan. Sistem secara otomatis menghitung uang kembalian di bawahnya.
      * **QRIS Statis**: Tunjukkan kode QR statis cafe di meja kasir. Pelanggan memindai dan melakukan transfer. Kasir wajib mengambil foto bukti transfer sukses dan mengunggahnya pada kolom **Unggah Bukti Transfer**.
-  4. Klik **Simpan & Cetak Struk**.
+  5. Klik **Simpan & Cetak Struk**.
 
 ![Proses Pilihan Pembayaran](docs/images/kasir-pembayaran.png)
 *Gambar 9.4: Modal Pembayaran untuk metode Tunai (kalkulator kembalian) dan QRIS (kolom bukti transfer).*
@@ -340,7 +349,12 @@ Halaman utama kasir diakses melalui URL: `/login` (menggunakan akun ber-role **K
   1. Cari transaksi berdasarkan **Kode Order** (`ORD-XXXXXX`) atau nama produk.
   2. Klik tombol **Detail** untuk melihat daftar item yang dibeli, diskon voucher, dan metode pembayaran.
   3. Klik **Cetak Struk** untuk mengirim perintah cetak ke printer termal, atau unduh sebagai PDF.
-  4. Di struk tersebut terdapat **QR Code Nota Digital**. Pelanggan dapat memindai QR tersebut dengan ponsel mereka untuk melihat nota versi digital publik di web tanpa perlu login.
+  4. **Format Struk & Nota Digital**:
+     * Struk belanja dan nota digital publik memformat baris produk dengan kuantitas sebagai prefix (misal: `1x Es Kopi Literan`).
+     * Rincian opsi produk (jika ada) dicetak di baris baru di bawah nama produk dengan format `NamaOpsi - Nilai` (misal: `Suhu - Es, Gula - No Gula`).
+     * Nilai subtotal di sisi kanan baris item dicetak hanya berupa angka nominal desimal bersih tanpa simbol `Rp` (misal: `25.000`).
+     * Simbol `Rp` dipertahankan pada bagian ringkasan total di bawah (Subtotal, Total, Tunai, Kembalian).
+  5. Di struk tersebut terdapat **QR Code Nota Digital**. Pelanggan dapat memindai QR tersebut dengan ponsel mereka untuk melihat nota versi digital publik di web tanpa perlu login.
 
 ![Riwayat Transaksi dan Nota Termal](docs/images/kasir-riwayat.png)
 *Gambar 9.6: Tabel riwayat transaksi kasir, detail order, dan pratinjau struk ber-QR Code.*
@@ -378,20 +392,24 @@ Halaman utama diakses melalui URL: `/admin/login` (menggunakan akun ber-role **A
 ---
 
 ## C. Manajemen Produk (Catalog Management)
-* **Tujuan Fitur**: Mengelola master produk/menu, harga jual, HPP, tipe produk konsinyasi, dan batas stok minimum.
+* **Tujuan Fitur**: Mengelola master produk/menu, harga jual, HPP, tipe produk konsinyasi, batas stok minimum, serta konfigurasi opsi tambahan produk.
 * **Lokasi Halaman**: Sidebar menu **Manajemen Produk** $\rightarrow$ **Produk** (`/admin/products`).
 * **Cara Penggunaan**:
-  1. Klik **Buat Produk Baru** (*Create Product*).
+  1. Klik **Buat Produk Baru** (*Create Product*) atau edit produk yang sudah ada.
   2. Isi kolom data produk/menu:
      * **Nama Produk**, **Kategori**, **Harga Jual**, **Stok Awal**, dan **Satuan** (contoh: Pcs, Botol, Porsi).
      * **Batas Stok Minimum**: Berfungsi untuk memicu indikator peringatan stok menipis.
   3. Tentukan jenis produk:
      * **Normal**: Masukkan nilai Harga Beli (HPP) awal.
      * **Konsinyasi**: Aktifkan centang konsinyasi, pilih tipe bagi hasil (*Nominal* atau *Persentase*) dan masukkan nominal hak produsen/pihak ketiga (misal: 7000 untuk bagi hasil Rp 7.000 per pcs, atau 70 untuk komisi bagi hasil 70% produsen - 30% cafe).
-  4. Klik **Simpan**. Kode SKU (`PRD-XXXXXX`) akan digenerate otomatis oleh sistem.
+  4. **Konfigurasi Opsi Tambahan (Opsional)**: Scroll ke bawah hingga menemukan section **Opsi Tambahan (Opsional)**. Fitur ini digunakan untuk menambahkan opsi menu khusus seperti suhu, tingkat gula, atau ukuran cup:
+     * Klik tombol **Tambah ke Opsi Tambahan**.
+     * **Nama Opsi**: Masukkan judul kelompok opsi (contoh: `Suhu`).
+     * **Daftar Pilihan**: Masukkan tag pilihan (contoh: ketik `Es` lalu tekan Enter, ketik `Panas` lalu tekan Enter).
+  5. Klik **Simpan**. Kode SKU (`PRD-XXXXXX`) akan digenerate otomatis oleh sistem.
 
 ![Form Tambah Master Produk](docs/images/admin-produk-form.png)
-*Gambar 10.3: Panel pembuatan master produk/menu normal dan pengaturan bagi hasil produk konsinyasi.*
+*Gambar 10.3: Panel pembuatan master produk/menu normal, pengaturan bagi hasil produk konsinyasi, dan konfigurasi opsi tambahan.*
 
 ---
 
@@ -485,8 +503,9 @@ Halaman utama diakses melalui URL: `/admin/login` (menggunakan akun ber-role **A
 * **Lokasi Halaman**: Sidebar menu **Laporan Penjualan** $\rightarrow$ **Transaksi** (`/admin/transactions`).
 * **Cara Penggunaan**:
   1. Admin dapat memantau status pembayaran (`Paid` / `Unpaid`).
-  2. Untuk transaksi QRIS, klik tombol **Lihat** untuk memeriksa keabsahan foto bukti transfer yang diunggah kasir.
-  3. Untuk mengekspor laporan penjualan ke Excel, gunakan fitur filter tanggal (jika ada), lalu pilih opsi **Ekspor Excel** di bagian atas tabel.
+  2. Klik tombol **Detail** (ikon mata) untuk membuka modal Detail Transaksi. Pada tab **Detail Item**, Admin dapat meninjau rincian produk yang dibeli lengkap dengan deskripsi opsi tambahan yang dipilih pelanggan (contoh: `Suhu - Es, Gula - No Gula` di bawah nama produk).
+  3. Untuk transaksi QRIS, klik tombol **Lihat** untuk memeriksa keabsahan foto bukti transfer yang diunggah kasir.
+  4. Untuk mengekspor laporan penjualan ke Excel, gunakan fitur filter tanggal (jika ada), lalu pilih opsi **Ekspor Excel** di bagian atas tabel.
 
 ![Tabel Transaksi Global & Ekspor](docs/images/admin-audit-transaksi.png)
 *Gambar 10.9: Layar riwayat audit transaksi global admin dan verifikasi bukti transfer digital.*

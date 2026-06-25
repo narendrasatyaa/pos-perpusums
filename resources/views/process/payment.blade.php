@@ -235,15 +235,31 @@
             let activePaymentMethod = 'cash';
 
             const itemsContainer = document.getElementById('order-items');
-            itemsContainer.innerHTML = checkout.items.map(item => `
-                <div class="flex justify-between gap-3">
-                    <div class="flex gap-3">
-                        <span class="text-primary font-bold text-sm">${item.quantity}x</span>
-                        <p class="font-bold text-slate-800 text-sm leading-tight">${item.name}</p>
+            itemsContainer.innerHTML = checkout.items.map(item => {
+                let formattedOpts = item.formatted_options || '';
+                if (!formattedOpts && item.selected_options) {
+                    try {
+                        const opts = typeof item.selected_options === 'string' 
+                            ? JSON.parse(item.selected_options) 
+                            : item.selected_options;
+                        formattedOpts = Object.values(opts).join(', ');
+                    } catch(e) {
+                        formattedOpts = '';
+                    }
+                }
+                return `
+                    <div class="flex justify-between gap-3 items-start">
+                        <div class="flex gap-3">
+                            <span class="text-primary font-bold text-sm">${item.quantity}x</span>
+                            <div>
+                                <p class="font-bold text-slate-800 text-sm leading-tight">${item.name}</p>
+                                ${formattedOpts ? `<p class="text-[10px] text-slate-400 font-semibold mt-0.5">${formattedOpts}</p>` : ''}
+                            </div>
+                        </div>
+                        <p class="font-bold text-slate-800 text-sm">${formatCurrency(item.subtotal)}</p>
                     </div>
-                    <p class="font-bold text-slate-800 text-sm">Rp ${formatCurrency(item.subtotal)}</p>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             const updateTotals = () => {
                 totalDue = Math.max(0, subtotal - discount);
@@ -506,6 +522,7 @@
                             price: Number(item.price || 0),
                             quantity: Number(item.quantity || 0),
                             subtotal: Number(item.subtotal || (Number(item.price || 0) * Number(item.quantity || 0))),
+                            selected_options: item.selected_options || null,
                         })),
                         isSequentialSplit: checkout.isSequentialSplit || false,
                         currentPersonLabel: checkout.currentPersonLabel || '',

@@ -16,32 +16,18 @@
                     <h1 class="text-xl font-black text-slate-800 uppercase tracking-tighter">Library Cafe</h1>
                     <div class="text-[11px] text-slate-500 leading-relaxed mt-1 font-medium">
                         UPT Perpustakaan dan Layanan Digital<br>
-                        Jl. A. Yani Tromol Pos I, Pabelan<br>
-                        Surakarta 57102
+                        Jl. A. Yani Tromol Pos I, Pabelan, Surakarta 57102
                     </div>
                 </div>
 
-                <div class="border-t border-dashed border-slate-200 my-6"></div>
-
-                <!-- Transaction Meta -->
-                <div class="space-y-2 text-[12px]">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-400 font-bold tracking-widest">Penjualan</span>
-                        <span class="text-slate-800 font-bold tracking-tight">{{ $transaction->order_code }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-400 font-bold tracking-widest">Tanggal</span>
-                        <span
-                            class="text-slate-800 font-bold tracking-tight">{{ $transaction->paid_at ? $transaction->paid_at->format('d/m/Y H:i') : $transaction->created_at->format('d/m/Y H:i') }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-400 font-bold tracking-widest">Kasir</span>
-                        <span
-                            class="text-slate-800 font-bold tracking-tight">{{ $transaction->user->name ?? 'Kasir' }}</span>
-                    </div>
+                <!-- Transaction Meta (Langsung di bawah header tanpa divider, persis di gambar) -->
+                <div class="space-y-1.5 text-[11px] text-slate-600 font-medium mb-4">
+                    <div>Order Date: <span class="font-bold text-slate-800">{{ $transaction->paid_at ? $transaction->paid_at->format('d/m/Y H:i') : $transaction->created_at->format('d/m/Y H:i') }}</span></div>
+                    <div>Order ID  : <span class="font-bold text-slate-800">{{ $transaction->order_code }}</span></div>
+                    <div>Kasir     : <span class="font-bold text-slate-800">{{ $transaction->user->name ?? 'Kasir' }}</span></div>
                 </div>
 
-                <div class="border-t border-dashed border-slate-200 my-6"></div>
+                <div class="border-t border-dashed border-slate-200 my-4"></div>
 
                 <!-- Items List -->
                 <div class="space-y-5">
@@ -54,14 +40,24 @@
                                 </div>
                                 <div class="space-y-3">
                                     @foreach ($person['items'] as $item)
-                                        <div class="flex justify-between items-start pl-2">
+                                        @php
+                                            $formattedOpts = '';
+                                            if (isset($item['selected_options']) && is_array($item['selected_options'])) {
+                                                $optsParts = [];
+                                                foreach ($item['selected_options'] as $key => $val) {
+                                                    $optsParts[] = "$key - $val";
+                                                }
+                                                $formattedOpts = implode(', ', $optsParts);
+                                            }
+                                        @endphp
+                                        <div class="flex justify-between items-start pl-2 mb-2">
                                             <div class="flex-1 pr-4">
                                                 <h4 class="text-[12px] font-bold text-slate-700 leading-tight uppercase tracking-tight">
-                                                    {{ $item['name'] ?? ($item['product_name'] ?? 'Item') }}
+                                                    {{ $item['quantity'] }}x {{ $item['name'] ?? ($item['product_name'] ?? 'Item') }}
                                                 </h4>
-                                                <p class="text-[10px] text-slate-500 font-bold mt-0.5">
-                                                    {{ $item['quantity'] }} x {{ number_format($item['price'], 0, ',', '.') }}
-                                                </p>
+                                                @if (!empty($formattedOpts))
+                                                    <p class="text-[10px] text-slate-400 font-semibold mt-0.5">{{ $formattedOpts }}</p>
+                                                @endif
                                             </div>
                                             <span class="text-[12px] font-bold text-slate-700 tracking-tighter">
                                                 {{ number_format($item['subtotal'], 0, ',', '.') }}
@@ -73,14 +69,24 @@
                         @endforeach
                     @else
                         @foreach ($transaction->items as $item)
-                            <div class="flex justify-between items-start">
+                            @php
+                                $formattedOpts = '';
+                                if ($item->selected_options && is_array($item->selected_options)) {
+                                    $optsParts = [];
+                                    foreach ($item->selected_options as $key => $val) {
+                                        $optsParts[] = "$key - $val";
+                                    }
+                                    $formattedOpts = implode(', ', $optsParts);
+                                }
+                            @endphp
+                            <div class="flex justify-between items-start mb-2.5">
                                 <div class="flex-1 pr-4">
-                                    <h4
-                                        class="text-[13px] font-black text-slate-800 leading-tight uppercase tracking-tight">
-                                        {{ $item->product_name }}</h4>
-                                    <p class="text-[11px] text-slate-500 font-bold mt-0.5">
-                                        {{ $item->quantity }} x {{ number_format($item->price, 0, ',', '.') }}
-                                    </p>
+                                    <h4 class="text-[13px] font-black text-slate-800 leading-tight uppercase tracking-tight">
+                                        {{ $item->quantity }}x {{ $item->product_name }}
+                                    </h4>
+                                    @if (!empty($formattedOpts))
+                                        <p class="text-[10px] text-slate-400 font-semibold mt-0.5">{{ $formattedOpts }}</p>
+                                    @endif
                                 </div>
                                 <span class="text-[13px] font-black text-slate-800 tracking-tighter">
                                     {{ number_format($item->subtotal, 0, ',', '.') }}
@@ -90,61 +96,46 @@
                     @endif
                 </div>
 
-                <div class="border-t border-dashed border-slate-200 my-6"></div>
+                <div class="border-t border-dashed border-slate-200 my-4"></div>
 
-                <!-- Summary -->
-                <div class="space-y-2.5">
-                    <div class="flex justify-between text-[13px] items-center">
-                        <span class="text-slate-500 font-bold uppercase tracking-wider">Subtotal
-                            ({{ $transaction->items->sum('quantity') }} item)</span>
-                        <span
-                            class="text-slate-800 font-bold tracking-tight">{{ number_format($transaction->subtotal, 0, ',', '.') }}</span>
+                <!-- Totals (Gada tax) -->
+                <div class="space-y-2 mb-4 text-xs font-semibold text-slate-600">
+                    <div class="flex justify-between">
+                        <span>Subtotal ({{ $transaction->items->sum('quantity') }} item)</span>
+                        <span>Rp {{ number_format($transaction->subtotal, 0, ',', '.') }}</span>
                     </div>
-
                     @php $discount = $transaction->subtotal - $transaction->total; @endphp
                     @if ($discount > 0)
-                        <div class="flex justify-between text-[13px] items-center text-red-500">
-                            <span class="font-bold uppercase tracking-wider">Diskon</span>
-                            <span class="font-bold tracking-tight">-{{ number_format($discount, 0, ',', '.') }}</span>
+                        <div class="flex justify-between text-red-500">
+                            <span>Discount</span>
+                            <span>- Rp {{ number_format($discount, 0, ',', '.') }}</span>
                         </div>
                     @endif
-
-                    <div class="flex justify-between items-center pt-3 mt-3 border-t border-dashed border-slate-200">
-                        <span class="text-base font-black text-slate-800 uppercase tracking-tighter">Total</span>
-                        <span class="text-2xl font-black text-slate-900 tracking-tighter">
-                            {{ number_format($transaction->total, 0, ',', '.') }}
-                        </span>
+                    <div class="flex justify-between pt-2 border-t border-dashed border-slate-200 text-sm font-black text-slate-800 uppercase">
+                        <span>Total</span>
+                        <span class="text-lg font-black text-slate-900 tracking-tighter">Rp {{ number_format($transaction->total, 0, ',', '.') }}</span>
                     </div>
-
-                    <div class="pt-4 space-y-2">
-                        <div class="flex justify-between text-[12px] items-center">
-                            <span class="text-slate-400 font-bold uppercase tracking-widest">
-                                {{ $transaction->payment_method ?? 'Tunai' }}
-                            </span>
-                            <span
-                                class="text-slate-800 font-bold tracking-tight">{{ number_format($transaction->paid_amount, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="flex justify-between text-[12px] items-center">
-                            <span class="text-slate-400 font-bold uppercase tracking-widest">Kembalian</span>
-                            <span
-                                class="text-slate-800 font-bold tracking-tight">{{ number_format($transaction->change_amount, 0, ',', '.') }}</span>
-                        </div>
+                    <div class="flex justify-between pt-2">
+                        <span class="uppercase">{{ $transaction->payment_method === 'qris_static' ? 'QRIS' : ($transaction->payment_method === 'transfer' ? 'Transfer' : 'Tunai') }}</span>
+                        <span>Rp {{ number_format($transaction->paid_amount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Kembalian</span>
+                        <span>Rp {{ number_format($transaction->change_amount, 0, ',', '.') }}</span>
                     </div>
                 </div>
 
-                <div class="border-t border-dashed border-slate-200 my-8"></div>
+                <div class="border-t-[1.5px] border-dashed border-slate-200 my-5"></div>
 
                 <!-- Footer -->
-                <div class="text-center">
-                    <p class="text-[11px] font-bold text-slate-500 italic mb-4 leading-relaxed tracking-tighter">
-                        "Makan, Minum, Baca, Santai"
-                    </p>
-                    <div class="space-y-1 text-[10px] font-bold text-slate-400 tracking-widest">
+                <div class="text-center font-medium">
+                    <p class="text-[11px] text-slate-500 italic mb-4">"Makan, Minum, Baca, Santai"</p>
+                    <div class="space-y-1 text-[10px] text-slate-400 tracking-widest">
                         <p>Instagram: @perpusums</p>
                         <p>Wifi: UMS Wifi | Password: ums.wifi</p>
                     </div>
-                    <div class="mt-6 text-[12px] font-black text-slate-800 tracking-[0.3em] opacity-30">
-                        * TERIMA KASIH *
+                    <div class="mt-6 text-[12px] font-black text-slate-800 tracking-[0.3em] opacity-30 uppercase">
+                        -- Terima Kasih --
                     </div>
                 </div>
             </div>

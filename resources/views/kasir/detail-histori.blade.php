@@ -212,16 +212,31 @@
 						? '<span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-tertiary/10 text-tertiary">LUNAS</span>'
 						: '<span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-accent/10 text-accent">DRAFT</span>';
 
-					itemsBody.innerHTML = items.map((item) => `
-						<tr class="border-b border-[#f3f6fc]">
-							<td class="py-4 pr-3">
-								<p class="text-sm font-bold text-primary">${escapeHtml(item?.product_name || 'Item')}</p>
-							</td>
-							<td class="py-4 px-3 text-sm font-semibold text-secondary/70">${formatCurrency(item?.price || 0)}</td>
-							<td class="py-4 px-3 text-sm font-semibold text-secondary/70">${Number(item?.quantity || 0)}</td>
-							<td class="py-4 pl-3 text-right text-sm font-bold text-primary">${formatCurrency(item?.subtotal || 0)}</td>
-						</tr>
-					`).join('');
+					itemsBody.innerHTML = items.map((item) => {
+						let formattedOpts = '';
+						if (item.selected_options) {
+							try {
+								const opts = typeof item.selected_options === 'string' 
+									? JSON.parse(item.selected_options) 
+									: item.selected_options;
+								formattedOpts = Object.entries(opts).map(([key, val]) => `${key} - ${val}`).join(', ');
+							} catch(e) {
+								formattedOpts = '';
+							}
+						}
+						const displayName = item.product_name || 'Item';
+						return `
+							<tr class="border-b border-[#f3f6fc]">
+								<td class="py-4 pr-3">
+									<p class="text-sm font-bold text-primary">${escapeHtml(displayName)}</p>
+									${formattedOpts ? `<p class="text-xs text-slate-400 font-semibold mt-0.5">${escapeHtml(formattedOpts)}</p>` : ''}
+								</td>
+								<td class="py-4 px-3 text-sm font-semibold text-secondary/70">${formatCurrency(item?.price || 0)}</td>
+								<td class="py-4 px-3 text-sm font-semibold text-secondary/70">${Number(item?.quantity || 0)}</td>
+								<td class="py-4 pl-3 text-right text-sm font-bold text-primary">${formatCurrency(item?.subtotal || 0)}</td>
+							</tr>
+						`;
+					}).join('');
 
 					document.getElementById('summary-total-items').textContent = String(totalItems);
 					document.getElementById('summary-subtotal').textContent = formatCurrency(subtotal);
@@ -283,6 +298,7 @@
 									price: item.price,
 									quantity: item.quantity,
 									subtotal: item.subtotal,
+									selected_options: item.selected_options || null,
 								})),
 							};
 
